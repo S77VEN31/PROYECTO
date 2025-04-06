@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "notion": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\stive\\Desktop\\Sandbox\\test\\mcp-notion-server\\notion\\build\\index.js"
+      ],
+      "env": {
+        "NOTION_API_TOKEN": "${NOTION_API_TOKEN}",
+        "NOTION_MARKDOWN_CONVERSION": "true"
+      }
+    }
+  }
+}
