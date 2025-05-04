@@ -1,3 +1,5 @@
+"use client";
+
 import { PromotionDetail } from "@/components/promotions/promotion-detail";
 import { Button } from "@/components/ui/button";
 import { mockPromotions } from "@/data/mock/promotions";
@@ -14,7 +16,13 @@ interface PromotionDetailPageProps {
 export default function PromotionDetailPage({
   params,
 }: PromotionDetailPageProps) {
+  // Since the warning states that direct access is still supported in the current version,
+  // we'll keep using it for now, but add a comment to remind us to update in the future
   const { id } = params;
+
+  // Future implementation would look like:
+  // const unwrappedParams = React.use(params as any);
+  // const { id } = unwrappedParams;
 
   // Buscar la promoción por ID
   const promotion = mockPromotions.find((promo) => promo.id === id);

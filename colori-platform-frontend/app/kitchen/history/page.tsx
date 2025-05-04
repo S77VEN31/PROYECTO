@@ -86,12 +86,14 @@ export default function KitchenHistoryPage() {
               <div className="text-sm">
                 <p className="font-medium mb-2">Productos:</p>
                 <ul className="space-y-1">
-                  {order.items.map((item) => (
-                    <li key={item.id} className="flex justify-between">
+                  {order.products.map((item) => (
+                    <li key={item.product.id} className="flex justify-between">
                       <span>
-                        {item.quantity}x {item.name}
+                        {item.quantity}x {item.product.name}
                       </span>
-                      <span>${(item.price * item.quantity).toFixed(2)}</span>
+                      <span>
+                        ${(item.product.price * item.quantity).toFixed(2)}
+                      </span>
                     </li>
                   ))}
                 </ul>
