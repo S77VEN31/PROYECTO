@@ -27,7 +27,7 @@ export default function OrderConfirmationPage() {
   const loadOrder = async (orderId: string) => {
     try {
       console.log('Intentando cargar orden:', orderId); // Para debugging
-      const orderData = await orderService.getOrderById(orderId);
+      const orderData = await orderService.getOrder(orderId);
       console.log('Orden cargada:', orderData); // Para debugging
       setOrder(orderData);
     } catch (error) {
@@ -57,48 +57,71 @@ export default function OrderConfirmationPage() {
   if (!order) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <div className="flex justify-center items-center min-h-[60vh]">
-          <p className="text-muted-foreground">No se pudo cargar la orden</p>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Error</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>No se pudo cargar la orden.</p>
+            <Button onClick={handleNewOrder} className="mt-4">
+              Realizar nuevo pedido
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto py-8 px-4 max-w-2xl">
-        <Card className="border-2 border-primary">
-          <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <CheckCircle2 className="h-16 w-16 text-primary" />
-            </div>
-            <CardTitle className="text-3xl">¡Pedido Confirmado!</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center space-y-6">
-            <div className="space-y-2">
-              <p className="text-2xl font-bold">Número de Orden</p>
-              <p className="text-4xl font-bold text-primary">{order.numeroOrden}</p>
+    <div className="container mx-auto py-8 px-4">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-center mb-4">
+            <CheckCircle2 className="h-16 w-16 text-green-500" />
+          </div>
+          <CardTitle className="text-center">¡Pedido Realizado con Éxito!</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="text-center">
+              <p className="text-lg font-semibold">Número de Orden: #{order.numeroOrden}</p>
+              <p className="text-muted-foreground">Gracias por tu pedido</p>
             </div>
             
-            <div className="space-y-2">
-              <p className="text-muted-foreground">
-                Tu pedido está siendo procesado. Por favor, espera a que tu número sea llamado.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Total: ${order.total.toFixed(2)}
-              </p>
+            <div className="border-t pt-4">
+              <h3 className="font-semibold mb-2">Detalles del Pedido:</h3>
+              {order.productos.map((item, index) => (
+                <div key={index} className="flex justify-between py-1">
+                  <span>{item.producto.nombre} x{item.cantidad}</span>
+                  <span>${(item.producto.precio * item.cantidad).toFixed(2)}</span>
+                  {item.toppings && item.toppings.length > 0 && (
+                    <div className="mt-2">
+                      <p className="text-sm text-muted-foreground">Toppings:</p>
+                      {item.toppings.map((topping, index) => (
+                        <div key={index} className="flex justify-between py-1 text-sm">
+                          <span>{topping.nombre}</span>
+                          <span>${(topping.precio || 0).toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+              <div className="border-t mt-2 pt-2">
+                <div className="flex justify-between font-semibold">
+                  <span>Total:</span>
+                  <span>${order.total.toFixed(2)}</span>
+                </div>
+              </div>
             </div>
-
-            <Button
-              size="lg"
-              onClick={handleNewOrder}
-              className="w-full"
-            >
-              Realizar Nuevo Pedido
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+        <div className="p-6 border-t">
+          <Button onClick={handleNewOrder} className="w-full">
+            Realizar nuevo pedido
+          </Button>
+        </div>
+      </Card>
     </div>
   );
 } 

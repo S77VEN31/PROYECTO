@@ -14,6 +14,7 @@ router.get('/:id', orderController.getOrder);
 
 // Rutas protegidas (solo admin)
 router.put('/:id/status', verifyToken, isAdmin, orderController.updateOrderStatus);
+router.patch('/:id/status', verifyToken, isAdmin, orderController.updateOrderStatus);
 router.delete('/:id', verifyToken, isAdmin, orderController.deleteOrder);
 
 module.exports = router; 

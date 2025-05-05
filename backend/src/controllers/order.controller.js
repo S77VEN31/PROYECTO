@@ -91,9 +91,10 @@ const getOrders = async (req, res) => {
   try {
     // Definir el orden de prioridad de los estados
     const statusPriority = {
-      'PENDIENTE': 1,
-      'EN PREPARACIÓN': 2,
-      'ENTREGADO': 3
+      'PREPARANDO': 1,
+      'PENDIENTE': 2,
+      'LISTO': 3,
+      'ENTREGADO': 4
     };
 
     // Obtener todas las órdenes y ordenarlas
@@ -138,15 +139,21 @@ const getOrder = async (req, res) => {
 
 const updateOrderStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { estado } = req.body;
+    console.log('Actualizando estado:', { id: req.params.id, estado }); // Debug
+
     const order = await Order.findByIdAndUpdate(
       req.params.id,
-      { estado: status },
+      { estado },
       { new: true }
-    );
+    ).populate('productos.producto', 'nombre precio')
+     .populate('productos.toppings', 'nombre precioTopping');
+
     if (!order) {
       return res.status(404).json({ error: 'Orden no encontrada' });
     }
+
+    console.log('Orden actualizada:', order); // Debug
     res.json(order);
   } catch (error) {
     console.error('Error al actualizar el estado:', error);

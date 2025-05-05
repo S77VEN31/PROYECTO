@@ -69,9 +69,9 @@ class OrderService {
     }
   }
 
-  async updateOrderStatus(id: string, status: 'PENDIENTE' | 'PREPARANDO' | 'LISTO' | 'ENTREGADO'): Promise<Order> {
+  async updateOrderStatus(id: string, estado: 'PENDIENTE' | 'PREPARANDO' | 'LISTO' | 'ENTREGADO'): Promise<Order> {
     try {
-      const response = await axios.patch<Order>(`${API_URL}/orders/${id}/status`, { status }, {
+      const response = await axios.patch<Order>(`${API_URL}/orders/${id}/status`, { estado }, {
         headers: this.getAuthHeader()
       });
       return response.data;
