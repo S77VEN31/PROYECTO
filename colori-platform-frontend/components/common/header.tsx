@@ -12,8 +12,10 @@ import {
   Utensils,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "./Logo";
+import { authService } from "@/lib/services/authService";
+import { toast } from "sonner";
 
 interface HeaderProps {
   variant: "admin" | "client" | "kitchen";
@@ -30,6 +32,17 @@ interface NavLink {
 
 export function Header({ variant, cartCount = 0 }: HeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      toast.success("Sesión cerrada exitosamente");
+      router.push("/login");
+    } catch (error) {
+      toast.error("Error al cerrar sesión");
+    }
+  };
 
   const getNavLinks = (): NavLink[] => {
     switch (variant) {
@@ -190,6 +203,7 @@ export function Header({ variant, cartCount = 0 }: HeaderProps) {
               variant="default"
               size="sm"
               className="flex items-center gap-2"
+              onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 text-primary-foreground" />
               <span className="hidden md:inline">Cerrar Sesión</span>

@@ -13,7 +13,9 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { authService } from "@/lib/services/authService";
+import { toast } from "sonner";
 
 interface SidebarLinkProps {
   href: string;
@@ -42,6 +44,18 @@ function SidebarLink({ href, label, icon }: SidebarLinkProps) {
 }
 
 export function AdminSidebar() {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      toast.success("Sesión cerrada exitosamente");
+      router.push("/login");
+    } catch (error) {
+      toast.error("Error al cerrar sesión");
+    }
+  };
+
   return (
     <aside className="hidden md:flex w-64 flex-col h-full bg-background border-r border-border">
       <div className="px-6 py-5 flex-shrink-0 border-b border-border">
@@ -103,7 +117,12 @@ export function AdminSidebar() {
       </nav>
 
       <div className="border-t border-border p-4">
-        <Button variant="default" className="w-full" size="sm">
+        <Button 
+          variant="default" 
+          className="w-full" 
+          size="sm"
+          onClick={handleLogout}
+        >
           <LogOut className="h-4 w-4 mr-2 text-primary-foreground" />
           Cerrar Sesión
         </Button>

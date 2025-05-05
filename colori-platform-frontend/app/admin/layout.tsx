@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { authService } from "@/lib/services/authService";
 import { AdminMobileNav } from "@/components/common/admin-mobile-nav";
 import { AdminSidebar } from "@/components/common/admin-sidebar";
 import { Footer } from "@/components/common/footer";
@@ -10,6 +13,23 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const user = await authService.getCurrentUser();
+        if (!user) {
+          router.push('/login');
+        }
+      } catch (error) {
+        router.push('/login');
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
   return (
     <div className="min-h-screen">
       {/* Sidebar - fixed on the left side */}
