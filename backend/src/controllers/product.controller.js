@@ -10,6 +10,28 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
+// Obtener productos del menú (excluyendo promociones)
+exports.getMenuProducts = async (req, res) => {
+  try {
+    const products = await Product.find({
+      categoria: { $in: ['batido', 'crepa', 'topping'] }
+    });
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Obtener solo promociones
+exports.getPromotions = async (req, res) => {
+  try {
+    const promotions = await Product.find({ categoria: 'promocion' });
+    res.json(promotions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Obtener productos por categoría
 exports.getProductsByCategory = async (req, res) => {
   try {

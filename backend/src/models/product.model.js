@@ -18,7 +18,7 @@ const productSchema = new mongoose.Schema({
   },
   categoria: {
     type: String,
-    enum: ['batido', 'crepa', 'topping'],
+    enum: ['batido', 'crepa', 'topping', 'promocion'],
     required: true
   },
   imagen: {
@@ -41,7 +41,15 @@ const productSchema = new mongoose.Schema({
   toppingsDisponibles: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product'
-  }]
+  }],
+  fechaInicio: {
+    type: Date,
+    default: null
+  },
+  fechaFin: {
+    type: Date,
+    default: null
+  }
 }, {
   timestamps: true
 });

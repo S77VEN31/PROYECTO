@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ShoppingCart, Plus, Minus, X } from "lucide-react";
+import { ShoppingCart, Plus, Minus, X, Coffee, IceCream, Gift, ArrowLeft } from "lucide-react";
 import { orderService } from "@/lib/services/orderService";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -55,6 +55,7 @@ export default function ClientPage() {
   const [showToppingsDialog, setShowToppingsDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -66,8 +67,8 @@ export default function ClientPage() {
         productService.getAllProducts(),
         productService.getAllToppings()
       ]);
-      setProducts(productosData.filter(product => !product.esTopping));
-      setToppings(toppingsData);
+      setProducts(productosData.filter(product => !product.esTopping && product.disponible));
+      setToppings(toppingsData.filter(topping => topping.disponible));
     } catch (error) {
       toast.error("Error al cargar los productos");
     } finally {
@@ -154,6 +155,131 @@ export default function ClientPage() {
     0
   );
 
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'batido':
+        return <IceCream className="h-8 w-8" />;
+      case 'crepa':
+        return <Coffee className="h-8 w-8" />;
+      default:
+        return <Gift className="h-8 w-8" />;
+    }
+  };
+
+  const groupedProducts = products.reduce((acc, product) => {
+    if (!acc[product.categoria]) {
+      acc[product.categoria] = [];
+    }
+    acc[product.categoria].push(product);
+    return acc;
+  }, {} as Record<string, Product[]>);
+
+  const categories = [
+    {
+      id: 'batido',
+      name: 'Batidos',
+      description: 'Deliciosos batidos preparados con los mejores ingredientes',
+      icon: <IceCream className="h-12 w-12" />
+    },
+    {
+      id: 'crepa',
+      name: 'Crepas',
+      description: 'Crepas dulces y saladas con los mejores toppings',
+      icon: <Coffee className="h-12 w-12" />
+    },
+    {
+      id: 'promocion',
+      name: 'Promociones',
+      description: 'Ofertas especiales y combos para disfrutar',
+      icon: <Gift className="h-12 w-12" />
+    }
+  ];
+
+  const renderCategoryCards = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {categories.map((category) => (
+        <Card 
+          key={category.id}
+          className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105"
+          onClick={() => setSelectedCategory(category.id)}
+        >
+          <CardContent className="p-6">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="p-4 bg-primary/10 rounded-full">
+                {category.icon}
+              </div>
+              <CardTitle className="text-2xl">{category.name}</CardTitle>
+              <p className="text-muted-foreground">{category.description}</p>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+
+  const renderProductsByCategory = () => {
+    const categoryProducts = products.filter(p => p.categoria === selectedCategory);
+    const category = categories.find(c => c.id === selectedCategory);
+
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSelectedCategory(null)}
+            className="hover:bg-primary/10"
+          >
+            <ArrowLeft className="h-6 w-6" />
+          </Button>
+          <div className="flex items-center gap-2">
+            {category?.icon}
+            <h2 className="text-2xl font-semibold">{category?.name}</h2>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {categoryProducts.map(product => (
+            <Card key={product._id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <div className="aspect-video relative bg-muted">
+                {product.imagen ? (
+                  <img
+                    src={product.imagen}
+                    alt={product.nombre}
+                    className="object-cover w-full h-full"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    {category?.icon}
+                  </div>
+                )}
+              </div>
+              <CardHeader>
+                <CardTitle className="text-xl">{product.nombre}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-4">{product.descripcion}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl font-bold">${product.precio.toFixed(2)}</span>
+                  <Button
+                    variant="default"
+                    size="lg"
+                    onClick={() => handleAddToCart(product)}
+                    disabled={!product.disponible}
+                    className="gap-2"
+                  >
+                    <Plus className="h-5 w-5" />
+                    Agregar
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen pb-20">
       <div className="container mx-auto py-8 px-4 max-w-7xl">
@@ -233,30 +359,7 @@ export default function ClientPage() {
           </Sheet>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {products.map(product => (
-            <Card key={product._id}>
-              <CardHeader>
-                <CardTitle>{product.nombre}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-2">{product.descripcion}</p>
-                <div className="flex justify-between items-center">
-                  <span className="font-bold">${product.precio.toFixed(2)}</span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleAddToCart(product)}
-                    disabled={!product.disponible}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Agregar
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {selectedCategory ? renderProductsByCategory() : renderCategoryCards()}
       </div>
 
       {/* Footer fijo */}

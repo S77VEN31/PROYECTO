@@ -5,11 +5,13 @@ const { verifyToken, isAdmin } = require('../middlewares/auth.middleware');
 
 // Rutas públicas
 router.get('/', productController.getAllProducts);
-router.get('/categoria/:categoria', productController.getProductsByCategory);
+router.get('/menu', productController.getMenuProducts);
+router.get('/promotions', productController.getPromotions);
+router.get('/category/:categoria', productController.getProductsByCategory);
 router.get('/:id', productController.getProductById);
 router.get('/toppings/all', productController.getAllToppings);
 
-// Rutas protegidas (solo admin)
+// Rutas protegidas (requieren autenticación y rol de admin)
 router.post('/', [verifyToken, isAdmin], productController.createProduct);
 router.put('/:id', [verifyToken, isAdmin], productController.updateProduct);
 router.delete('/:id', [verifyToken, isAdmin], productController.deleteProduct);
