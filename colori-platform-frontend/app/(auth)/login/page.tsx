@@ -8,6 +8,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
+  CardFooter,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib/services/authService";
 import { toast } from "sonner";
+import { ShoppingBag } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -85,7 +87,7 @@ export default function LoginPage() {
             Iniciar Sesión
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent>
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="space-y-2">
@@ -122,7 +124,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Checkbox 
                   id="rememberMe" 
@@ -160,6 +162,28 @@ export default function LoginPage() {
               {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
             </Button>
           </form>
+
+          <div className="relative mt-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                O accede directamente a
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <Button
+              variant="cafe"
+              className="w-full"
+              onClick={() => router.push("/client")}
+            >
+              <ShoppingBag className="h-4 w-4 mr-2" />
+              Ver Menú
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

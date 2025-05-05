@@ -1,30 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { auth, checkRole } = require('../middleware/auth.middleware');
-const {
-  createProduct,
-  getProducts,
-  getProduct,
-  updateProduct,
-  deleteProduct
-} = require('../controllers/product.controller');
-const { body } = require('express-validator');
-
-// Validaciones
-const productValidation = [
-  body('nombre').trim().notEmpty().withMessage('El nombre es requerido'),
-  body('descripcion').trim().notEmpty().withMessage('La descripción es requerida'),
-  body('precio').isFloat({ min: 0 }).withMessage('El precio debe ser un número positivo'),
-  body('tipo').isIn(['batido', 'crepa', 'topping']).withMessage('Tipo de producto inválido')
-];
+const productController = require('../controllers/product.controller');
+const { verifyToken, isAdmin } = require('../middlewares/auth.middleware');
 
 // Rutas públicas
-router.get('/', getProducts);
-router.get('/:id', getProduct);
+router.get('/', productController.getAllProducts);
+router.get('/categoria/:categoria', productController.getProductsByCategory);
+router.get('/:id', productController.getProductById);
+router.get('/toppings/all', productController.getAllToppings);
 
-// Rutas protegidas (solo encargados)
-router.post('/', auth, checkRole(['encargado']), productValidation, createProduct);
-router.put('/:id', auth, checkRole(['encargado']), productValidation, updateProduct);
-router.delete('/:id', auth, checkRole(['encargado']), deleteProduct);
+// Rutas protegidas (solo admin)
+router.post('/', [verifyToken, isAdmin], productController.createProduct);
+router.put('/:id', [verifyToken, isAdmin], productController.updateProduct);
+router.delete('/:id', [verifyToken, isAdmin], productController.deleteProduct);
 
 module.exports = router; 

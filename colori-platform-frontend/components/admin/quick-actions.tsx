@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { BookOpenText, ClipboardList, ShoppingCart } from "lucide-react";
+import { BookOpenText, ClipboardList, ShoppingCart, ChefHat } from "lucide-react";
 import Link from "next/link";
 
 export function QuickActions() {
@@ -19,15 +19,21 @@ export function QuickActions() {
       icon: <ShoppingCart className="h-5 w-5 mr-2" />,
     },
     {
+      label: "Panel de Cocina",
+      href: "/admin/kitchen",
+      variant: "naranja" as const,
+      icon: <ChefHat className="h-5 w-5 mr-2" />,
+    },
+    {
       label: "Generar Informes",
       href: "/admin/reports",
-      variant: "naranja" as const,
+      variant: "cafe" as const,
       icon: <ClipboardList className="h-5 w-5 mr-2" />,
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {actions.map((action, index) => (
         <Button
           key={index}

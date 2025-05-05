@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
+  numeroOrden: {
+    type: Number,
+    required: true,
+    unique: true
+  },
   usuario: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    ref: 'User'
   },
   productos: [{
     producto: {
@@ -17,20 +21,26 @@ const orderSchema = new mongoose.Schema({
       required: true,
       min: 1
     },
-    notas: {
-      type: String,
-      trim: true
-    }
+    notas: String,
+    toppings: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product'
+    }]
   }],
   estado: {
     type: String,
-    enum: ['pendiente', 'en preparación', 'entregado'],
-    default: 'pendiente'
+    enum: ['PENDIENTE', 'PREPARANDO', 'LISTO', 'ENTREGADO'],
+    default: 'PENDIENTE'
   },
   total: {
     type: Number,
     required: true,
     min: 0
+  },
+  notas: String,
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
 }, {
   timestamps: true

@@ -11,6 +11,7 @@ import {
   Percent,
   Settings,
   ShoppingCart,
+  ChefHat,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -83,6 +84,13 @@ export function AdminSidebar() {
               href="/admin/orders"
               label="Pedidos"
               icon={<ShoppingCart className="h-4 w-4" />}
+            />
+          </li>
+          <li>
+            <SidebarLink
+              href="/admin/kitchen"
+              label="Panel de Cocina"
+              icon={<ChefHat className="h-4 w-4" />}
             />
           </li>
           <li>
