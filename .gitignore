@@ -14,6 +14,7 @@ yarn.lock
 .env.production.local
 
 # Build output
+dist/
 /dist
 /build
 /out

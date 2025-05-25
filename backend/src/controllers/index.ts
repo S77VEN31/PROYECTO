@@ -40,40 +40,71 @@ import {
   updateUser,
 } from "./entities/user.controller";
 
+// Transaction controllers
+import {
+  completeEvent,
+  createEvent,
+  deleteEvent,
+  getEventById,
+  getEvents,
+  updateEvent,
+} from "./transactions/event.controller";
+
+import {
+  createOrder,
+  deleteOrder,
+  getOrderById,
+  getOrders,
+  updateOrder,
+} from "./transactions/order.controller";
+
+
 // Category controller exports
 export {
   createCategory,
   deleteCategory,
   getCategories,
   getCategoryById,
-  updateCategory,
+  updateCategory
 };
 
 // Product controller exports
-export {
-  createProduct,
-  deleteProduct,
-  getProductById,
-  getProducts,
-  updateProduct,
-};
+  export {
+    createProduct,
+    deleteProduct,
+    getProductById,
+    getProducts,
+    updateProduct
+  };
 
 // Promotion controller exports
-export {
-  createPromotion,
-  deletePromotion,
-  getPromotionById,
-  getPromotions,
-  updatePromotion,
-};
+  export {
+    createPromotion,
+    deletePromotion,
+    getPromotionById,
+    getPromotions,
+    updatePromotion
+  };
 
 // User controller exports
-export {
-  createUser,
-  deleteUser,
-  getUserById,
-  getUsers,
-  login,
-  logout,
-  updateUser,
-};
+  export {
+    createUser,
+    deleteUser,
+    getUserById,
+    getUsers,
+    login,
+    logout,
+    updateUser
+  };
+
+// Transaction controller exports
+  export {
+    // Event controllers
+    completeEvent,
+    createEvent,
+    // Order controllers
+    createOrder, deleteEvent, deleteOrder, getEventById,
+    getEvents, getOrderById,
+    getOrders, updateEvent, updateOrder
+  };
+

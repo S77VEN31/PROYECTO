@@ -6,53 +6,65 @@
  */
 
 // Entity models
+import CategoryModel from "./entities/category.model";
 import {
-  CategoryModel,
-  ICategory,
-  ICategoryDocument,
-} from "./entities/category.model";
-
-import { BaseEntity, IEntity, IEntityDocument } from "./entities/entity.model";
-
-import {
-  IProduct,
-  IProductDocument,
-  ProductModel,
-} from "./entities/product.model";
-
-import {
-  IPromotion,
-  IPromotionDocument,
-  PromotionModel,
-} from "./entities/promotion.model";
-
-import { IUser, IUserDocument, UserModel } from "./entities/user.model";
+  IBaseDocument,
+  baseEntitySchemaFields,
+  baseEntitySchemaOptions,
+} from "./entities/entity.model";
+import { ProductModel } from "./entities/product.model";
+import PromotionModel from "./entities/promotion.model";
+import UserModel from "./entities/user.model";
 
 // Transaction models
-import { EventModel, IEvent, IEventDocument } from "./transactions/event.model";
-
-import { IOrder, IOrderDocument, OrderModel } from "./transactions/order.model";
-
+import EventModel from "./transactions/event.model";
+import OrderModel from "./transactions/order.model";
 import {
-  ITransaction,
   ITransactionDocument,
-  TransactionModel,
+  baseTransactionSchemaFields,
+  baseTransactionSchemaOptions,
 } from "./transactions/transaction.model";
 
 // Entity model exports
-export { CategoryModel, ICategory, ICategoryDocument };
-
-export { BaseEntity, IEntity, IEntityDocument };
-
-export { IProduct, IProductDocument, ProductModel };
-
-export { IPromotion, IPromotionDocument, PromotionModel };
-
-export { IUser, IUserDocument, UserModel };
+export {
+  CategoryModel,
+  ProductModel,
+  PromotionModel,
+  UserModel,
+  baseEntitySchemaFields,
+  baseEntitySchemaOptions,
+};
+export type { IBaseDocument };
 
 // Transaction model exports
-export { EventModel, IEvent, IEventDocument };
+export {
+  EventModel,
+  OrderModel,
+  baseTransactionSchemaFields,
+  baseTransactionSchemaOptions,
+};
+export type { ITransactionDocument };
 
-export { IOrder, IOrderDocument, OrderModel };
+// Legacy type aliases for backward compatibility
+export type {
+  IBaseDocument as ICategoryDocument,
+  IBaseDocument as IEntity,
+  IBaseDocument as IEntityDocument,
+  ITransactionDocument as IEventDocument,
+  ITransactionDocument as IOrderDocument,
+  IBaseDocument as IProductDocument,
+  IBaseDocument as IPromotionDocument,
+  ITransactionDocument as ITransaction,
+  IBaseDocument as IUserDocument,
+};
 
-export { ITransaction, ITransactionDocument, TransactionModel };
+// Legacy model exports with interface names for backward compatibility
+export {
+  CategoryModel as ICategory,
+  EventModel as IEvent,
+  OrderModel as IOrder,
+  ProductModel as IProduct,
+  PromotionModel as IPromotion,
+  UserModel as IUser,
+};
+
