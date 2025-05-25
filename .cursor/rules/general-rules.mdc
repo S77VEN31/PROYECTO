@@ -1,0 +1,81 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# General Coding Rules
+
+## Language Standards
+
+- **English Only**: All code, including variable names, function names, comments, and documentation must be written in English.
+- **Consistent Terminology**: Use consistent terms throughout the codebase to refer to the same concepts.
+- **Clear Naming**: Use descriptive names that convey meaning and purpose.
+
+## JSDoc Comments
+
+### Required JSDoc
+
+- All public functions, classes, interfaces, and modules must have JSDoc comments.
+- All non-trivial private functions should have JSDoc comments.
+
+### JSDoc Format
+
+```typescript
+/**
+ * Brief description of what the function/class/component does
+ *
+ * @param {type} paramName - Description of the parameter
+ * @returns {type} Description of the return value
+ * @throws {ErrorType} Description of when this error is thrown
+ * @example
+ * // Example usage
+ * const result = myFunction('example');
+ */
+```
+
+### JSDoc Elements
+
+- **Description**: Start with a concise description of the purpose
+- **@param**: Document each parameter with type and description
+- **@returns**: Document the return value with type and description
+- **@throws**: Document any errors that might be thrown
+- **@example**: Provide usage examples for complex functions
+- **@deprecated**: Mark deprecated features and suggest alternatives
+
+## Code Documentation Practices
+
+- **Comment Why, Not What**: Code should be self-explanatory about what it does. Comments should explain why.
+- **Keep Comments Updated**: Always update comments when changing code.
+- **Document Edge Cases**: Explicitly document edge cases and special handling.
+- **Avoid Commented-Out Code**: Don't leave commented-out code in the codebase.
+
+## Variable and Function Naming
+
+- Use camelCase for variables and functions
+- Use PascalCase for classes and interfaces
+- Use UPPER_SNAKE_CASE for constants
+
+## File Structure
+
+- One primary concept per file
+- Filenames should match the main export
+- Group related functionality
+
+## Import/Export Standards
+
+- Use named exports for most functions and classes
+- Use default exports sparingly and only for main components/classes
+- Sort imports: third-party libraries first, then internal modules
+
+## Type Safety
+
+- Use proper TypeScript types for all variables, parameters, and return values
+- Avoid using `any` type whenever possible
+- Use interfaces for object shapes and type aliases for unions and complex types
+
+## Error Handling
+
+- Document all possible error scenarios
+- Use descriptive error messages
+
+- Properly chain and propagate errors

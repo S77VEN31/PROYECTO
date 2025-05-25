@@ -1,0 +1,190 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# TypeScript Type System Best Practices
+
+This guide outlines best practices for TypeScript type definitions based on the patterns observed in our codebase. These principles can be applied to any TypeScript project for better type safety, code organization, and developer experience.
+
+## Directory Structure
+
+```
+/types
+  /entities       # Domain objects, business entities
+  /transactions   # Operations, events, state changes
+  /enums          # Strongly typed constants
+  index.ts        # Centralized export
+```
+
+## Type Naming Conventions
+
+- Use **PascalCase** for interfaces, types, and enums
+- Use descriptive, domain-specific names
+- Follow these patterns:
+  - **Interfaces**: `EntityName` or `EntityNameBase` for core definitions
+  - **Types**: `EntityNameAction` (e.g., `UserCreate`, `ProductUpdate`)
+  - **Enums**: `EntityNameCategory` (e.g., `OrderStatus`, `UserRole`)
+
+## Interface Design Patterns
+
+### Base Entity Pattern
+
+```typescript
+/**
+ * Core properties shared across all entities
+ */
+export interface EntityBase {
+  id?: string;
+  name: string;
+  description: string;
+  active?: boolean;
+}
+
+/**
+ * Complete entity with required ID
+ */
+export interface Entity extends EntityBase {
+  id: string;
+}
+```
+
+### Entity Extension Pattern
+
+```typescript
+/**
+ * Specialized entity with additional properties
+ */
+export interface SpecificEntityBase extends EntityBase {
+  specificProperty: string;
+  optionalProperty?: number;
+}
+
+/**
+ * Complete specialized entity
+ */
+export interface SpecificEntity extends SpecificEntityBase {
+  id: string;
+}
+```
+
+### Timestamp Mixing Pattern
+
+```typescript
+/**
+ * Standard timestamp properties for database records
+ */
+export interface TimeStamps {
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Entity base with timestamps
+ */
+export interface TrackedEntityBase extends EntityBase, TimeStamps {
+  // Additional properties
+}
+```
+
+## Type Utility Patterns
+
+### Action Type Pattern
+
+```typescript
+/**
+ * Input type for entity creation
+ */
+export type EntityCreate = Omit<Partial<Entity>, "id"> & 
+  Pick<EntityBase, "name" | "description">;
+
+/**
+ * Input type for entity updates
+ */
+export type EntityUpdate = Omit<Partial<Entity>, "id">;
+```
+
+### Partial Type Pattern
+
+```typescript
+/**
+ * Utility type for flexible attribute sets
+ */
+export type PartialEntityMetadata = Partial<EntityMetadata>;
+```
+
+## Enum Declaration Pattern
+
+```typescript
+/**
+ * Well-documented enum with semantic values
+ * @enum {string}
+ */
+export enum StatusType {
+  /**
+   * Descriptive comment about this status
+   */
+  ACTIVE = "active",
+  
+  /**
+   * Descriptive comment about this status
+   */
+  INACTIVE = "inactive",
+}
+```
+
+## Documentation Standards
+
+### Interface Documentation
+
+```typescript
+/**
+ * Clear description of the interface purpose
+ * @interface InterfaceName
+ * @extends BaseInterface
+ * @property {type} propertyName - Description of the property
+ * @property {type} [optionalProperty] - Description of optional property
+ */
+```
+
+### Type Documentation
+
+```typescript
+/**
+ * Clear description of the type's purpose and usage
+ * @type TypeName
+ */
+```
+
+## Best Practices
+
+1. **Use declaration merging sparingly** - Prefer composition over declaration merging
+2. **Make all optional properties explicit** with `?` suffix
+3. **Create specialized sub-interfaces** rather than overly generic ones
+4. **Use string literal types** for enums when integration with JavaScript is important
+5. **Use `Record<K, T>` type** for dynamic property collections
+6. **Prefer interfaces** for object shapes and `type` for unions or complex transformations
+7. **Consider readonly** for immutable properties
+8. **Use Pick, Omit, Partial and Required** type utilities to derive new types
+9. **Document all public types** with JSDoc comments
+10. **Define shared types in a central location** to avoid duplication
+
+## Index File Pattern
+
+```typescript
+/**
+ * @fileoverview Central export file for all application type definitions
+ */
+
+// Entity exports
+export * from "./entities/entity-a";
+export * from "./entities/entity-b";
+
+// Transaction exports
+export * from "./transactions/transaction-a";
+export * from "./transactions/transaction-b";
+
+// Enum exports
+export * from "./enums/enum-a";
+export * from "./enums/enum-b";
+```

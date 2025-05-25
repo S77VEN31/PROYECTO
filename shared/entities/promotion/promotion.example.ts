@@ -1,0 +1,82 @@
+/**
+ * @fileoverview Example usage of Promotion types
+ * Demonstrates data modeling with promotion objects
+ */
+
+import { Promotion, PromotionCreate, PromotionUpdate } from "@shared/entities";
+import { PromotionType } from "@shared/enums";
+
+/**
+ * Example of a discount promotion creation model
+ */
+const discountPromotionModel: PromotionCreate = {
+  name: "Weekend Special",
+  description: "15% off on all coffee drinks during the weekend",
+  type: PromotionType.DISCOUNT,
+  startDate: "2023-08-18T00:00:00Z",
+  endDate: "2023-08-20T23:59:59Z",
+  code: "WEEKEND15",
+  discountPercent: 15,
+  applicableCategories: ["cat-coffee"],
+};
+
+/**
+ * Example of a BOGO (Buy One Get One) promotion creation model
+ */
+const bogoPromotionModel: PromotionCreate = {
+  name: "Buy One Get One Free",
+  description: "Buy any espresso drink and get a second one free",
+  type: PromotionType.BOGO,
+  startDate: "2023-08-15T00:00:00Z",
+  endDate: "2023-08-22T23:59:59Z",
+  applicableProducts: ["prod-001", "prod-002", "prod-003"],
+  usageLimit: 100,
+};
+
+/**
+ * Example of a complete promotion model as stored in the database
+ */
+const promotionModel: Promotion = {
+  id: "promo-12345",
+  name: "Weekend Special",
+  description: "15% off on all coffee drinks during the weekend",
+  slug: "weekend-special",
+  type: PromotionType.DISCOUNT,
+  startDate: "2023-08-18T00:00:00Z",
+  endDate: "2023-08-20T23:59:59Z",
+  code: "WEEKEND15",
+  discountPercent: 15,
+  minimumPurchase: 10,
+  applicableCategories: ["cat-coffee"],
+  active: true,
+  createdAt: "2023-08-15T14:00:00Z",
+  updatedAt: "2023-08-15T14:00:00Z",
+};
+
+/**
+ * Example of a promotion update model
+ */
+const promotionUpdateModel: PromotionUpdate = {
+  endDate: "2023-08-25T23:59:59Z",
+  discountPercent: 20,
+};
+
+/**
+ * Example of a seasonal promotion model
+ */
+const seasonalPromotionModel: PromotionCreate = {
+  name: "Summer Specials",
+  description: "Limited time summer drinks with 10% discount",
+  type: PromotionType.SEASONAL,
+  startDate: "2023-06-01T00:00:00Z",
+  endDate: "2023-08-31T23:59:59Z",
+  discountPercent: 10,
+};
+
+export {
+  bogoPromotionModel,
+  discountPromotionModel,
+  promotionModel,
+  promotionUpdateModel,
+  seasonalPromotionModel,
+};

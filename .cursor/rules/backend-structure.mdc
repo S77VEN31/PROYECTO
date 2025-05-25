@@ -1,0 +1,101 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Backend Folder Structure Rules
+
+## Root Structure
+```
+/src
+  /config          # Application configuration
+  /models          # Database models
+  /controllers     # Route controllers
+  /middleware      # Express middleware
+  /routes          # API routes
+  /services        # Business logic
+  /utils           # Helper functions and utilities
+  /types           # TypeScript type definitions
+  server.ts        # Entry point
+```
+
+## Service-Based Organization
+
+Each domain service should have its own files within the respective folders:
+
+### Models
+```
+/models
+  /user
+    user.model.ts
+  /product
+    product.model.ts
+  /order
+    order.model.ts
+```
+
+### Controllers
+```
+/controllers
+  /user
+    user.controller.ts
+  /product
+    product.controller.ts
+  /order
+    order.controller.ts
+```
+
+### Middleware
+```
+/middleware
+  /auth
+    auth.middleware.ts
+  /validation
+    validation.middleware.ts
+  /error
+    error.middleware.ts
+```
+
+### Routes
+```
+/routes
+  /user
+    user.routes.ts
+  /product
+    product.routes.ts
+  /order
+    order.routes.ts
+  index.ts         # Route aggregator
+```
+
+### Services
+```
+/services
+  /user
+    user.service.ts
+  /product
+    product.service.ts
+  /order
+    order.service.ts
+```
+
+## Naming Conventions
+
+- Files: Use kebab-case for multi-word filenames
+- File suffixes should indicate the type: `.model.ts`, `.controller.ts`, `.middleware.ts`, etc.
+- Classes: Use PascalCase (e.g., `UserModel`, `AuthMiddleware`)
+- Functions/methods: Use camelCase (e.g., `getUserById`, `validateToken`)
+- Interfaces/Types: Use PascalCase with prefix I for interfaces (e.g., `IUser`, `IProduct`)
+
+## Import Rules
+
+- Use relative paths for imports within a service
+- Use absolute paths for cross-service imports (configure path aliases in tsconfig.json)
+- Group imports: external dependencies first, then internal imports
+
+## Code Organization
+
+- Each file should have a single responsibility
+- Related functionality should be grouped together in the same service
+
+- Shared functionality should be moved to utils or dedicated services 

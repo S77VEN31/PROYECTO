@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "composite": true,
+    "paths": {
+      "@/*": ["src/*"],
+      "@middlewares": ["src/middlewares"],
+      "@models": ["src/models"],
+      "@services": ["src/services"],
+      "@controllers": ["src/controllers"],
+      "colori-platform-shared": ["../shared"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../shared" }
+  ]
+} 
