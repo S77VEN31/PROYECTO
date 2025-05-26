@@ -4,10 +4,10 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderUpdateSchema = exports.OrderCreateSchema = exports.OrderSchema = exports.OrderTransactionSchema = exports.OrderToppingSchema = exports.OrderProductSchema = void 0;
-const common_1 = require("@shared/common");
-const enums_1 = require("@shared/enums");
-const transactions_1 = require("@shared/transactions");
+const common_1 = require("../../common");
+const enums_1 = require("../../enums");
 const zod_1 = require("zod");
+const transaction_schema_1 = require("../transaction/transaction.schema");
 /**
  * Schema for individual menu item within an order
  */
@@ -29,7 +29,7 @@ exports.OrderToppingSchema = zod_1.z.object({
 /**
  * Schema for core order information
  */
-exports.OrderTransactionSchema = transactions_1.AuditableTransactionSchema.extend({
+exports.OrderTransactionSchema = transaction_schema_1.AuditableTransactionSchema.extend({
     customerName: zod_1.z.string(),
     tableNumber: zod_1.z.number().int().positive(),
     products: zod_1.z.array(exports.OrderProductSchema),

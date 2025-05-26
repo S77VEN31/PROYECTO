@@ -5,7 +5,6 @@
 import { PaymentFinancialSchema } from "@shared/common";
 import { OrderStatus, PaymentMethod } from "@shared/enums";
 import {
-  AuditableTransactionSchema,
   Order,
   OrderCreate,
   OrderProduct,
@@ -14,6 +13,7 @@ import {
   OrderUpdate,
 } from "@shared/transactions";
 import { z } from "zod";
+import { AuditableTransactionSchema } from "../transaction/transaction.schema";
 
 /**
  * Schema for individual menu item within an order

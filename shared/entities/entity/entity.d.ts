@@ -16,7 +16,7 @@ import { Image, SeoMetadata, TimeStamps } from "@shared/common";
  * @property {boolean} [active] - Flag indicating if the entity is currently active in the system
  */
 export interface EntityBase extends TimeStamps {
-  id?: string;
+  _id?: mongoose.Types.ObjectId;
   name: string;
   description: string;
   active?: boolean;

@@ -1,7 +1,7 @@
 /**
  * Schemas for Promotion entities
  */
-import { PromotionType } from "@shared/enums";
+import { PromotionType } from "../../enums";
 import { z } from "zod";
 /**
  * Schema for core promotion information
@@ -42,17 +42,17 @@ export declare const PromotionBaseSchema: z.ZodObject<{
     applicableProducts: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     applicableCategories: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
-    active: boolean;
+    type: PromotionType;
     createdAt: string;
     updatedAt: string;
-    type: PromotionType;
     name: string;
     description: string;
+    active: boolean;
     slug: string;
     startDate: string;
     endDate: string;
-    id?: string | undefined;
     code?: string | undefined;
+    id?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
         src: string;
@@ -66,17 +66,17 @@ export declare const PromotionBaseSchema: z.ZodObject<{
     applicableProducts?: string[] | undefined;
     applicableCategories?: string[] | undefined;
 }, {
+    type: PromotionType;
     createdAt: string;
     updatedAt: string;
-    type: PromotionType;
     name: string;
     description: string;
     slug: string;
     startDate: string;
     endDate: string;
+    code?: string | undefined;
     id?: string | undefined;
     active?: boolean | undefined;
-    code?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
         src: string;
@@ -127,13 +127,13 @@ export declare const PromotionSchema: z.ZodObject<{
 } & {
     id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    active: boolean;
+    type: PromotionType;
     createdAt: string;
     updatedAt: string;
-    type: PromotionType;
+    id: string;
     name: string;
     description: string;
+    active: boolean;
     slug: string;
     startDate: string;
     endDate: string;
@@ -151,17 +151,17 @@ export declare const PromotionSchema: z.ZodObject<{
     applicableProducts?: string[] | undefined;
     applicableCategories?: string[] | undefined;
 }, {
-    id: string;
+    type: PromotionType;
     createdAt: string;
     updatedAt: string;
-    type: PromotionType;
+    id: string;
     name: string;
     description: string;
     slug: string;
     startDate: string;
     endDate: string;
-    active?: boolean | undefined;
     code?: string | undefined;
+    active?: boolean | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
         src: string;
@@ -248,13 +248,13 @@ export declare const PromotionCreateSchema: z.ZodObject<{
  * Schema for promotion updates
  */
 export declare const PromotionUpdateSchema: z.ZodObject<{
-    active: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodBoolean>>>;
-    createdAt: z.ZodOptional<z.ZodString>;
-    updatedAt: z.ZodOptional<z.ZodString>;
     code: z.ZodOptional<z.ZodOptional<z.ZodString>>;
     type: z.ZodOptional<z.ZodNativeEnum<typeof PromotionType>>;
+    createdAt: z.ZodOptional<z.ZodString>;
+    updatedAt: z.ZodOptional<z.ZodString>;
     name: z.ZodOptional<z.ZodString>;
     description: z.ZodOptional<z.ZodString>;
+    active: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodBoolean>>>;
     slug: z.ZodOptional<z.ZodString>;
     searchTerm: z.ZodOptional<z.ZodOptional<z.ZodString>>;
     backgroundImages: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -279,13 +279,13 @@ export declare const PromotionUpdateSchema: z.ZodObject<{
     applicableProducts: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodString, "many">>>;
     applicableCategories: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodString, "many">>>;
 }, "strip", z.ZodTypeAny, {
-    active?: boolean | undefined;
-    createdAt?: string | undefined;
-    updatedAt?: string | undefined;
     code?: string | undefined;
     type?: PromotionType | undefined;
+    createdAt?: string | undefined;
+    updatedAt?: string | undefined;
     name?: string | undefined;
     description?: string | undefined;
+    active?: boolean | undefined;
     slug?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -302,13 +302,13 @@ export declare const PromotionUpdateSchema: z.ZodObject<{
     applicableProducts?: string[] | undefined;
     applicableCategories?: string[] | undefined;
 }, {
-    active?: boolean | undefined;
-    createdAt?: string | undefined;
-    updatedAt?: string | undefined;
     code?: string | undefined;
     type?: PromotionType | undefined;
+    createdAt?: string | undefined;
+    updatedAt?: string | undefined;
     name?: string | undefined;
     description?: string | undefined;
+    active?: boolean | undefined;
     slug?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -351,10 +351,10 @@ export declare const CreatePromotionRequestSchema: z.ZodObject<{
         applicableCategories: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
         active: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
     }, "strip", z.ZodTypeAny, {
-        active: boolean;
         type: PromotionType;
         name: string;
         description: string;
+        active: boolean;
         startDate: string;
         endDate: string;
         code?: string | undefined;
@@ -370,8 +370,8 @@ export declare const CreatePromotionRequestSchema: z.ZodObject<{
         description: string;
         startDate: string;
         endDate: string;
-        active?: boolean | undefined;
         code?: string | undefined;
+        active?: boolean | undefined;
         discountValue?: number | undefined;
         discountPercent?: number | undefined;
         minimumPurchase?: number | undefined;
@@ -381,10 +381,10 @@ export declare const CreatePromotionRequestSchema: z.ZodObject<{
     }>;
 }, "strip", z.ZodTypeAny, {
     promotion: {
-        active: boolean;
         type: PromotionType;
         name: string;
         description: string;
+        active: boolean;
         startDate: string;
         endDate: string;
         code?: string | undefined;
@@ -402,8 +402,8 @@ export declare const CreatePromotionRequestSchema: z.ZodObject<{
         description: string;
         startDate: string;
         endDate: string;
-        active?: boolean | undefined;
         code?: string | undefined;
+        active?: boolean | undefined;
         discountValue?: number | undefined;
         discountPercent?: number | undefined;
         minimumPurchase?: number | undefined;
@@ -429,11 +429,11 @@ export declare const UpdatePromotionRequestSchema: z.ZodObject<{
         applicableCategories: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
         active: z.ZodOptional<z.ZodBoolean>;
     }, "strip", z.ZodTypeAny, {
-        active?: boolean | undefined;
         code?: string | undefined;
         type?: PromotionType | undefined;
         name?: string | undefined;
         description?: string | undefined;
+        active?: boolean | undefined;
         startDate?: string | undefined;
         endDate?: string | undefined;
         discountValue?: number | undefined;
@@ -443,11 +443,11 @@ export declare const UpdatePromotionRequestSchema: z.ZodObject<{
         applicableProducts?: string[] | undefined;
         applicableCategories?: string[] | undefined;
     }, {
-        active?: boolean | undefined;
         code?: string | undefined;
         type?: PromotionType | undefined;
         name?: string | undefined;
         description?: string | undefined;
+        active?: boolean | undefined;
         startDate?: string | undefined;
         endDate?: string | undefined;
         discountValue?: number | undefined;
@@ -460,11 +460,11 @@ export declare const UpdatePromotionRequestSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     id: string;
     promotion: {
-        active?: boolean | undefined;
         code?: string | undefined;
         type?: PromotionType | undefined;
         name?: string | undefined;
         description?: string | undefined;
+        active?: boolean | undefined;
         startDate?: string | undefined;
         endDate?: string | undefined;
         discountValue?: number | undefined;
@@ -477,11 +477,11 @@ export declare const UpdatePromotionRequestSchema: z.ZodObject<{
 }, {
     id: string;
     promotion: {
-        active?: boolean | undefined;
         code?: string | undefined;
         type?: PromotionType | undefined;
         name?: string | undefined;
         description?: string | undefined;
+        active?: boolean | undefined;
         startDate?: string | undefined;
         endDate?: string | undefined;
         discountValue?: number | undefined;

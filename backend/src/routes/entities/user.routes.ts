@@ -20,24 +20,35 @@ import express from "express";
 const router = express.Router();
 
 // User CRUD routes
-router.post("/", authMiddleware, validate(CreateUserRequestSchema), createUser);
+router.post(
+  "/",
+  // authMiddleware, // Temporarily disabled for initial user creation
+  validate(CreateUserRequestSchema, "body"),
+  createUser
+);
 router.get("/", authMiddleware, getUsers);
-router.get("/:id", authMiddleware, validate(GetUserRequestSchema), getUserById);
+router.get(
+  "/:id",
+  authMiddleware,
+  validate(GetUserRequestSchema, "params"),
+  getUserById
+);
 router.put(
   "/:id",
   authMiddleware,
-  validate(UpdateUserRequestSchema),
+  validate(GetUserRequestSchema, "params"),
+  validate(UpdateUserRequestSchema, "body"),
   updateUser
 );
 router.delete(
   "/:id",
   authMiddleware,
-  validate(DeleteUserRequestSchema),
+  validate(DeleteUserRequestSchema, "params"),
   deleteUser
 );
 
 // Auth routes
-router.post("/login", validate(LoginRequestSchema), login);
+router.post("/login", validate(LoginRequestSchema, "body"), login);
 router.post("/logout", authMiddleware, logout);
 
 export default router;

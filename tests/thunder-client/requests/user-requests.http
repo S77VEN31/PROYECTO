@@ -1,0 +1,53 @@
+### User Management Requests
+
+# Variables
+@baseUrl = http://localhost:3001/api
+@authToken = your-jwt-token-here
+@userId = user-id-here
+
+### Get all users (requires authentication)
+GET {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+
+### Get user by ID (requires authentication)
+GET {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{authToken}}
+
+### Create new user (requires authentication)
+POST {{baseUrl}}/users
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "password123",
+  "role": "server"
+}
+
+### Create admin user (requires authentication)
+POST {{baseUrl}}/users
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Admin User",
+  "email": "admin@colori.com",
+  "password": "admin123",
+  "role": "admin"
+}
+
+### Update user (requires authentication)
+PUT {{baseUrl}}/users/{{userId}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Updated User Name",
+  "email": "updated@example.com",
+  "role": "manager"
+}
+
+### Delete user (requires authentication)
+DELETE {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{authToken}} 

@@ -2,8 +2,8 @@
  * @fileoverview Schemas for image-related types
  */
 
-import { Image } from "@shared/common";
 import { z } from "zod";
+import { Image } from "./image.d";
 
 /**
  * Schema for Image representation

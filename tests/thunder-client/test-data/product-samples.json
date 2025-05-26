@@ -1,0 +1,33 @@
+{
+  "createProduct": {
+    "name": "Margherita Pizza",
+    "description": "Classic pizza with tomato sauce, mozzarella, and fresh basil",
+    "price": 12.99,
+    "categoryId": "replace-with-actual-category-id",
+    "available": true,
+    "ingredients": ["tomato sauce", "mozzarella", "basil"],
+    "allergens": ["dairy", "gluten"]
+  },
+  "createBeverage": {
+    "name": "Coca Cola",
+    "description": "Classic soft drink",
+    "price": 2.5,
+    "categoryId": "replace-with-actual-category-id",
+    "available": true,
+    "size": "330ml"
+  },
+  "updateProduct": {
+    "name": "Updated Pizza Name",
+    "description": "Updated description",
+    "price": 14.99,
+    "available": false
+  },
+  "createDessert": {
+    "name": "Tiramisu",
+    "description": "Traditional Italian dessert with coffee and mascarpone",
+    "price": 6.99,
+    "categoryId": "replace-with-actual-category-id",
+    "available": true,
+    "allergens": ["dairy", "eggs", "gluten"]
+  }
+}

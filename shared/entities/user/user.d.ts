@@ -20,7 +20,7 @@ export declare interface UserBase extends EntityMetadata {
   lastName: string;
   email: string;
   role: UserRole;
-  lastLogin: string;
+  lastLogin: string | null;
   password: string;
 }
 
@@ -30,9 +30,9 @@ export declare interface UserBase extends EntityMetadata {
  * @extends UserBase
  * @property {string} id - Unique identifier for the user
  */
-export declare interface User extends Omit<UserBase, "password"> {
-  id: string;
-}
+export declare interface User
+  extends Omit<UserBase, "password">,
+    Pick<EntityBase, "id"> {}
 
 /**
  * Input type for user creation operations

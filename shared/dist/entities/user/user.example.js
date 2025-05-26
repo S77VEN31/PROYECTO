@@ -5,7 +5,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userUpdateModel = exports.userModel = exports.serverUserModel = exports.newUserModel = void 0;
-const enums_1 = require("@shared/enums");
+const enums_1 = require("../../enums");
 /**
  * Example of a user creation model
  */

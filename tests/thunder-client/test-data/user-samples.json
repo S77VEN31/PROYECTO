@@ -1,0 +1,27 @@
+{
+  "createUser": {
+    "name": "Test User",
+    "email": "test@example.com",
+    "password": "password123",
+    "role": "server"
+  },
+  "createAdmin": {
+    "name": "Admin User",
+    "email": "admin@colori.com",
+    "password": "admin123",
+    "role": "admin"
+  },
+  "updateUser": {
+    "name": "Updated User Name",
+    "email": "updated@example.com",
+    "role": "manager"
+  },
+  "loginCredentials": {
+    "email": "admin@colori.com",
+    "password": "admin123"
+  },
+  "invalidLogin": {
+    "email": "wrong@example.com",
+    "password": "wrongpassword"
+  }
+}

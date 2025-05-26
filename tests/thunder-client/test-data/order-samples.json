@@ -1,0 +1,63 @@
+{
+  "createSimpleOrder": {
+    "customerName": "John Doe",
+    "tableNumber": 5,
+    "products": [
+      {
+        "productId": "replace-with-actual-product-id",
+        "quantity": 2,
+        "specialInstructions": "No onions please"
+      }
+    ],
+    "status": "PENDING"
+  },
+  "createComplexOrder": {
+    "customerName": "Jane Smith",
+    "tableNumber": 12,
+    "products": [
+      {
+        "productId": "replace-with-actual-product-id-1",
+        "quantity": 1,
+        "specialInstructions": "Extra cheese",
+        "toppings": ["extra-cheese", "pepperoni"]
+      },
+      {
+        "productId": "replace-with-actual-product-id-2",
+        "quantity": 2,
+        "specialInstructions": "No ice"
+      }
+    ],
+    "subtotal": 25.98,
+    "tax": 2.6,
+    "total": 28.58,
+    "tip": 5.0,
+    "paymentMethod": "CREDIT_CARD",
+    "status": "PENDING"
+  },
+  "updateOrderStatus": {
+    "status": "PREPARING"
+  },
+  "updateOrderComplete": {
+    "status": "COMPLETED",
+    "customerName": "Updated Customer Name",
+    "tableNumber": 8,
+    "subtotal": 30.0,
+    "tax": 3.0,
+    "total": 33.0,
+    "tip": 6.6,
+    "paymentMethod": "CASH"
+  },
+  "createOrderWithToppings": {
+    "customerName": "Mike Johnson",
+    "tableNumber": 3,
+    "products": [
+      {
+        "productId": "replace-with-actual-product-id",
+        "quantity": 1,
+        "specialInstructions": "Well done",
+        "toppings": ["mushrooms", "olives", "bell-peppers"]
+      }
+    ],
+    "status": "PENDING"
+  }
+}

@@ -4,8 +4,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoginRequestSchema = exports.DeleteUserRequestSchema = exports.UpdateUserRequestSchema = exports.CreateUserRequestSchema = exports.GetUserRequestSchema = exports.UserUpdateSchema = exports.UserCreateSchema = exports.UserSchema = exports.UserBaseSchema = void 0;
-const entities_1 = require("@shared/entities");
-const enums_1 = require("@shared/enums");
+const entities_1 = require("../../entities");
+const enums_1 = require("../../enums");
 const zod_1 = require("zod");
 /**
  * Schema for core user profile information
@@ -52,25 +52,16 @@ exports.GetUserRequestSchema = zod_1.z.object({
     id: zod_1.z.string().uuid(),
 });
 exports.CreateUserRequestSchema = zod_1.z.object({
-    user: zod_1.z.object({
-        firstName: zod_1.z.string().min(1).max(50),
-        lastName: zod_1.z.string().min(1).max(50),
-        email: zod_1.z.string().email(),
-        password: zod_1.z.string().min(6),
-        role: zod_1.z.nativeEnum(enums_1.UserRole).optional(),
-        active: zod_1.z.boolean().optional().default(true),
-    }),
+    name: zod_1.z.string().min(1).max(100),
+    email: zod_1.z.string().email(),
     password: zod_1.z.string().min(6),
+    role: zod_1.z.nativeEnum(enums_1.UserRole).optional().default(enums_1.UserRole.SERVER),
 });
 exports.UpdateUserRequestSchema = zod_1.z.object({
-    id: zod_1.z.string().uuid(),
-    user: zod_1.z.object({
-        firstName: zod_1.z.string().min(1).max(50).optional(),
-        lastName: zod_1.z.string().min(1).max(50).optional(),
-        email: zod_1.z.string().email().optional(),
-        role: zod_1.z.nativeEnum(enums_1.UserRole).optional(),
-        active: zod_1.z.boolean().optional(),
-    }),
+    name: zod_1.z.string().min(1).max(100).optional(),
+    email: zod_1.z.string().email().optional(),
+    role: zod_1.z.nativeEnum(enums_1.UserRole).optional(),
+    active: zod_1.z.boolean().optional(),
 });
 exports.DeleteUserRequestSchema = zod_1.z.object({
     id: zod_1.z.string().uuid(),

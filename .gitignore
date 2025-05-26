@@ -18,6 +18,8 @@ dist/
 /dist
 /build
 /out
+dist
+shared/dist/
 
 # TypeScript cache
 *.tsbuildinfo

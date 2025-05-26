@@ -17,9 +17,10 @@ import mongoose, { Schema } from "mongoose";
  * Adds the comparePassword method for password verification
  * @typedef {Object} UserDocument
  */
-type UserDocument = Omit<UserCreate, keyof IBaseDocument> & {
-  comparePassword(candidatePassword: string): Promise<boolean>;
-};
+type UserDocument = IBaseDocument &
+  Omit<UserCreate, keyof IBaseDocument> & {
+    comparePassword(candidatePassword: string): Promise<boolean>;
+  };
 
 /**
  * Schema for user model with base fields and user-specific fields
@@ -37,7 +38,7 @@ const userSchema = new Schema<UserDocument>(
       enum: Object.values(UserRole),
       default: UserRole.SERVER,
     },
-    lastLogin: { type: String, default: null },
+    lastLogin: { type: String, default: null, required: false },
   },
   baseEntitySchemaOptions
 );

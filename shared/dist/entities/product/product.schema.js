@@ -4,8 +4,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DeleteProductRequestSchema = exports.UpdateProductRequestSchema = exports.CreateProductRequestSchema = exports.GetProductRequestSchema = exports.ProductUpdateSchema = exports.ProductCreateSchema = exports.ProductSchema = exports.ProductBaseSchema = exports.NutritionalInfoSchema = void 0;
-const common_1 = require("@shared/common");
-const entities_1 = require("@shared/entities");
+const common_1 = require("../../common");
+const entities_1 = require("../../entities");
 const zod_1 = require("zod");
 /**
  * Schema for nutritional information

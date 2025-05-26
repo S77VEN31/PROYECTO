@@ -2,9 +2,9 @@
  * @fileoverview Schemas for financial-related types
  */
 
-import { Financial, PaymentFinancial } from "@shared/common";
 import { PaymentMethod } from "@shared/enums";
 import { z } from "zod";
+import { Financial, PaymentFinancial } from "./financial.d";
 
 /**
  * Schema for basic financial information

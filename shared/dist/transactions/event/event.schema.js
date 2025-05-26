@@ -4,8 +4,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventUpdateSchema = exports.EventCreateSchema = exports.EventSchema = exports.EventTransactionSchema = void 0;
-const enums_1 = require("@shared/enums");
-const transaction_schema_1 = require("@shared/transactions/transaction/transaction.schema");
+const enums_1 = require("../../enums");
+const transaction_schema_1 = require("../../transactions/transaction/transaction.schema");
 const zod_1 = require("zod");
 /**
  * Schema for event transaction

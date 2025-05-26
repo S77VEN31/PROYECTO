@@ -18,7 +18,9 @@
       "@models": ["src/models"],
       "@services": ["src/services"],
       "@controllers": ["src/controllers"],
+      "@config": ["src/config"],
       "colori-platform-shared": ["../shared"]
+    
     }
   },
   "include": ["src/**/*.ts"],

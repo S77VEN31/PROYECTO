@@ -1,0 +1,32 @@
+{
+  "createPizzaCategory": {
+    "name": "Pizzas",
+    "description": "Delicious handmade pizzas with fresh ingredients",
+    "active": true,
+    "sortOrder": 1
+  },
+  "createBeverageCategory": {
+    "name": "Beverages",
+    "description": "Refreshing drinks and beverages",
+    "active": true,
+    "sortOrder": 2
+  },
+  "createDessertCategory": {
+    "name": "Desserts",
+    "description": "Sweet treats and desserts",
+    "active": true,
+    "sortOrder": 3
+  },
+  "updateCategory": {
+    "name": "Updated Category Name",
+    "description": "Updated category description",
+    "active": false,
+    "sortOrder": 5
+  },
+  "createAppetizerCategory": {
+    "name": "Appetizers",
+    "description": "Starters and appetizers to begin your meal",
+    "active": true,
+    "sortOrder": 0
+  }
+}

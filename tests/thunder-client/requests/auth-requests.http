@@ -1,0 +1,27 @@
+### Authentication Requests
+
+# Variables
+@baseUrl = http://localhost:3001/api
+@authToken = your-jwt-token-here
+
+### Login
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+  "email": "admin@colori.com",
+  "password": "admin123"
+}
+
+### Login with invalid credentials (should fail)
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+  "email": "wrong@example.com",
+  "password": "wrongpassword"
+}
+
+### Logout (requires authentication)
+POST {{baseUrl}}/users/logout
+Authorization: Bearer {{authToken}} 

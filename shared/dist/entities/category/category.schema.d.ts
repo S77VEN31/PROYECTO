@@ -36,12 +36,12 @@ export declare const CategoryBaseSchema: z.ZodObject<{
     products: z.ZodArray<z.ZodString, "many">;
     variant: z.ZodNativeEnum<typeof CategoryVariant>;
 }, "strip", z.ZodTypeAny, {
-    slug: string;
+    createdAt: string;
+    updatedAt: string;
     name: string;
     description: string;
     active: boolean;
-    createdAt: string;
-    updatedAt: string;
+    slug: string;
     icon: string;
     displayOrder: number;
     products: string[];
@@ -54,23 +54,23 @@ export declare const CategoryBaseSchema: z.ZodObject<{
         isPrimary?: boolean | undefined;
     }[] | undefined;
 }, {
-    slug: string;
-    name: string;
-    description: string;
     createdAt: string;
     updatedAt: string;
+    name: string;
+    description: string;
+    slug: string;
     icon: string;
     displayOrder: number;
     products: string[];
     variant: CategoryVariant;
     id?: string | undefined;
+    active?: boolean | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
         src: string;
         alt?: string | undefined;
         isPrimary?: boolean | undefined;
     }[] | undefined;
-    active?: boolean | undefined;
 }>;
 /**
  * Schema for complete category representation
@@ -103,13 +103,13 @@ export declare const CategorySchema: z.ZodObject<{
 } & {
     id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
+    createdAt: string;
+    updatedAt: string;
     id: string;
-    slug: string;
     name: string;
     description: string;
     active: boolean;
-    createdAt: string;
-    updatedAt: string;
+    slug: string;
     icon: string;
     displayOrder: number;
     products: string[];
@@ -121,23 +121,23 @@ export declare const CategorySchema: z.ZodObject<{
         isPrimary?: boolean | undefined;
     }[] | undefined;
 }, {
-    id: string;
-    slug: string;
-    name: string;
-    description: string;
     createdAt: string;
     updatedAt: string;
+    id: string;
+    name: string;
+    description: string;
+    slug: string;
     icon: string;
     displayOrder: number;
     products: string[];
     variant: CategoryVariant;
+    active?: boolean | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
         src: string;
         alt?: string | undefined;
         isPrimary?: boolean | undefined;
     }[] | undefined;
-    active?: boolean | undefined;
 }>;
 /**
  * Schema for category creation
@@ -194,6 +194,11 @@ export declare const CategoryCreateSchema: z.ZodObject<{
  * Schema for category updates
  */
 export declare const CategoryUpdateSchema: z.ZodObject<{
+    createdAt: z.ZodOptional<z.ZodString>;
+    updatedAt: z.ZodOptional<z.ZodString>;
+    name: z.ZodOptional<z.ZodString>;
+    description: z.ZodOptional<z.ZodString>;
+    active: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodBoolean>>>;
     slug: z.ZodOptional<z.ZodString>;
     searchTerm: z.ZodOptional<z.ZodOptional<z.ZodString>>;
     backgroundImages: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -209,16 +214,16 @@ export declare const CategoryUpdateSchema: z.ZodObject<{
         alt?: string | undefined;
         isPrimary?: boolean | undefined;
     }>, "many">>>;
-    name: z.ZodOptional<z.ZodString>;
-    description: z.ZodOptional<z.ZodString>;
-    active: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodBoolean>>>;
-    createdAt: z.ZodOptional<z.ZodString>;
-    updatedAt: z.ZodOptional<z.ZodString>;
     icon: z.ZodOptional<z.ZodString>;
     displayOrder: z.ZodOptional<z.ZodNumber>;
     products: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     variant: z.ZodOptional<z.ZodNativeEnum<typeof CategoryVariant>>;
 }, "strip", z.ZodTypeAny, {
+    createdAt?: string | undefined;
+    updatedAt?: string | undefined;
+    name?: string | undefined;
+    description?: string | undefined;
+    active?: boolean | undefined;
     slug?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -226,16 +231,16 @@ export declare const CategoryUpdateSchema: z.ZodObject<{
         alt?: string | undefined;
         isPrimary?: boolean | undefined;
     }[] | undefined;
-    name?: string | undefined;
-    description?: string | undefined;
-    active?: boolean | undefined;
-    createdAt?: string | undefined;
-    updatedAt?: string | undefined;
     icon?: string | undefined;
     displayOrder?: number | undefined;
     products?: string[] | undefined;
     variant?: CategoryVariant | undefined;
 }, {
+    createdAt?: string | undefined;
+    updatedAt?: string | undefined;
+    name?: string | undefined;
+    description?: string | undefined;
+    active?: boolean | undefined;
     slug?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -243,11 +248,6 @@ export declare const CategoryUpdateSchema: z.ZodObject<{
         alt?: string | undefined;
         isPrimary?: boolean | undefined;
     }[] | undefined;
-    name?: string | undefined;
-    description?: string | undefined;
-    active?: boolean | undefined;
-    createdAt?: string | undefined;
-    updatedAt?: string | undefined;
     icon?: string | undefined;
     displayOrder?: number | undefined;
     products?: string[] | undefined;

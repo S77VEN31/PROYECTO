@@ -1,0 +1,74 @@
+{
+  "createOrderEvent": {
+    "type": "ORDER_CREATED",
+    "entityId": "replace-with-actual-order-id",
+    "entityType": "ORDER",
+    "data": {
+      "orderId": "replace-with-actual-order-id",
+      "customerName": "John Doe",
+      "tableNumber": 5,
+      "total": 25.99
+    },
+    "metadata": {
+      "source": "POS_SYSTEM",
+      "version": "1.0"
+    }
+  },
+  "createPaymentEvent": {
+    "type": "PAYMENT_PROCESSED",
+    "entityId": "replace-with-actual-order-id",
+    "entityType": "ORDER",
+    "data": {
+      "orderId": "replace-with-actual-order-id",
+      "paymentMethod": "CREDIT_CARD",
+      "amount": 25.99,
+      "transactionId": "txn_123456789"
+    },
+    "metadata": {
+      "source": "PAYMENT_GATEWAY",
+      "processingTime": 1250
+    }
+  },
+  "createUserEvent": {
+    "type": "USER_LOGIN",
+    "entityId": "replace-with-actual-user-id",
+    "entityType": "USER",
+    "data": {
+      "userId": "replace-with-actual-user-id",
+      "email": "user@example.com",
+      "loginTime": "2024-01-01T10:00:00.000Z"
+    },
+    "metadata": {
+      "source": "WEB_APP",
+      "ipAddress": "192.168.1.100",
+      "userAgent": "Mozilla/5.0..."
+    }
+  },
+  "updateEvent": {
+    "type": "ORDER_UPDATED",
+    "data": {
+      "orderId": "replace-with-actual-order-id",
+      "status": "COMPLETED",
+      "completedAt": "2024-01-01T11:30:00.000Z"
+    },
+    "metadata": {
+      "source": "KITCHEN_SYSTEM",
+      "updatedBy": "chef_001"
+    }
+  },
+  "createInventoryEvent": {
+    "type": "INVENTORY_UPDATED",
+    "entityId": "replace-with-actual-product-id",
+    "entityType": "PRODUCT",
+    "data": {
+      "productId": "replace-with-actual-product-id",
+      "previousStock": 50,
+      "newStock": 45,
+      "reason": "ORDER_FULFILLMENT"
+    },
+    "metadata": {
+      "source": "INVENTORY_SYSTEM",
+      "automaticUpdate": true
+    }
+  }
+}

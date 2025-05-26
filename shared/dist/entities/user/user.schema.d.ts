@@ -1,7 +1,7 @@
 /**
  * Schemas for User entities
  */
-import { UserRole } from "@shared/enums";
+import { UserRole } from "../../enums";
 import { z } from "zod";
 /**
  * Schema for core user profile information
@@ -38,11 +38,11 @@ export declare const UserBaseSchema: z.ZodObject<{
     lastLogin: z.ZodString;
     password: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    active: boolean;
     createdAt: string;
     updatedAt: string;
     name: string;
     description: string;
+    active: boolean;
     slug: string;
     firstName: string;
     lastName: string;
@@ -82,11 +82,11 @@ export declare const UserBaseSchema: z.ZodObject<{
  * Schema for complete user representation
  */
 export declare const UserSchema: z.ZodObject<{
-    active: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
     createdAt: z.ZodString;
     updatedAt: z.ZodString;
     name: z.ZodString;
     description: z.ZodString;
+    active: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
     slug: z.ZodString;
     searchTerm: z.ZodOptional<z.ZodString>;
     backgroundImages: z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -110,12 +110,12 @@ export declare const UserSchema: z.ZodObject<{
 } & {
     id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    active: boolean;
     createdAt: string;
     updatedAt: string;
+    id: string;
     name: string;
     description: string;
+    active: boolean;
     slug: string;
     firstName: string;
     lastName: string;
@@ -129,9 +129,9 @@ export declare const UserSchema: z.ZodObject<{
         isPrimary?: boolean | undefined;
     }[] | undefined;
 }, {
-    id: string;
     createdAt: string;
     updatedAt: string;
+    id: string;
     name: string;
     description: string;
     slug: string;
@@ -180,11 +180,11 @@ export declare const UserCreateSchema: z.ZodObject<{
  * Schema for user updates
  */
 export declare const UserUpdateSchema: z.ZodObject<{
-    active: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodBoolean>>>;
     createdAt: z.ZodOptional<z.ZodString>;
     updatedAt: z.ZodOptional<z.ZodString>;
     name: z.ZodOptional<z.ZodString>;
     description: z.ZodOptional<z.ZodString>;
+    active: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodBoolean>>>;
     slug: z.ZodOptional<z.ZodString>;
     searchTerm: z.ZodOptional<z.ZodOptional<z.ZodString>>;
     backgroundImages: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -206,11 +206,11 @@ export declare const UserUpdateSchema: z.ZodObject<{
     role: z.ZodOptional<z.ZodNativeEnum<typeof UserRole>>;
     lastLogin: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    active?: boolean | undefined;
     createdAt?: string | undefined;
     updatedAt?: string | undefined;
     name?: string | undefined;
     description?: string | undefined;
+    active?: boolean | undefined;
     slug?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -224,11 +224,11 @@ export declare const UserUpdateSchema: z.ZodObject<{
     role?: UserRole | undefined;
     lastLogin?: string | undefined;
 }, {
-    active?: boolean | undefined;
     createdAt?: string | undefined;
     updatedAt?: string | undefined;
     name?: string | undefined;
     description?: string | undefined;
+    active?: boolean | undefined;
     slug?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -253,89 +253,36 @@ export declare const GetUserRequestSchema: z.ZodObject<{
     id: string;
 }>;
 export declare const CreateUserRequestSchema: z.ZodObject<{
-    user: z.ZodObject<{
-        firstName: z.ZodString;
-        lastName: z.ZodString;
-        email: z.ZodString;
-        password: z.ZodString;
-        role: z.ZodOptional<z.ZodNativeEnum<typeof UserRole>>;
-        active: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
-    }, "strip", z.ZodTypeAny, {
-        active: boolean;
-        firstName: string;
-        lastName: string;
-        email: string;
-        password: string;
-        role?: UserRole | undefined;
-    }, {
-        firstName: string;
-        lastName: string;
-        email: string;
-        password: string;
-        active?: boolean | undefined;
-        role?: UserRole | undefined;
-    }>;
+    name: z.ZodString;
+    email: z.ZodString;
     password: z.ZodString;
+    role: z.ZodDefault<z.ZodOptional<z.ZodNativeEnum<typeof UserRole>>>;
 }, "strip", z.ZodTypeAny, {
+    name: string;
+    email: string;
+    role: UserRole;
     password: string;
-    user: {
-        active: boolean;
-        firstName: string;
-        lastName: string;
-        email: string;
-        password: string;
-        role?: UserRole | undefined;
-    };
 }, {
+    name: string;
+    email: string;
     password: string;
-    user: {
-        firstName: string;
-        lastName: string;
-        email: string;
-        password: string;
-        active?: boolean | undefined;
-        role?: UserRole | undefined;
-    };
+    role?: UserRole | undefined;
 }>;
 export declare const UpdateUserRequestSchema: z.ZodObject<{
-    id: z.ZodString;
-    user: z.ZodObject<{
-        firstName: z.ZodOptional<z.ZodString>;
-        lastName: z.ZodOptional<z.ZodString>;
-        email: z.ZodOptional<z.ZodString>;
-        role: z.ZodOptional<z.ZodNativeEnum<typeof UserRole>>;
-        active: z.ZodOptional<z.ZodBoolean>;
-    }, "strip", z.ZodTypeAny, {
-        active?: boolean | undefined;
-        firstName?: string | undefined;
-        lastName?: string | undefined;
-        email?: string | undefined;
-        role?: UserRole | undefined;
-    }, {
-        active?: boolean | undefined;
-        firstName?: string | undefined;
-        lastName?: string | undefined;
-        email?: string | undefined;
-        role?: UserRole | undefined;
-    }>;
+    name: z.ZodOptional<z.ZodString>;
+    email: z.ZodOptional<z.ZodString>;
+    role: z.ZodOptional<z.ZodNativeEnum<typeof UserRole>>;
+    active: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    user: {
-        active?: boolean | undefined;
-        firstName?: string | undefined;
-        lastName?: string | undefined;
-        email?: string | undefined;
-        role?: UserRole | undefined;
-    };
+    name?: string | undefined;
+    active?: boolean | undefined;
+    email?: string | undefined;
+    role?: UserRole | undefined;
 }, {
-    id: string;
-    user: {
-        active?: boolean | undefined;
-        firstName?: string | undefined;
-        lastName?: string | undefined;
-        email?: string | undefined;
-        role?: UserRole | undefined;
-    };
+    name?: string | undefined;
+    active?: boolean | undefined;
+    email?: string | undefined;
+    role?: UserRole | undefined;
 }>;
 export declare const DeleteUserRequestSchema: z.ZodObject<{
     id: z.ZodString;

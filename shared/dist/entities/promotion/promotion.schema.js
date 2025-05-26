@@ -4,9 +4,9 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DeletePromotionRequestSchema = exports.UpdatePromotionRequestSchema = exports.CreatePromotionRequestSchema = exports.GetPromotionRequestSchema = exports.PromotionUpdateSchema = exports.PromotionCreateSchema = exports.PromotionSchema = exports.PromotionBaseSchema = void 0;
-const common_1 = require("@shared/common");
-const entities_1 = require("@shared/entities");
-const enums_1 = require("@shared/enums");
+const common_1 = require("../../common");
+const entities_1 = require("../../entities");
+const enums_1 = require("../../enums");
 const zod_1 = require("zod");
 /**
  * Schema for core promotion information

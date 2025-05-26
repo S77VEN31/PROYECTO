@@ -5,7 +5,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.newCategoryModel = exports.minimalCategoryModel = exports.categoryUpdateModel = exports.categoryModel = void 0;
-const enums_1 = require("@shared/enums");
+const enums_1 = require("../../enums");
 /**
  * Example of a category creation model
  */

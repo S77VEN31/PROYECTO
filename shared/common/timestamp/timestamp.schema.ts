@@ -2,12 +2,12 @@
  * @fileoverview Schemas for timestamp-related types
  */
 
+import { z } from "zod";
 import {
   CompletableTimestamp,
   TimeStamps,
   TimestampField,
-} from "@shared/common";
-import { z } from "zod";
+} from "./timestamp.d";
 
 /**
  * Schema for timestamp fields present in all entities

@@ -1,0 +1,303 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "Colori Platform API",
+  "dateExported": "2024-01-01T00:00:00.000Z",
+  "version": "1.1",
+  "folders": [
+    {
+      "id": "auth-folder",
+      "name": "Authentication",
+      "containerId": "",
+      "created": "2024-01-01T00:00:00.000Z",
+      "sortNum": 10000
+    },
+    {
+      "id": "users-folder",
+      "name": "Users",
+      "containerId": "",
+      "created": "2024-01-01T00:00:00.000Z",
+      "sortNum": 20000
+    },
+    {
+      "id": "products-folder",
+      "name": "Products",
+      "containerId": "",
+      "created": "2024-01-01T00:00:00.000Z",
+      "sortNum": 30000
+    },
+    {
+      "id": "categories-folder",
+      "name": "Categories",
+      "containerId": "",
+      "created": "2024-01-01T00:00:00.000Z",
+      "sortNum": 40000
+    },
+    {
+      "id": "orders-folder",
+      "name": "Orders",
+      "containerId": "",
+      "created": "2024-01-01T00:00:00.000Z",
+      "sortNum": 50000
+    },
+    {
+      "id": "promotions-folder",
+      "name": "Promotions",
+      "containerId": "",
+      "created": "2024-01-01T00:00:00.000Z",
+      "sortNum": 60000
+    },
+    {
+      "id": "events-folder",
+      "name": "Events",
+      "containerId": "",
+      "created": "2024-01-01T00:00:00.000Z",
+      "sortNum": 70000
+    }
+  ],
+  "requests": [
+    {
+      "id": "login-request",
+      "name": "Login",
+      "url": "{{baseUrl}}/users/login",
+      "method": "POST",
+      "sortNum": 10000,
+      "created": "2024-01-01T00:00:00.000Z",
+      "modified": "2024-01-01T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"admin@colori.com\",\n  \"password\": \"admin123\"\n}",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "auth-folder"
+    },
+    {
+      "id": "logout-request",
+      "name": "Logout",
+      "url": "{{baseUrl}}/users/logout",
+      "method": "POST",
+      "sortNum": 20000,
+      "created": "2024-01-01T00:00:00.000Z",
+      "modified": "2024-01-01T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "auth-folder"
+    },
+    {
+      "id": "get-users",
+      "name": "Get All Users",
+      "url": "{{baseUrl}}/users",
+      "method": "GET",
+      "sortNum": 10000,
+      "created": "2024-01-01T00:00:00.000Z",
+      "modified": "2024-01-01T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "containerId": "users-folder"
+    },
+    {
+      "id": "get-user-by-id",
+      "name": "Get User by ID",
+      "url": "{{baseUrl}}/users/{{userId}}",
+      "method": "GET",
+      "sortNum": 20000,
+      "created": "2024-01-01T00:00:00.000Z",
+      "modified": "2024-01-01T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "containerId": "users-folder"
+    },
+    {
+      "id": "create-user",
+      "name": "Create User",
+      "url": "{{baseUrl}}/users",
+      "method": "POST",
+      "sortNum": 30000,
+      "created": "2024-01-01T00:00:00.000Z",
+      "modified": "2024-01-01T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"server\"\n}",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "users-folder"
+    },
+    {
+      "id": "get-products",
+      "name": "Get All Products",
+      "url": "{{baseUrl}}/products",
+      "method": "GET",
+      "sortNum": 10000,
+      "created": "2024-01-01T00:00:00.000Z",
+      "modified": "2024-01-01T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "containerId": "products-folder"
+    },
+    {
+      "id": "get-product-by-id",
+      "name": "Get Product by ID",
+      "url": "{{baseUrl}}/products/{{productId}}",
+      "method": "GET",
+      "sortNum": 20000,
+      "created": "2024-01-01T00:00:00.000Z",
+      "modified": "2024-01-01T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "containerId": "products-folder"
+    },
+    {
+      "id": "create-product",
+      "name": "Create Product",
+      "url": "{{baseUrl}}/products",
+      "method": "POST",
+      "sortNum": 30000,
+      "created": "2024-01-01T00:00:00.000Z",
+      "modified": "2024-01-01T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Test Product\",\n  \"description\": \"A test product\",\n  \"price\": 9.99,\n  \"categoryId\": \"{{categoryId}}\",\n  \"available\": true\n}",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "products-folder"
+    },
+    {
+      "id": "get-orders",
+      "name": "Get All Orders",
+      "url": "{{baseUrl}}/orders",
+      "method": "GET",
+      "sortNum": 10000,
+      "created": "2024-01-01T00:00:00.000Z",
+      "modified": "2024-01-01T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "containerId": "orders-folder"
+    },
+    {
+      "id": "get-order-by-id",
+      "name": "Get Order by ID",
+      "url": "{{baseUrl}}/orders/{{orderId}}",
+      "method": "GET",
+      "sortNum": 20000,
+      "created": "2024-01-01T00:00:00.000Z",
+      "modified": "2024-01-01T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "containerId": "orders-folder"
+    },
+    {
+      "id": "create-order",
+      "name": "Create Order",
+      "url": "{{baseUrl}}/orders",
+      "method": "POST",
+      "sortNum": 30000,
+      "created": "2024-01-01T00:00:00.000Z",
+      "modified": "2024-01-01T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"customerName\": \"John Doe\",\n  \"tableNumber\": 5,\n  \"products\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 2,\n      \"specialInstructions\": \"No onions\"\n    }\n  ],\n  \"status\": \"PENDING\"\n}",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "orders-folder"
+    }
+  ],
+  "environments": [
+    {
+      "id": "local-env",
+      "name": "Local Development",
+      "default": true,
+      "data": [
+        {
+          "name": "baseUrl",
+          "value": "http://localhost:3001/api"
+        },
+        {
+          "name": "authToken",
+          "value": ""
+        },
+        {
+          "name": "userId",
+          "value": ""
+        },
+        {
+          "name": "productId",
+          "value": ""
+        },
+        {
+          "name": "categoryId",
+          "value": ""
+        },
+        {
+          "name": "orderId",
+          "value": ""
+        }
+      ]
+    }
+  ]
+}

@@ -13,7 +13,7 @@ export { ApiResponse, AuthResponse, CategoryFilterOptions, CreateResponse, Delet
  */
 import { Financial, PaymentFinancial } from "./financial/financial.d";
 import { FinancialSchema, PaymentFinancialSchema } from "./financial/financial.schema";
-export { Financial, FinancialSchema, PaymentFinancial, PaymentFinancialSchema };
+export { Financial, FinancialSchema, PaymentFinancial, PaymentFinancialSchema, };
 /**
  * Image related types and schemas
  */

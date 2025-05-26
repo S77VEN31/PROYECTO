@@ -18,7 +18,7 @@ export interface JwtPayload extends BaseJwtPayload {
   role: string;
 }
 
-// Extend Express Request type
+// Extend Express Request type to include user authentication data
 declare global {
   namespace Express {
     interface Request {

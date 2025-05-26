@@ -1,8 +1,8 @@
 /**
  * Schemas for Order transactions
  */
-import { OrderStatus, PaymentMethod } from "@shared/enums";
-import { OrderCreate, OrderUpdate } from "@shared/transactions";
+import { OrderStatus, PaymentMethod } from "../../enums";
+import { OrderCreate, OrderUpdate } from "../../transactions";
 import { z } from "zod";
 /**
  * Schema for individual menu item within an order
@@ -33,8 +33,8 @@ export declare const OrderToppingSchema: z.ZodObject<{
     active: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
 }, "strip", z.ZodTypeAny, {
     id: string;
-    active: boolean;
     name: string;
+    active: boolean;
     price: number;
 }, {
     id: string;
@@ -79,43 +79,43 @@ export declare const OrderTransactionSchema: z.ZodObject<{
     }>, "many">;
     status: z.ZodNativeEnum<typeof OrderStatus>;
 }, "strip", z.ZodTypeAny, {
-    customerName: string;
-    tableNumber: number;
-    products: {
-        productId: string;
-        quantity: number;
-        specialInstructions?: string | undefined;
-        toppings?: string[] | undefined;
-    }[];
     status: OrderStatus;
+    createdAt: string;
+    updatedAt: string;
     active: boolean;
-    createdAt: string;
-    updatedAt: string;
-    id?: string | undefined;
-    createdBy?: string | undefined;
-    updatedBy?: string | undefined;
-    completedBy?: string | undefined;
-    reference?: string | undefined;
-    completedAt?: string | null | undefined;
-}, {
-    customerName: string;
-    tableNumber: number;
     products: {
         productId: string;
         quantity: number;
         specialInstructions?: string | undefined;
         toppings?: string[] | undefined;
     }[];
-    status: OrderStatus;
-    createdAt: string;
-    updatedAt: string;
+    customerName: string;
+    tableNumber: number;
+    completedAt?: string | null | undefined;
     id?: string | undefined;
+    reference?: string | undefined;
     createdBy?: string | undefined;
     updatedBy?: string | undefined;
     completedBy?: string | undefined;
+}, {
+    status: OrderStatus;
+    createdAt: string;
+    updatedAt: string;
+    products: {
+        productId: string;
+        quantity: number;
+        specialInstructions?: string | undefined;
+        toppings?: string[] | undefined;
+    }[];
+    customerName: string;
+    tableNumber: number;
+    completedAt?: string | null | undefined;
+    id?: string | undefined;
     active?: boolean | undefined;
     reference?: string | undefined;
-    completedAt?: string | null | undefined;
+    createdBy?: string | undefined;
+    updatedBy?: string | undefined;
+    completedBy?: string | undefined;
 }>;
 /**
  * Schema for complete order representation
@@ -156,53 +156,53 @@ export declare const OrderSchema: z.ZodObject<{
 } & {
     id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
+    status: OrderStatus;
+    subtotal: number;
+    tax: number;
+    total: number;
+    createdAt: string;
+    updatedAt: string;
     id: string;
-    customerName: string;
-    tableNumber: number;
+    active: boolean;
     products: {
         productId: string;
         quantity: number;
         specialInstructions?: string | undefined;
         toppings?: string[] | undefined;
     }[];
-    status: OrderStatus;
-    active: boolean;
-    createdAt: string;
-    updatedAt: string;
-    subtotal: number;
-    tax: number;
-    total: number;
-    createdBy?: string | undefined;
-    updatedBy?: string | undefined;
-    completedBy?: string | undefined;
-    reference?: string | undefined;
-    completedAt?: string | null | undefined;
+    customerName: string;
+    tableNumber: number;
     tip?: number | null | undefined;
     paymentMethod?: PaymentMethod | null | undefined;
+    completedAt?: string | null | undefined;
+    reference?: string | undefined;
+    createdBy?: string | undefined;
+    updatedBy?: string | undefined;
+    completedBy?: string | undefined;
 }, {
+    status: OrderStatus;
+    subtotal: number;
+    tax: number;
+    total: number;
+    createdAt: string;
+    updatedAt: string;
     id: string;
-    customerName: string;
-    tableNumber: number;
     products: {
         productId: string;
         quantity: number;
         specialInstructions?: string | undefined;
         toppings?: string[] | undefined;
     }[];
-    status: OrderStatus;
-    createdAt: string;
-    updatedAt: string;
-    subtotal: number;
-    tax: number;
-    total: number;
-    createdBy?: string | undefined;
-    updatedBy?: string | undefined;
-    completedBy?: string | undefined;
+    customerName: string;
+    tableNumber: number;
+    tip?: number | null | undefined;
+    paymentMethod?: PaymentMethod | null | undefined;
+    completedAt?: string | null | undefined;
     active?: boolean | undefined;
     reference?: string | undefined;
-    completedAt?: string | null | undefined;
-    tip?: number | null | undefined;
-    paymentMethod?: PaymentMethod | null | undefined;
+    createdBy?: string | undefined;
+    updatedBy?: string | undefined;
+    completedBy?: string | undefined;
 }>;
 /**
  * Schema for order creation

@@ -1,7 +1,7 @@
 /**
  * Schemas for Event transactions
  */
-import { EventPriority, EventSource, OrderStatus } from "@shared/enums";
+import { EventPriority, EventSource, OrderStatus } from "../../enums";
 import { z } from "zod";
 /**
  * Schema for event transaction
@@ -26,16 +26,16 @@ export declare const EventTransactionSchema: z.ZodObject<{
     completedBy: z.ZodOptional<z.ZodNullable<z.ZodString>>;
 }, "strip", z.ZodTypeAny, {
     status: OrderStatus;
-    active: boolean;
     createdAt: string;
     updatedAt: string;
+    active: boolean;
     source: EventSource;
     orderId: string;
     priority: EventPriority;
-    id?: string | undefined;
-    completedBy?: string | null | undefined;
-    reference?: string | undefined;
     completedAt?: string | null | undefined;
+    id?: string | undefined;
+    reference?: string | undefined;
+    completedBy?: string | null | undefined;
     previousStatus?: OrderStatus | undefined;
     userId?: string | undefined;
     reason?: string | undefined;
@@ -45,11 +45,11 @@ export declare const EventTransactionSchema: z.ZodObject<{
     updatedAt: string;
     source: EventSource;
     orderId: string;
+    completedAt?: string | null | undefined;
     id?: string | undefined;
-    completedBy?: string | null | undefined;
     active?: boolean | undefined;
     reference?: string | undefined;
-    completedAt?: string | null | undefined;
+    completedBy?: string | null | undefined;
     previousStatus?: OrderStatus | undefined;
     userId?: string | undefined;
     reason?: string | undefined;
@@ -75,31 +75,31 @@ export declare const EventSchema: z.ZodObject<{
 } & {
     id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    id: string;
     status: OrderStatus;
-    active: boolean;
     createdAt: string;
     updatedAt: string;
+    id: string;
+    active: boolean;
     source: EventSource;
     orderId: string;
     priority: EventPriority;
-    completedBy?: string | null | undefined;
-    reference?: string | undefined;
     completedAt?: string | null | undefined;
+    reference?: string | undefined;
+    completedBy?: string | null | undefined;
     previousStatus?: OrderStatus | undefined;
     userId?: string | undefined;
     reason?: string | undefined;
 }, {
-    id: string;
     status: OrderStatus;
     createdAt: string;
     updatedAt: string;
+    id: string;
     source: EventSource;
     orderId: string;
-    completedBy?: string | null | undefined;
+    completedAt?: string | null | undefined;
     active?: boolean | undefined;
     reference?: string | undefined;
-    completedAt?: string | null | undefined;
+    completedBy?: string | null | undefined;
     previousStatus?: OrderStatus | undefined;
     userId?: string | undefined;
     reason?: string | undefined;
@@ -147,15 +147,15 @@ export declare const EventUpdateSchema: z.ZodObject<{
     completedAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     completedBy: z.ZodOptional<z.ZodNullable<z.ZodString>>;
 }, "strip", z.ZodTypeAny, {
-    completedBy?: string | null | undefined;
     completedAt?: string | null | undefined;
+    completedBy?: string | null | undefined;
     previousStatus?: OrderStatus | undefined;
     userId?: string | undefined;
     reason?: string | undefined;
     priority?: EventPriority | undefined;
 }, {
-    completedBy?: string | null | undefined;
     completedAt?: string | null | undefined;
+    completedBy?: string | null | undefined;
     previousStatus?: OrderStatus | undefined;
     userId?: string | undefined;
     reason?: string | undefined;

@@ -3,11 +3,11 @@
  * Handles business logic for user operations and authentication
  */
 
+import { UserModel } from "@models";
 import {
   AuthResponse,
   PaginatedResponse,
   User,
-  UserCreate,
   UserFilterOptions,
   UserUpdate,
 } from "colori-platform-shared";
@@ -50,23 +50,55 @@ export class UserService {
   /**
    * Create a new user
    */
-  static async create(
-    data: UserCreate & { createdBy?: string },
-    password: string
-  ): Promise<User> {
-    // TODO: Implement actual database interaction
-    // Mock implementation for now
-    return {
-      id: "mock-id",
-      firstName: data.firstName || "",
-      lastName: data.lastName || "",
-      email: data.email || "user@example.com",
-      role: data.role || "USER",
-      lastLogin: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      active: true,
-    } as unknown as User;
+  static async create(data: {
+    name: string;
+    email: string;
+    password: string;
+    role?: string;
+    createdBy?: string;
+  }): Promise<User> {
+    try {
+      // Split name into firstName and lastName for the model
+      const nameParts = data.name.trim().split(" ");
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      const newUser = new UserModel({
+        name: data.name,
+        description: `User profile for ${data.name}`,
+        firstName,
+        lastName,
+        email: data.email,
+        password: data.password,
+        role: data.role,
+        active: true,
+        createdBy: data.createdBy,
+      });
+
+      const savedUser = (await newUser.save()) as User;
+
+      // Convert to User format (excluding password)
+
+      return {
+        id: savedUser.id,
+        name: savedUser.name,
+        description: savedUser.description,
+        slug: savedUser.slug,
+        firstName: savedUser.firstName,
+        lastName: savedUser.lastName,
+        email: savedUser.email,
+        role: savedUser.role,
+        active: savedUser.active,
+        createdAt: savedUser.createdAt,
+        updatedAt: savedUser.updatedAt,
+        lastLogin: savedUser.lastLogin || null,
+      } as User;
+    } catch (error: any) {
+      if (error.code === 11000) {
+        throw new Error("Email already exists");
+      }
+      throw new Error(`Failed to create user: ${error.message}`);
+    }
   }
 
   /**
@@ -107,36 +139,56 @@ export class UserService {
     email: string,
     password: string
   ): Promise<AuthResponse> {
-    // TODO: Implement actual authentication with password verification
-    // Mock implementation for now
+    try {
+      // Find user by email and include password for verification
+      const userDoc = await UserModel.findOne({ email }).select("+password");
 
-    if (email !== "admin@example.com" || password !== "password") {
+      if (!userDoc) {
+        throw new Error("Invalid email or password");
+      }
+
+      // Verify password using the comparePassword method
+      const isPasswordValid = await userDoc.comparePassword(password);
+
+      if (!isPasswordValid) {
+        throw new Error("Invalid email or password");
+      }
+
+      // Update last login
+      userDoc.lastLogin = new Date().toISOString();
+      await userDoc.save();
+
+      // Convert to User format (excluding password)
+
+      const user: User = {
+        id: userDoc._id.toString(),
+        name: userDoc.name,
+        description: userDoc.description,
+        slug: userDoc.slug,
+        firstName: userDoc.firstName!,
+        lastName: userDoc.lastName!,
+        email: userDoc.email!,
+        role: userDoc.role!,
+        active: userDoc.active!,
+        createdAt: userDoc.createdAt,
+        updatedAt: userDoc.updatedAt,
+        lastLogin: userDoc.lastLogin,
+      };
+
+      // Create and sign JWT token
+      const token = jwt.sign(
+        {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        },
+        process.env.JWT_SECRET || "your-secret-key",
+        { expiresIn: "24h" }
+      );
+
+      return { user, token };
+    } catch (error: any) {
       throw new Error("Invalid email or password");
     }
-
-    const user = {
-      id: "mock-admin-id",
-      firstName: "Admin",
-      lastName: "User",
-      email: "admin@example.com",
-      role: "ADMIN",
-      lastLogin: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      active: true,
-    } as unknown as User;
-
-    // Create and sign JWT token
-    const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
-      process.env.JWT_SECRET || "your-secret-key",
-      { expiresIn: "24h" }
-    );
-
-    return { user, token };
   }
 }

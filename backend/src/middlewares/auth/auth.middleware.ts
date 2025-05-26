@@ -1,4 +1,4 @@
-import env from "@/config/env.config";
+import { env } from "@config";
 import { ApiError } from "@middlewares";
 import { JwtPayload, UserRole } from "colori-platform-shared";
 import { NextFunction, Request, Response } from "express";

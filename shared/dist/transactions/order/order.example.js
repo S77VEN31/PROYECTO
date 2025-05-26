@@ -5,7 +5,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.orderUpdateModel = exports.orderProductsModel = exports.orderModel = exports.newOrderModel = exports.cancelledOrderModel = void 0;
-const enums_1 = require("@shared/enums");
+const enums_1 = require("../../enums");
 /**
  * Example of order product models
  */

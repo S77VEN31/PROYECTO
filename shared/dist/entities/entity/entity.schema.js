@@ -4,7 +4,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PartialMetadataSchema = exports.FullMetadataSchema = exports.EntityMetadataSchema = exports.EntityBaseSchema = void 0;
-const common_1 = require("@shared/common");
+const common_1 = require("../../common");
 const zod_1 = require("zod");
 /**
  * Schema for basic entity properties

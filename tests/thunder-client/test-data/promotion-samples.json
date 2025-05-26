@@ -1,0 +1,51 @@
+{
+  "createPercentagePromotion": {
+    "name": "Weekend Special",
+    "description": "20% off all pizzas during weekends",
+    "discountType": "PERCENTAGE",
+    "discountValue": 20,
+    "startDate": "2024-01-01T00:00:00.000Z",
+    "endDate": "2024-12-31T23:59:59.999Z",
+    "active": true,
+    "minimumOrderAmount": 15.0,
+    "applicableCategories": ["replace-with-pizza-category-id"]
+  },
+  "createFixedAmountPromotion": {
+    "name": "New Customer Discount",
+    "description": "$5 off your first order",
+    "discountType": "FIXED_AMOUNT",
+    "discountValue": 5.0,
+    "startDate": "2024-01-01T00:00:00.000Z",
+    "endDate": "2024-12-31T23:59:59.999Z",
+    "active": true,
+    "minimumOrderAmount": 20.0,
+    "maxUsesPerCustomer": 1
+  },
+  "createBuyOneGetOnePromotion": {
+    "name": "BOGO Desserts",
+    "description": "Buy one dessert, get one free",
+    "discountType": "BUY_ONE_GET_ONE",
+    "discountValue": 100,
+    "startDate": "2024-01-01T00:00:00.000Z",
+    "endDate": "2024-06-30T23:59:59.999Z",
+    "active": true,
+    "applicableCategories": ["replace-with-dessert-category-id"]
+  },
+  "updatePromotion": {
+    "name": "Updated Promotion Name",
+    "description": "Updated promotion description",
+    "discountValue": 25,
+    "active": false,
+    "minimumOrderAmount": 30.0
+  },
+  "createHappyHourPromotion": {
+    "name": "Happy Hour",
+    "description": "50% off beverages from 3-5 PM",
+    "discountType": "PERCENTAGE",
+    "discountValue": 50,
+    "startDate": "2024-01-01T15:00:00.000Z",
+    "endDate": "2024-01-01T17:00:00.000Z",
+    "active": true,
+    "applicableCategories": ["replace-with-beverage-category-id"]
+  }
+}

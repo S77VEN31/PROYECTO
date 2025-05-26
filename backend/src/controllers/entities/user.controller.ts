@@ -7,7 +7,6 @@ import { UserService } from "@services";
 import {
   ApiResponse,
   CreateResponse,
-  CreateUserRequest,
   DeleteResponse,
   DeleteUserRequestParams,
   GetUserRequestParams,
@@ -86,23 +85,20 @@ export const getUserById = async (
 /**
  * Create a new user
  */
-export const createUser = async (
-  req: Request<{}, any, CreateUserRequest>,
-  res: Response
-) => {
+export const createUser = async (req: Request, res: Response) => {
   try {
-    const { user, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     // Get user ID from authenticated request
     const creatorId = req.user?.id;
 
-    const newUser = await UserService.create(
-      {
-        ...user,
-        createdBy: creatorId,
-      },
-      password
-    );
+    const newUser = await UserService.create({
+      name,
+      email,
+      password,
+      role,
+      createdBy: creatorId,
+    });
 
     return res.status(201).json({
       success: true,

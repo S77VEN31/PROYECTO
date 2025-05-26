@@ -15,19 +15,19 @@ export declare const TransactionRecordSchema: z.ZodObject<{
     active: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
     reference: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    active: boolean;
     createdAt: string;
     updatedAt: string;
+    active: boolean;
+    completedAt?: string | null | undefined;
     id?: string | undefined;
     reference?: string | undefined;
-    completedAt?: string | null | undefined;
 }, {
     createdAt: string;
     updatedAt: string;
+    completedAt?: string | null | undefined;
     id?: string | undefined;
     active?: boolean | undefined;
     reference?: string | undefined;
-    completedAt?: string | null | undefined;
 }>;
 /**
  * Schema for auditable transaction with user tracking
@@ -46,25 +46,25 @@ export declare const AuditableTransactionSchema: z.ZodObject<{
     updatedBy: z.ZodOptional<z.ZodString>;
     completedBy: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    active: boolean;
     createdAt: string;
     updatedAt: string;
+    active: boolean;
+    completedAt?: string | null | undefined;
     id?: string | undefined;
+    reference?: string | undefined;
     createdBy?: string | undefined;
     updatedBy?: string | undefined;
     completedBy?: string | undefined;
-    reference?: string | undefined;
-    completedAt?: string | null | undefined;
 }, {
     createdAt: string;
     updatedAt: string;
+    completedAt?: string | null | undefined;
     id?: string | undefined;
+    active?: boolean | undefined;
+    reference?: string | undefined;
     createdBy?: string | undefined;
     updatedBy?: string | undefined;
     completedBy?: string | undefined;
-    active?: boolean | undefined;
-    reference?: string | undefined;
-    completedAt?: string | null | undefined;
 }>;
 /**
  * Partial schema for flexible transaction creation
@@ -77,17 +77,17 @@ export declare const PartialTransactionRecordSchema: z.ZodObject<{
     active: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodBoolean>>>;
     reference: z.ZodOptional<z.ZodOptional<z.ZodString>>;
 }, "strip", z.ZodTypeAny, {
+    createdAt?: string | undefined;
+    updatedAt?: string | undefined;
+    completedAt?: string | null | undefined;
     id?: string | undefined;
     active?: boolean | undefined;
     reference?: string | undefined;
-    completedAt?: string | null | undefined;
-    createdAt?: string | undefined;
-    updatedAt?: string | undefined;
 }, {
+    createdAt?: string | undefined;
+    updatedAt?: string | undefined;
+    completedAt?: string | null | undefined;
     id?: string | undefined;
     active?: boolean | undefined;
     reference?: string | undefined;
-    completedAt?: string | null | undefined;
-    createdAt?: string | undefined;
-    updatedAt?: string | undefined;
 }>;

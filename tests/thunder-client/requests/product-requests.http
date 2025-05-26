@@ -1,0 +1,75 @@
+### Product Management Requests
+
+# Variables
+@baseUrl = http://localhost:3001/api
+@authToken = your-jwt-token-here
+@productId = product-id-here
+@categoryId = category-id-here
+
+### Get all products
+GET {{baseUrl}}/products
+
+### Get all products with query parameters
+GET {{baseUrl}}/products?category={{categoryId}}&available=true&limit=10
+
+### Get product by ID
+GET {{baseUrl}}/products/{{productId}}
+
+### Create pizza product (requires authentication)
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Margherita Pizza",
+  "description": "Classic pizza with tomato sauce, mozzarella, and fresh basil",
+  "price": 12.99,
+  "categoryId": "{{categoryId}}",
+  "available": true,
+  "ingredients": ["tomato sauce", "mozzarella", "basil"],
+  "allergens": ["dairy", "gluten"]
+}
+
+### Create beverage product (requires authentication)
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Coca Cola",
+  "description": "Classic soft drink",
+  "price": 2.50,
+  "categoryId": "{{categoryId}}",
+  "available": true,
+  "size": "330ml"
+}
+
+### Create dessert product (requires authentication)
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Tiramisu",
+  "description": "Traditional Italian dessert with coffee and mascarpone",
+  "price": 6.99,
+  "categoryId": "{{categoryId}}",
+  "available": true,
+  "allergens": ["dairy", "eggs", "gluten"]
+}
+
+### Update product (requires authentication)
+PUT {{baseUrl}}/products/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Updated Pizza Name",
+  "description": "Updated description",
+  "price": 14.99,
+  "available": false
+}
+
+### Delete product (requires authentication)
+DELETE {{baseUrl}}/products/{{productId}}
+Authorization: Bearer {{authToken}} 

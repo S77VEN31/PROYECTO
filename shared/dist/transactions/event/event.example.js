@@ -4,7 +4,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateEventExample = exports.createEventExample = exports.orderCancelledEvent = exports.orderCompletedEvent = exports.orderInProgressEvent = exports.newOrderEvent = void 0;
-const enums_1 = require("@shared/enums");
+const enums_1 = require("../../enums");
 /**
  * Example of a new order event
  */

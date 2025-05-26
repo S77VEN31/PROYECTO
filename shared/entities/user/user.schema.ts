@@ -63,26 +63,17 @@ export const GetUserRequestSchema = z.object({
 });
 
 export const CreateUserRequestSchema = z.object({
-  user: z.object({
-    firstName: z.string().min(1).max(50),
-    lastName: z.string().min(1).max(50),
-    email: z.string().email(),
-    password: z.string().min(6),
-    role: z.nativeEnum(UserRole).optional(),
-    active: z.boolean().optional().default(true),
-  }),
+  name: z.string().min(1).max(100),
+  email: z.string().email(),
   password: z.string().min(6),
+  role: z.nativeEnum(UserRole).optional().default(UserRole.SERVER),
 });
 
 export const UpdateUserRequestSchema = z.object({
-  id: z.string().uuid(),
-  user: z.object({
-    firstName: z.string().min(1).max(50).optional(),
-    lastName: z.string().min(1).max(50).optional(),
-    email: z.string().email().optional(),
-    role: z.nativeEnum(UserRole).optional(),
-    active: z.boolean().optional(),
-  }),
+  name: z.string().min(1).max(100).optional(),
+  email: z.string().email().optional(),
+  role: z.nativeEnum(UserRole).optional(),
+  active: z.boolean().optional(),
 });
 
 export const DeleteUserRequestSchema = z.object({

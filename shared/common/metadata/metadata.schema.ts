@@ -2,8 +2,8 @@
  * @fileoverview Schemas for metadata-related types
  */
 
-import { SeoMetadata } from "@shared/common";
 import { z } from "zod";
+import { SeoMetadata } from "./metadata.d";
 
 /**
  * Schema for SEO metadata
