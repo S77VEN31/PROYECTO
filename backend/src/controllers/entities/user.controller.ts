@@ -87,17 +87,14 @@ export const getUserById = async (
  */
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, role } = req.body;
-
-    // Get user ID from authenticated request
-    const creatorId = req.user?.id;
+    const { name, email, password, role, description } = req.body;
 
     const newUser = await UserService.create({
       name,
       email,
       password,
       role,
-      createdBy: creatorId,
+      description,
     });
 
     return res.status(201).json({
@@ -139,7 +136,6 @@ export const updateUser = async (
 
     const updatedUser = await UserService.update(id, {
       ...user,
-      updatedBy: updaterId,
     });
 
     return res.status(200).json({

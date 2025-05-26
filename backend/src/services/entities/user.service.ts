@@ -8,6 +8,7 @@ import {
   AuthResponse,
   PaginatedResponse,
   User,
+  UserCreate,
   UserFilterOptions,
   UserUpdate,
 } from "colori-platform-shared";
@@ -50,64 +51,56 @@ export class UserService {
   /**
    * Create a new user
    */
-  static async create(data: {
-    name: string;
-    email: string;
-    password: string;
-    role?: string;
-    createdBy?: string;
-  }): Promise<User> {
-    try {
-      // Split name into firstName and lastName for the model
-      const nameParts = data.name.trim().split(" ");
-      const firstName = nameParts[0] || "";
-      const lastName = nameParts.slice(1).join(" ") || "";
+  static async create(data: UserCreate): Promise<User> {
+    {
+      try {
+        // Split name into firstName and lastName for the model
+        const nameParts = data.name.trim().split(" ");
+        const firstName = nameParts[0] || "";
+        const lastName = nameParts.slice(1).join(" ") || "";
 
-      const newUser = new UserModel({
-        name: data.name,
-        description: `User profile for ${data.name}`,
-        firstName,
-        lastName,
-        email: data.email,
-        password: data.password,
-        role: data.role,
-        active: true,
-        createdBy: data.createdBy,
-      });
+        const newUser = new UserModel({
+          name: data.name,
+          description: `User profile for ${data.name}`,
+          firstName,
+          lastName,
+          email: data.email,
+          password: data.password,
+          role: data.role,
+          active: true,
+        });
 
-      const savedUser = (await newUser.save()) as User;
+        const savedUser = (await newUser.save()) as User;
 
-      // Convert to User format (excluding password)
+        // Convert to User format (excluding password)
 
-      return {
-        id: savedUser.id,
-        name: savedUser.name,
-        description: savedUser.description,
-        slug: savedUser.slug,
-        firstName: savedUser.firstName,
-        lastName: savedUser.lastName,
-        email: savedUser.email,
-        role: savedUser.role,
-        active: savedUser.active,
-        createdAt: savedUser.createdAt,
-        updatedAt: savedUser.updatedAt,
-        lastLogin: savedUser.lastLogin || null,
-      } as User;
-    } catch (error: any) {
-      if (error.code === 11000) {
-        throw new Error("Email already exists");
+        return {
+          id: savedUser.id,
+          name: savedUser.name,
+          description: savedUser.description,
+          slug: savedUser.slug,
+          firstName: savedUser.firstName,
+          lastName: savedUser.lastName,
+          email: savedUser.email,
+          role: savedUser.role,
+          active: savedUser.active,
+          createdAt: savedUser.createdAt,
+          updatedAt: savedUser.updatedAt,
+          lastLogin: savedUser.lastLogin || null,
+        } as User;
+      } catch (error: any) {
+        if (error.code === 11000) {
+          throw new Error("Email already exists");
+        }
+        throw new Error(`Failed to create user: ${error.message}`);
       }
-      throw new Error(`Failed to create user: ${error.message}`);
     }
   }
 
   /**
    * Update an existing user
    */
-  static async update(
-    id: string,
-    data: UserUpdate & { updatedBy?: string }
-  ): Promise<User> {
+  static async update(id: string, data: UserUpdate): Promise<User> {
     // TODO: Implement actual database interaction
     // Mock implementation for now
     return {
