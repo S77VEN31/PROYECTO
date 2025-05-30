@@ -1,11 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrderStatus = void 0;
 /**
  * Order processing stages in the system
  * @enum {string}
  */
-var OrderStatus;
+export var OrderStatus;
 (function (OrderStatus) {
     /**
      * Order has been created but processing has not started
@@ -23,5 +20,5 @@ var OrderStatus;
      * Order has been terminated before completion
      */
     OrderStatus["CANCELLED"] = "cancelled";
-})(OrderStatus || (exports.OrderStatus = OrderStatus = {}));
+})(OrderStatus || (OrderStatus = {}));
 //# sourceMappingURL=order-status.enum.js.map

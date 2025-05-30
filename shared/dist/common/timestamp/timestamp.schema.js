@@ -1,28 +1,25 @@
-"use strict";
 /**
  * @fileoverview Schemas for timestamp-related types
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CompletableTimestampSchema = exports.TimestampFieldSchema = exports.TimeStampsSchema = void 0;
-const zod_1 = require("zod");
+import { z } from "zod";
 /**
  * Schema for timestamp fields present in all entities
  */
-exports.TimeStampsSchema = zod_1.z.object({
-    createdAt: zod_1.z.string().datetime(),
-    updatedAt: zod_1.z.string().datetime(),
+export const TimeStampsSchema = z.object({
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
 });
 /**
  * Schema for timestamp field
  */
-exports.TimestampFieldSchema = zod_1.z.union([
-    zod_1.z.string().datetime(),
-    zod_1.z.date(),
+export const TimestampFieldSchema = z.union([
+    z.string().datetime(),
+    z.date(),
 ]);
 /**
  * Schema for entities that track completion time
  */
-exports.CompletableTimestampSchema = zod_1.z.object({
-    completedAt: zod_1.z.string().datetime().nullable().optional(),
+export const CompletableTimestampSchema = z.object({
+    completedAt: z.string().datetime().nullable().optional(),
 });
 //# sourceMappingURL=timestamp.schema.js.map

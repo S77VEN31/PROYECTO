@@ -19,6 +19,7 @@ import {
   Percent,
   Settings,
   ShoppingCart,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -82,6 +83,14 @@ export function AdminMobileNav() {
                   href="/admin"
                   label="Dashboard"
                   icon={<BarChart3 className="h-4 w-4" />}
+                  onClose={() => {}}
+                />
+              </li>
+              <li>
+                <MobileLink
+                  href="/admin/users"
+                  label="Usuarios"
+                  icon={<Users className="h-4 w-4" />}
                   onClose={() => {}}
                 />
               </li>

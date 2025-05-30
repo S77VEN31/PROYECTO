@@ -1,29 +1,26 @@
-"use strict";
 /**
  * Base transaction schemas for the application
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PartialTransactionRecordSchema = exports.AuditableTransactionSchema = exports.TransactionRecordSchema = void 0;
-const common_1 = require("../../common");
-const zod_1 = require("zod");
+import { CompletableTimestampSchema, TimeStampsSchema } from "../../common";
+import { z } from "zod";
 /**
  * Schema for core transaction properties
  */
-exports.TransactionRecordSchema = common_1.TimeStampsSchema.merge(common_1.CompletableTimestampSchema).extend({
-    id: zod_1.z.string().uuid().optional(),
-    active: zod_1.z.boolean().optional().default(true),
-    reference: zod_1.z.string().optional(),
+export const TransactionRecordSchema = TimeStampsSchema.merge(CompletableTimestampSchema).extend({
+    id: z.string().uuid().optional(),
+    active: z.boolean().optional().default(true),
+    reference: z.string().optional(),
 });
 /**
  * Schema for auditable transaction with user tracking
  */
-exports.AuditableTransactionSchema = exports.TransactionRecordSchema.extend({
-    createdBy: zod_1.z.string().uuid().optional(),
-    updatedBy: zod_1.z.string().uuid().optional(),
-    completedBy: zod_1.z.string().uuid().optional(),
+export const AuditableTransactionSchema = TransactionRecordSchema.extend({
+    createdBy: z.string().uuid().optional(),
+    updatedBy: z.string().uuid().optional(),
+    completedBy: z.string().uuid().optional(),
 });
 /**
  * Partial schema for flexible transaction creation
  */
-exports.PartialTransactionRecordSchema = exports.TransactionRecordSchema.partial();
+export const PartialTransactionRecordSchema = TransactionRecordSchema.partial();
 //# sourceMappingURL=transaction.schema.js.map

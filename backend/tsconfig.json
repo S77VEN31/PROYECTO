@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ES2020",
+    "moduleResolution": "node",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
@@ -12,6 +13,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "composite": true,
+    "forceConsistentCasingInFileNames": true,
     "paths": {
       "@/*": ["src/*"],
       "@middlewares": ["src/middlewares"],
@@ -19,13 +21,20 @@
       "@services": ["src/services"],
       "@controllers": ["src/controllers"],
       "@config": ["src/config"],
-      "colori-platform-shared": ["../shared"]
-    
+      "colori-platform-shared": ["../shared/dist"]
     }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../shared" }
-  ]
+  ],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node",
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "ES2020"
+    }
+  }
 } 

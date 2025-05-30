@@ -1,72 +1,69 @@
-"use strict";
 /**
  * Schemas for Order transactions
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrderUpdateSchema = exports.OrderCreateSchema = exports.OrderSchema = exports.OrderTransactionSchema = exports.OrderToppingSchema = exports.OrderProductSchema = void 0;
-const common_1 = require("../../common");
-const enums_1 = require("../../enums");
-const zod_1 = require("zod");
-const transaction_schema_1 = require("../transaction/transaction.schema");
+import { PaymentFinancialSchema } from "../../common";
+import { OrderStatus, PaymentMethod } from "../../enums";
+import { z } from "zod";
+import { AuditableTransactionSchema } from "../transaction/transaction.schema";
 /**
  * Schema for individual menu item within an order
  */
-exports.OrderProductSchema = zod_1.z.object({
-    productId: zod_1.z.string().uuid(),
-    quantity: zod_1.z.number().int().positive(),
-    specialInstructions: zod_1.z.string().optional(),
-    toppings: zod_1.z.array(zod_1.z.string()).optional(),
+export const OrderProductSchema = z.object({
+    productId: z.string().uuid(),
+    quantity: z.number().int().positive(),
+    specialInstructions: z.string().optional(),
+    toppings: z.array(z.string()).optional(),
 });
 /**
  * Schema for product toppings
  */
-exports.OrderToppingSchema = zod_1.z.object({
-    id: zod_1.z.string().uuid(),
-    name: zod_1.z.string(),
-    price: zod_1.z.number().nonnegative(),
-    active: zod_1.z.boolean().optional().default(true),
+export const OrderToppingSchema = z.object({
+    id: z.string().uuid(),
+    name: z.string(),
+    price: z.number().nonnegative(),
+    active: z.boolean().optional().default(true),
 });
 /**
  * Schema for core order information
  */
-exports.OrderTransactionSchema = transaction_schema_1.AuditableTransactionSchema.extend({
-    customerName: zod_1.z.string(),
-    tableNumber: zod_1.z.number().int().positive(),
-    products: zod_1.z.array(exports.OrderProductSchema),
-    status: zod_1.z.nativeEnum(enums_1.OrderStatus),
+export const OrderTransactionSchema = AuditableTransactionSchema.extend({
+    customerName: z.string(),
+    tableNumber: z.number().int().positive(),
+    products: z.array(OrderProductSchema),
+    status: z.nativeEnum(OrderStatus),
 });
 /**
  * Schema for complete order representation
  */
-exports.OrderSchema = exports.OrderTransactionSchema.merge(common_1.PaymentFinancialSchema).extend({
-    id: zod_1.z.string().uuid(),
+export const OrderSchema = OrderTransactionSchema.merge(PaymentFinancialSchema).extend({
+    id: z.string().uuid(),
 });
 /**
  * Schema for order creation
  */
-exports.OrderCreateSchema = zod_1.z.object({
-    customerName: zod_1.z.string(),
-    tableNumber: zod_1.z.number().int().positive(),
-    products: zod_1.z.array(exports.OrderProductSchema),
-    subtotal: zod_1.z.number().nonnegative().optional(),
-    tax: zod_1.z.number().nonnegative().optional(),
-    total: zod_1.z.number().nonnegative().optional(),
-    tip: zod_1.z.number().nonnegative().nullable().optional(),
-    paymentMethod: zod_1.z.nativeEnum(enums_1.PaymentMethod).nullable().optional(),
-    status: zod_1.z.nativeEnum(enums_1.OrderStatus).optional().default(enums_1.OrderStatus.PENDING),
+export const OrderCreateSchema = z.object({
+    customerName: z.string(),
+    tableNumber: z.number().int().positive(),
+    products: z.array(OrderProductSchema),
+    subtotal: z.number().nonnegative().optional(),
+    tax: z.number().nonnegative().optional(),
+    total: z.number().nonnegative().optional(),
+    tip: z.number().nonnegative().nullable().optional(),
+    paymentMethod: z.nativeEnum(PaymentMethod).nullable().optional(),
+    status: z.nativeEnum(OrderStatus).optional().default(OrderStatus.PENDING),
 });
 /**
  * Schema for order updates
  */
-exports.OrderUpdateSchema = zod_1.z.object({
-    status: zod_1.z.nativeEnum(enums_1.OrderStatus),
-    customerName: zod_1.z.string().optional(),
-    tableNumber: zod_1.z.number().int().positive().optional(),
-    products: zod_1.z.array(exports.OrderProductSchema).optional(),
-    subtotal: zod_1.z.number().nonnegative().optional(),
-    tax: zod_1.z.number().nonnegative().optional(),
-    total: zod_1.z.number().nonnegative().optional(),
-    tip: zod_1.z.number().nonnegative().nullable().optional(),
-    paymentMethod: zod_1.z.nativeEnum(enums_1.PaymentMethod).nullable().optional(),
+export const OrderUpdateSchema = z.object({
+    status: z.nativeEnum(OrderStatus),
+    customerName: z.string().optional(),
+    tableNumber: z.number().int().positive().optional(),
+    products: z.array(OrderProductSchema).optional(),
+    subtotal: z.number().nonnegative().optional(),
+    tax: z.number().nonnegative().optional(),
+    total: z.number().nonnegative().optional(),
+    tip: z.number().nonnegative().nullable().optional(),
+    paymentMethod: z.nativeEnum(PaymentMethod).nullable().optional(),
 });
 //# sourceMappingURL=order.schema.js.map

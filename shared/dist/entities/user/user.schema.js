@@ -1,73 +1,70 @@
-"use strict";
 /**
  * Schemas for User entities
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.LoginRequestSchema = exports.DeleteUserRequestSchema = exports.UpdateUserRequestSchema = exports.CreateUserRequestSchema = exports.GetUserRequestSchema = exports.UserUpdateSchema = exports.UserCreateSchema = exports.UserSchema = exports.UserBaseSchema = void 0;
-const entities_1 = require("../../entities");
-const enums_1 = require("../../enums");
-const zod_1 = require("zod");
+import { EntityMetadataSchema, } from "../../entities";
+import { UserRole } from "../../enums";
+import { z } from "zod";
 /**
  * Schema for core user profile information
  */
-exports.UserBaseSchema = entities_1.EntityMetadataSchema.extend({
-    firstName: zod_1.z.string().min(1).max(50),
-    lastName: zod_1.z.string().min(1).max(50),
-    email: zod_1.z.string().email(),
-    role: zod_1.z.nativeEnum(enums_1.UserRole),
-    lastLogin: zod_1.z.string().datetime(),
-    password: zod_1.z.string().min(6),
+export const UserBaseSchema = EntityMetadataSchema.extend({
+    firstName: z.string().min(1).max(50),
+    lastName: z.string().min(1).max(50),
+    email: z.string().email(),
+    role: z.nativeEnum(UserRole),
+    lastLogin: z.string().datetime(),
+    password: z.string().min(6),
 });
 /**
  * Schema for complete user representation
  */
-exports.UserSchema = exports.UserBaseSchema.omit({
+export const UserSchema = UserBaseSchema.omit({
     password: true,
 }).extend({
-    id: zod_1.z.string().uuid(),
+    id: z.string().uuid(),
 });
 /**
  * Schema for user creation
  */
-exports.UserCreateSchema = zod_1.z.object({
-    firstName: zod_1.z.string().min(1).max(50),
-    lastName: zod_1.z.string().min(1).max(50),
-    email: zod_1.z.string().email(),
-    role: zod_1.z.nativeEnum(enums_1.UserRole).optional(),
-    name: zod_1.z.string().min(1).max(100),
-    description: zod_1.z.string().min(1),
-    password: zod_1.z.string().min(6),
+export const UserCreateSchema = z.object({
+    firstName: z.string().min(1).max(50),
+    lastName: z.string().min(1).max(50),
+    email: z.string().email(),
+    role: z.nativeEnum(UserRole).optional(),
+    name: z.string().min(1).max(100),
+    description: z.string().min(1),
+    password: z.string().min(6),
 });
 /**
  * Schema for user updates
  */
-exports.UserUpdateSchema = exports.UserBaseSchema.omit({
+export const UserUpdateSchema = UserBaseSchema.omit({
     id: true,
     password: true,
 }).partial();
 /**
  * User request validation schemas
  */
-exports.GetUserRequestSchema = zod_1.z.object({
-    id: zod_1.z.string().uuid(),
+export const GetUserRequestSchema = z.object({
+    id: z.string().uuid(),
 });
-exports.CreateUserRequestSchema = zod_1.z.object({
-    name: zod_1.z.string().min(1).max(100),
-    email: zod_1.z.string().email(),
-    password: zod_1.z.string().min(6),
-    role: zod_1.z.nativeEnum(enums_1.UserRole).optional().default(enums_1.UserRole.SERVER),
+export const CreateUserRequestSchema = z.object({
+    name: z.string().min(1).max(100),
+    email: z.string().email(),
+    password: z.string().min(6),
+    role: z.nativeEnum(UserRole).optional().default(UserRole.SERVER),
 });
-exports.UpdateUserRequestSchema = zod_1.z.object({
-    name: zod_1.z.string().min(1).max(100).optional(),
-    email: zod_1.z.string().email().optional(),
-    role: zod_1.z.nativeEnum(enums_1.UserRole).optional(),
-    active: zod_1.z.boolean().optional(),
+export const UpdateUserRequestSchema = z.object({
+    name: z.string().min(1).max(100).optional(),
+    email: z.string().email().optional(),
+    role: z.nativeEnum(UserRole).optional(),
+    active: z.boolean().optional(),
 });
-exports.DeleteUserRequestSchema = zod_1.z.object({
-    id: zod_1.z.string().uuid(),
+export const DeleteUserRequestSchema = z.object({
+    id: z.string().uuid(),
 });
-exports.LoginRequestSchema = zod_1.z.object({
-    email: zod_1.z.string().email(),
-    password: zod_1.z.string().min(6),
+export const LoginRequestSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(6),
 });
 //# sourceMappingURL=user.schema.js.map

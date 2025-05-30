@@ -1,94 +1,91 @@
-"use strict";
 /**
  * Schemas for Product entities
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DeleteProductRequestSchema = exports.UpdateProductRequestSchema = exports.CreateProductRequestSchema = exports.GetProductRequestSchema = exports.ProductUpdateSchema = exports.ProductCreateSchema = exports.ProductSchema = exports.ProductBaseSchema = exports.NutritionalInfoSchema = void 0;
-const common_1 = require("../../common");
-const entities_1 = require("../../entities");
-const zod_1 = require("zod");
+import { ImageSchema } from "../../common";
+import { EntityMetadataSchema, } from "../../entities";
+import { z } from "zod";
 /**
  * Schema for nutritional information
  */
-exports.NutritionalInfoSchema = zod_1.z.object({
-    calories: zod_1.z.number().nonnegative().optional(),
-    protein: zod_1.z.number().nonnegative().optional(),
-    carbs: zod_1.z.number().nonnegative().optional(),
-    fat: zod_1.z.number().nonnegative().optional(),
-    allergens: zod_1.z.array(zod_1.z.string()).optional(),
+export const NutritionalInfoSchema = z.object({
+    calories: z.number().nonnegative().optional(),
+    protein: z.number().nonnegative().optional(),
+    carbs: z.number().nonnegative().optional(),
+    fat: z.number().nonnegative().optional(),
+    allergens: z.array(z.string()).optional(),
 });
 /**
  * Schema for core product information
  */
-exports.ProductBaseSchema = entities_1.EntityMetadataSchema.extend({
-    price: zod_1.z.number().positive(),
-    longDescription: zod_1.z.string().optional(),
-    tags: zod_1.z.array(zod_1.z.string()).optional(),
-    nutritionalInfo: exports.NutritionalInfoSchema.optional(),
-    preparationTime: zod_1.z.number().nonnegative().optional(),
+export const ProductBaseSchema = EntityMetadataSchema.extend({
+    price: z.number().positive(),
+    longDescription: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    nutritionalInfo: NutritionalInfoSchema.optional(),
+    preparationTime: z.number().nonnegative().optional(),
 });
 /**
  * Schema for complete product representation
  */
-exports.ProductSchema = exports.ProductBaseSchema.extend({
-    id: zod_1.z.string().uuid(),
+export const ProductSchema = ProductBaseSchema.extend({
+    id: z.string().uuid(),
 });
 /**
  * Schema for product creation
  */
-exports.ProductCreateSchema = zod_1.z.object({
-    name: zod_1.z.string().min(1).max(100),
-    description: zod_1.z.string().min(1),
-    price: zod_1.z.number().positive(),
-    longDescription: zod_1.z.string().optional(),
-    tags: zod_1.z.array(zod_1.z.string()).optional(),
-    nutritionalInfo: exports.NutritionalInfoSchema.optional(),
-    preparationTime: zod_1.z.number().nonnegative().optional(),
-    slug: zod_1.z.string().optional(),
-    backgroundImages: zod_1.z.array(common_1.ImageSchema).optional(),
+export const ProductCreateSchema = z.object({
+    name: z.string().min(1).max(100),
+    description: z.string().min(1),
+    price: z.number().positive(),
+    longDescription: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    nutritionalInfo: NutritionalInfoSchema.optional(),
+    preparationTime: z.number().nonnegative().optional(),
+    slug: z.string().optional(),
+    backgroundImages: z.array(ImageSchema).optional(),
 });
 /**
  * Schema for product updates
  */
-exports.ProductUpdateSchema = exports.ProductBaseSchema.omit({
+export const ProductUpdateSchema = ProductBaseSchema.omit({
     id: true,
 }).partial();
 /**
  * Product request validation schemas
  */
-exports.GetProductRequestSchema = zod_1.z.object({
-    id: zod_1.z.string().uuid(),
+export const GetProductRequestSchema = z.object({
+    id: z.string().uuid(),
 });
-exports.CreateProductRequestSchema = zod_1.z.object({
-    product: zod_1.z.object({
-        name: zod_1.z.string().min(2).max(100),
-        description: zod_1.z.string().min(1),
-        price: zod_1.z.number().positive(),
-        longDescription: zod_1.z.string().optional(),
-        tags: zod_1.z.array(zod_1.z.string()).optional(),
-        nutritionalInfo: exports.NutritionalInfoSchema.optional(),
-        category: zod_1.z.string().uuid().optional(),
-        preparationTime: zod_1.z.number().int().positive().optional(),
-        images: zod_1.z.array(zod_1.z.string().url()).optional(),
-        active: zod_1.z.boolean().optional().default(true),
+export const CreateProductRequestSchema = z.object({
+    product: z.object({
+        name: z.string().min(2).max(100),
+        description: z.string().min(1),
+        price: z.number().positive(),
+        longDescription: z.string().optional(),
+        tags: z.array(z.string()).optional(),
+        nutritionalInfo: NutritionalInfoSchema.optional(),
+        category: z.string().uuid().optional(),
+        preparationTime: z.number().int().positive().optional(),
+        images: z.array(z.string().url()).optional(),
+        active: z.boolean().optional().default(true),
     }),
 });
-exports.UpdateProductRequestSchema = zod_1.z.object({
-    id: zod_1.z.string().uuid(),
-    product: zod_1.z.object({
-        name: zod_1.z.string().min(2).max(100).optional(),
-        description: zod_1.z.string().min(1).optional(),
-        price: zod_1.z.number().positive().optional(),
-        longDescription: zod_1.z.string().optional(),
-        tags: zod_1.z.array(zod_1.z.string()).optional(),
-        nutritionalInfo: exports.NutritionalInfoSchema.optional(),
-        category: zod_1.z.string().uuid().optional(),
-        preparationTime: zod_1.z.number().int().positive().optional(),
-        images: zod_1.z.array(zod_1.z.string().url()).optional(),
-        active: zod_1.z.boolean().optional(),
+export const UpdateProductRequestSchema = z.object({
+    id: z.string().uuid(),
+    product: z.object({
+        name: z.string().min(2).max(100).optional(),
+        description: z.string().min(1).optional(),
+        price: z.number().positive().optional(),
+        longDescription: z.string().optional(),
+        tags: z.array(z.string()).optional(),
+        nutritionalInfo: NutritionalInfoSchema.optional(),
+        category: z.string().uuid().optional(),
+        preparationTime: z.number().int().positive().optional(),
+        images: z.array(z.string().url()).optional(),
+        active: z.boolean().optional(),
     }),
 });
-exports.DeleteProductRequestSchema = zod_1.z.object({
-    id: zod_1.z.string().uuid(),
+export const DeleteProductRequestSchema = z.object({
+    id: z.string().uuid(),
 });
 //# sourceMappingURL=product.schema.js.map

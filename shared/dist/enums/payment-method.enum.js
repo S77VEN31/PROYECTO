@@ -1,11 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PaymentMethod = void 0;
 /**
  * Supported payment methods available in the system
  * @enum {string}
  */
-var PaymentMethod;
+export var PaymentMethod;
 (function (PaymentMethod) {
     /**
      * Cash payment
@@ -23,5 +20,5 @@ var PaymentMethod;
      * Mobile payment methods (Apple Pay, Google Pay, etc.)
      */
     PaymentMethod["MOBILE_PAYMENT"] = "mobile-payment";
-})(PaymentMethod || (exports.PaymentMethod = PaymentMethod = {}));
+})(PaymentMethod || (PaymentMethod = {}));
 //# sourceMappingURL=payment-method.enum.js.map

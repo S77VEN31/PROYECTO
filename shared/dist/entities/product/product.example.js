@@ -1,10 +1,7 @@
-"use strict";
 /**
  * @fileoverview Example usage of Product types
  * Demonstrates data modeling with product objects
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.productUpdateModel = exports.productModel = exports.nutritionalInfoModel = exports.newProductModel = exports.minimalProductModel = void 0;
 /**
  * Example of a nutritional information model
  */
@@ -15,7 +12,6 @@ const nutritionalInfoModel = {
     fat: 0,
     allergens: [],
 };
-exports.nutritionalInfoModel = nutritionalInfoModel;
 /**
  * Example of a product creation model
  */
@@ -28,7 +24,6 @@ const newProductModel = {
     nutritionalInfo: nutritionalInfoModel,
     preparationTime: 3,
 };
-exports.newProductModel = newProductModel;
 /**
  * Example of a complete product model as stored in the database
  */
@@ -47,14 +42,12 @@ const productModel = {
     updatedAt: "2023-08-15T10:00:00Z",
     searchTerm: "espresso coffee shot hot",
 };
-exports.productModel = productModel;
 /**
  * Example of a product update model
  */
 const productUpdateModel = {
     price: 4.0,
 };
-exports.productUpdateModel = productUpdateModel;
 /**
  * Example of a product with minimal properties
  */
@@ -63,5 +56,5 @@ const minimalProductModel = {
     description: "House blend filtered coffee",
     price: 2.5,
 };
-exports.minimalProductModel = minimalProductModel;
+export { minimalProductModel, newProductModel, nutritionalInfoModel, productModel, productUpdateModel, };
 //# sourceMappingURL=product.example.js.map

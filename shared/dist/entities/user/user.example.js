@@ -1,11 +1,8 @@
-"use strict";
 /**
  * @fileoverview Example usage of User types
  * Demonstrates data modeling with user objects
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.userUpdateModel = exports.userModel = exports.serverUserModel = exports.newUserModel = void 0;
-const enums_1 = require("../../enums");
+import { UserRole } from "../../enums";
 /**
  * Example of a user creation model
  */
@@ -16,10 +13,9 @@ const newUserModel = {
     lastName: "Smith",
     email: "john.smith@example.com",
     password: "password",
-    role: enums_1.UserRole.MANAGER,
+    role: UserRole.MANAGER,
     active: true,
 };
-exports.newUserModel = newUserModel;
 /**
  * Example of a complete user model as stored in the database
  */
@@ -30,22 +26,20 @@ const userModel = {
     firstName: "John",
     lastName: "Smith",
     email: "john.smith@example.com",
-    role: enums_1.UserRole.MANAGER,
+    role: UserRole.MANAGER,
     lastLogin: "2023-08-15T08:30:00Z",
     slug: "john-smith",
     active: true,
     createdAt: "2023-07-01T10:00:00Z",
     updatedAt: "2023-08-15T08:30:00Z",
 };
-exports.userModel = userModel;
 /**
  * Example of a user update model
  */
 const userUpdateModel = {
-    role: enums_1.UserRole.ADMIN,
+    role: UserRole.ADMIN,
     lastLogin: "2023-08-16T09:45:00Z",
 };
-exports.userUpdateModel = userUpdateModel;
 /**
  * Example of a user with different role
  */
@@ -55,9 +49,9 @@ const serverUserModel = {
     firstName: "Maria",
     lastName: "Garcia",
     email: "maria.garcia@example.com",
-    role: enums_1.UserRole.SERVER,
+    role: UserRole.SERVER,
     active: true,
     password: "password",
 };
-exports.serverUserModel = serverUserModel;
+export { newUserModel, serverUserModel, userModel, userUpdateModel };
 //# sourceMappingURL=user.example.js.map

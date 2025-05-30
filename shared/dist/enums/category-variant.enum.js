@@ -1,11 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CategoryVariant = void 0;
 /**
  * Visual styling options for category presentation
  * @enum {string}
  */
-var CategoryVariant;
+export var CategoryVariant;
 (function (CategoryVariant) {
     /**
      * Coffee-themed styling
@@ -31,5 +28,5 @@ var CategoryVariant;
      * Default styling theme
      */
     CategoryVariant["DEFAULT"] = "default";
-})(CategoryVariant || (exports.CategoryVariant = CategoryVariant = {}));
+})(CategoryVariant || (CategoryVariant = {}));
 //# sourceMappingURL=category-variant.enum.js.map

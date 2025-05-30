@@ -1,11 +1,8 @@
-"use strict";
 /**
  * @fileoverview Example usage of Order types
  * Demonstrates data modeling with order objects
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.orderUpdateModel = exports.orderProductsModel = exports.orderModel = exports.newOrderModel = exports.cancelledOrderModel = void 0;
-const enums_1 = require("../../enums");
+import { OrderStatus, PaymentMethod } from "../../enums";
 /**
  * Example of order product models
  */
@@ -20,7 +17,6 @@ const orderProductsModel = [
         quantity: 1,
     },
 ];
-exports.orderProductsModel = orderProductsModel;
 /**
  * Example of an order creation model
  */
@@ -29,7 +25,6 @@ const newOrderModel = {
     tableNumber: 5,
     products: orderProductsModel,
 };
-exports.newOrderModel = newOrderModel;
 /**
  * Example of a complete order model as stored in the database
  */
@@ -38,12 +33,12 @@ const orderModel = {
     customerName: "Sarah Johnson",
     tableNumber: 5,
     products: orderProductsModel,
-    status: enums_1.OrderStatus.IN_PROGRESS,
+    status: OrderStatus.IN_PROGRESS,
     subtotal: 12.5,
     tax: 1.25,
     total: 13.75,
     tip: 2.75,
-    paymentMethod: enums_1.PaymentMethod.CREDIT_CARD,
+    paymentMethod: PaymentMethod.CREDIT_CARD,
     active: true,
     createdAt: "2023-08-15T12:30:00Z",
     updatedAt: "2023-08-15T12:45:00Z",
@@ -51,21 +46,19 @@ const orderModel = {
     completedAt: undefined,
     completedBy: undefined,
 };
-exports.orderModel = orderModel;
 /**
  * Example of an order update model
  */
 const orderUpdateModel = {
-    status: enums_1.OrderStatus.COMPLETED,
+    status: OrderStatus.COMPLETED,
 };
-exports.orderUpdateModel = orderUpdateModel;
 /**
  * Example of a cancelled order model
  */
 const cancelledOrderModel = {
     ...orderModel,
     id: "order-78902",
-    status: enums_1.OrderStatus.CANCELLED,
+    status: OrderStatus.CANCELLED,
 };
-exports.cancelledOrderModel = cancelledOrderModel;
+export { cancelledOrderModel, newOrderModel, orderModel, orderProductsModel, orderUpdateModel, };
 //# sourceMappingURL=order.example.js.map

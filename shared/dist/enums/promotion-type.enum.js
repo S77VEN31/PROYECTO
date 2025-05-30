@@ -1,11 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PromotionType = void 0;
 /**
  * Promotional campaign classifications
  * @enum {string}
  */
-var PromotionType;
+export var PromotionType;
 (function (PromotionType) {
     /**
      * Direct price reduction promotion
@@ -31,5 +28,5 @@ var PromotionType;
      * Limited-time seasonal promotion
      */
     PromotionType["SEASONAL"] = "seasonal";
-})(PromotionType || (exports.PromotionType = PromotionType = {}));
+})(PromotionType || (PromotionType = {}));
 //# sourceMappingURL=promotion-type.enum.js.map

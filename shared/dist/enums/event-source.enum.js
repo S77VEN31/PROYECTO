@@ -1,11 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.EventSource = void 0;
 /**
  * Event sources in the system
  * @enum {string}
  */
-var EventSource;
+export var EventSource;
 (function (EventSource) {
     /**
      * Point-of-Sale system
@@ -35,5 +32,5 @@ var EventSource;
      * Core system components
      */
     EventSource["SYSTEM"] = "system";
-})(EventSource || (exports.EventSource = EventSource = {}));
+})(EventSource || (EventSource = {}));
 //# sourceMappingURL=event-source.enum.js.map

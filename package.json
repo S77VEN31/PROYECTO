@@ -1,5 +1,5 @@
 {
-  "name": "colori-platform",
+  "name": "colori-platform-monorepo",
   "version": "1.0.0",
   "private": true,
   "workspaces": [
@@ -8,19 +8,17 @@
     "frontend"
   ],
   "scripts": {
-    "build:shared": "cd shared && cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build",
-    "build:backend": "cd backend && cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build",
-    "build:frontend": "cd frontend && cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build",
-    "build": "npm run build:shared && npm run build:backend && npm run build:frontend",
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev"
-  },
-  "dependencies": {
-    "zod": "^3.25.17"
+    "build:shared": "cd shared && yarn build",
+    "build:backend": "cd backend && yarn build",
+    "build:frontend": "cd frontend && yarn build",
+    "build": "yarn build:shared && yarn build:backend && yarn build:frontend",
+    "dev:backend": "cd backend && yarn dev",
+    "dev:frontend": "cd frontend && yarn dev:legacy",
+    "dev": "concurrently \"yarn dev:backend\" \"yarn dev:frontend\"",
+    "install:all": "yarn install && cd shared && yarn install && cd ../backend && yarn install && cd ../frontend && yarn install",
+    "clean": "rm -rf shared/dist backend/dist frontend/.next"
   },
   "devDependencies": {
-    "concurrently": "^8.2.0",
-    "cross-env": "^7.0.3"
+    "concurrently": "^8.2.2"
   }
 }

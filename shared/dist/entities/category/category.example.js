@@ -1,11 +1,8 @@
-"use strict";
 /**
  * @fileoverview Example usage of Category types
  * Demonstrates data modeling with category objects
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.newCategoryModel = exports.minimalCategoryModel = exports.categoryUpdateModel = exports.categoryModel = void 0;
-const enums_1 = require("../../enums");
+import { CategoryVariant } from "../../enums";
 /**
  * Example of a category creation model
  */
@@ -16,9 +13,8 @@ const newCategoryModel = {
     icon: "coffee-cup",
     displayOrder: 1,
     products: [],
-    variant: enums_1.CategoryVariant.COFFEE,
+    variant: CategoryVariant.COFFEE,
 };
-exports.newCategoryModel = newCategoryModel;
 /**
  * Example of a complete category model as stored in the database
  */
@@ -30,13 +26,12 @@ const categoryModel = {
     icon: "coffee-cup",
     displayOrder: 1,
     products: ["prod-001", "prod-002", "prod-003"],
-    variant: enums_1.CategoryVariant.COFFEE,
+    variant: CategoryVariant.COFFEE,
     active: true,
     createdAt: "2023-08-15T10:30:00Z",
     updatedAt: "2023-08-15T10:30:00Z",
     searchTerm: "coffee espresso latte cappuccino",
 };
-exports.categoryModel = categoryModel;
 /**
  * Example of a category update model
  */
@@ -50,14 +45,13 @@ const categoryUpdateModel = {
         },
     ],
 };
-exports.categoryUpdateModel = categoryUpdateModel;
 /**
  * Example of a category with all optional properties
  */
 const minimalCategoryModel = {
     name: "Seasonal Specials",
     description: "Limited time seasonal offerings",
-    variant: enums_1.CategoryVariant.ORANGE,
+    variant: CategoryVariant.ORANGE,
 };
-exports.minimalCategoryModel = minimalCategoryModel;
+export { categoryModel, categoryUpdateModel, minimalCategoryModel, newCategoryModel, };
 //# sourceMappingURL=category.example.js.map

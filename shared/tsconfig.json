@@ -4,6 +4,7 @@
     "module": "ES2020",
     "moduleResolution": "node",
     "declaration": true,
+    "declarationMap": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
@@ -16,7 +17,8 @@
       "@shared/*": ["./*"]
     },
     "rootDir": ".",
-    "lib": ["ES2020", "DOM"]
+    "lib": ["ES2020", "DOM"],
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["**/*.ts", "**/*.d.ts", "index.ts"],
   "exclude": ["node_modules", "dist"]

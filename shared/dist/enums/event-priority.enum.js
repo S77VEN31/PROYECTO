@@ -1,11 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.EventPriority = void 0;
 /**
  * Priority levels for events in the system
  * @enum {number}
  */
-var EventPriority;
+export var EventPriority;
 (function (EventPriority) {
     /**
      * Low priority events, can be processed with delays
@@ -23,5 +20,5 @@ var EventPriority;
      * Critical priority for urgent operations that need immediate attention
      */
     EventPriority[EventPriority["CRITICAL"] = 3] = "CRITICAL";
-})(EventPriority || (exports.EventPriority = EventPriority = {}));
+})(EventPriority || (EventPriority = {}));
 //# sourceMappingURL=event-priority.enum.js.map

@@ -1,11 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserRole = void 0;
 /**
  * User role enumeration defining permission levels in the system
  * @enum {string}
  */
-var UserRole;
+export var UserRole;
 (function (UserRole) {
     /**
      * System administrator with full access to all features
@@ -27,5 +24,5 @@ var UserRole;
      * Staff member handling payment transactions
      */
     UserRole["CASHIER"] = "cashier";
-})(UserRole || (exports.UserRole = UserRole = {}));
+})(UserRole || (UserRole = {}));
 //# sourceMappingURL=user-roles.enum.js.map

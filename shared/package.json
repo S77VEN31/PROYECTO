@@ -2,11 +2,19 @@
   "name": "colori-platform-shared",
   "version": "1.0.0",
   "description": "Shared types and utilities for Colori platform",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "type": "commonjs",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
-    "build": "tsc && tsc-alias"
+    "build": "tsc && tsc-alias",
+    "postbuild": "node -e \"require('fs').copyFileSync('./dist/index.js', './dist/index.cjs')\""
   },
   "devDependencies": {
     "typescript": "^5.4.3",

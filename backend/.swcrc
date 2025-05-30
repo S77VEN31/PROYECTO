@@ -1,0 +1,23 @@
+{
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "tsx": false,
+      "decorators": true
+    },
+    "target": "es2020",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@middlewares": ["./src/middlewares"],
+      "@models": ["./src/models"],
+      "@services": ["./src/services"],
+      "@controllers": ["./src/controllers"],
+      "@config": ["./src/config"],
+      "colori-platform-shared": ["../shared/dist"]
+    }
+  },
+  "module": {
+    "type": "es6"
+  }
+} 

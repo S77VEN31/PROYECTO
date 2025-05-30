@@ -1,20 +1,17 @@
-"use strict";
 /**
  * Examples of event transactions
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateEventExample = exports.createEventExample = exports.orderCancelledEvent = exports.orderCompletedEvent = exports.orderInProgressEvent = exports.newOrderEvent = void 0;
-const enums_1 = require("../../enums");
+import { EventPriority, EventSource, OrderStatus } from "../../enums";
 /**
  * Example of a new order event
  */
-exports.newOrderEvent = {
+export const newOrderEvent = {
     id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    status: enums_1.OrderStatus.PENDING,
-    source: enums_1.EventSource.POS,
+    status: OrderStatus.PENDING,
+    source: EventSource.POS,
     orderId: "7fa85f64-5717-4562-b3fc-2c963f66a456",
     userId: "user-cashier1",
-    priority: enums_1.EventPriority.NORMAL,
+    priority: EventPriority.NORMAL,
     reference: "ORD-20230615-001",
     createdAt: "2023-06-15T14:30:00Z",
     updatedAt: "2023-06-15T14:30:00Z",
@@ -24,14 +21,14 @@ exports.newOrderEvent = {
 /**
  * Example of an order in-progress event
  */
-exports.orderInProgressEvent = {
+export const orderInProgressEvent = {
     id: "3fa85f64-5717-4562-b3fc-2c963f66afa9",
-    status: enums_1.OrderStatus.IN_PROGRESS,
-    source: enums_1.EventSource.KITCHEN_DISPLAY,
+    status: OrderStatus.IN_PROGRESS,
+    source: EventSource.KITCHEN_DISPLAY,
     orderId: "7fa85f64-5717-4562-b3fc-2c963f66a456",
-    previousStatus: enums_1.OrderStatus.PENDING,
+    previousStatus: OrderStatus.PENDING,
     userId: "user-cook1",
-    priority: enums_1.EventPriority.NORMAL,
+    priority: EventPriority.NORMAL,
     reference: "ORD-20230615-001",
     createdAt: "2023-06-15T14:40:00Z",
     updatedAt: "2023-06-15T14:40:00Z",
@@ -41,14 +38,14 @@ exports.orderInProgressEvent = {
 /**
  * Example of an order completed event
  */
-exports.orderCompletedEvent = {
+export const orderCompletedEvent = {
     id: "4fa85f64-5717-4562-b3fc-2c963f66afa7",
-    status: enums_1.OrderStatus.COMPLETED,
-    source: enums_1.EventSource.KITCHEN_DISPLAY,
+    status: OrderStatus.COMPLETED,
+    source: EventSource.KITCHEN_DISPLAY,
     orderId: "7fa85f64-5717-4562-b3fc-2c963f66a456",
-    previousStatus: enums_1.OrderStatus.IN_PROGRESS,
+    previousStatus: OrderStatus.IN_PROGRESS,
     userId: "user-cook1",
-    priority: enums_1.EventPriority.HIGH,
+    priority: EventPriority.HIGH,
     reference: "ORD-20230615-001",
     createdAt: "2023-06-15T15:35:00Z",
     updatedAt: "2023-06-15T15:35:00Z",
@@ -58,15 +55,15 @@ exports.orderCompletedEvent = {
 /**
  * Example of an order cancelled event
  */
-exports.orderCancelledEvent = {
+export const orderCancelledEvent = {
     id: "5fa85f64-5717-4562-b3fc-2c963f66afa8",
-    status: enums_1.OrderStatus.CANCELLED,
-    source: enums_1.EventSource.ADMIN_PORTAL,
+    status: OrderStatus.CANCELLED,
+    source: EventSource.ADMIN_PORTAL,
     orderId: "7fa85f64-5717-4562-b3fc-2c963f66a456",
-    previousStatus: enums_1.OrderStatus.PENDING,
+    previousStatus: OrderStatus.PENDING,
     userId: "user-manager1",
     reason: "Customer requested cancellation",
-    priority: enums_1.EventPriority.NORMAL,
+    priority: EventPriority.NORMAL,
     reference: "ORD-20230615-001",
     createdAt: "2023-06-15T16:00:00Z",
     updatedAt: "2023-06-15T16:00:00Z",
@@ -76,19 +73,19 @@ exports.orderCancelledEvent = {
 /**
  * Example of creating a new event
  */
-exports.createEventExample = {
-    status: enums_1.OrderStatus.PENDING,
-    source: enums_1.EventSource.POS,
+export const createEventExample = {
+    status: OrderStatus.PENDING,
+    source: EventSource.POS,
     orderId: "8fa85f64-5717-4562-b3fc-2c963f66a654",
     userId: "user-cashier2",
-    priority: enums_1.EventPriority.NORMAL,
+    priority: EventPriority.NORMAL,
     reference: "ORD-20230615-002",
 };
 /**
  * Example of updating an event status
  */
-exports.updateEventExample = {
-    previousStatus: enums_1.OrderStatus.PENDING,
+export const updateEventExample = {
+    previousStatus: OrderStatus.PENDING,
     userId: "user-manager1",
     completedAt: "2023-06-15T15:10:00Z",
     completedBy: "user-manager1",

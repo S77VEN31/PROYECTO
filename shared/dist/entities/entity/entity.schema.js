@@ -1,34 +1,31 @@
-"use strict";
 /**
  * Base entity schemas that define validation for all entity types
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PartialMetadataSchema = exports.FullMetadataSchema = exports.EntityMetadataSchema = exports.EntityBaseSchema = void 0;
-const common_1 = require("../../common");
-const zod_1 = require("zod");
+import { ImageSchema, SeoMetadataSchema, TimeStampsSchema, } from "../../common";
+import { z } from "zod";
 /**
  * Schema for basic entity properties
  */
-exports.EntityBaseSchema = common_1.TimeStampsSchema.extend({
-    id: zod_1.z.string().uuid().optional(),
-    name: zod_1.z.string().min(1).max(100),
-    description: zod_1.z.string().min(1),
-    active: zod_1.z.boolean().optional().default(true),
+export const EntityBaseSchema = TimeStampsSchema.extend({
+    id: z.string().uuid().optional(),
+    name: z.string().min(1).max(100),
+    description: z.string().min(1),
+    active: z.boolean().optional().default(true),
 });
 /**
  * Schema for entity metadata
  */
-exports.EntityMetadataSchema = exports.EntityBaseSchema.extend({
-    slug: zod_1.z.string().min(1),
-    searchTerm: zod_1.z.string().optional(),
-    backgroundImages: zod_1.z.array(common_1.ImageSchema).optional(),
+export const EntityMetadataSchema = EntityBaseSchema.extend({
+    slug: z.string().min(1),
+    searchTerm: z.string().optional(),
+    backgroundImages: z.array(ImageSchema).optional(),
 });
 /**
  * Schema for complete metadata including SEO properties
  */
-exports.FullMetadataSchema = exports.EntityMetadataSchema.merge(common_1.SeoMetadataSchema);
+export const FullMetadataSchema = EntityMetadataSchema.merge(SeoMetadataSchema);
 /**
  * Schema for creating entities with partial metadata
  */
-exports.PartialMetadataSchema = exports.EntityMetadataSchema.partial();
+export const PartialMetadataSchema = EntityMetadataSchema.partial();
 //# sourceMappingURL=entity.schema.js.map
