@@ -1,17 +1,20 @@
 /**
- * Authentication hook
- * Provides authentication state and methods with centralized logout handling
+ * Authentication Context
+ * Provides centralized authentication state management across the application
  */
+
+"use client";
 
 import { AuthApiService } from "@/api/entities/auth.api";
+import { setupApiInterceptors } from "@/api/interceptors";
 import { User } from "colori-platform-shared";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 /**
- * Authentication hook return type
+ * Authentication context type
  */
-interface UseAuthReturn {
+interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -22,10 +25,25 @@ interface UseAuthReturn {
 }
 
 /**
- * Custom hook for authentication management with centralized logout
- * @returns Authentication state and methods
+ * Authentication context
  */
-export function useAuth(): UseAuthReturn {
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+/**
+ * Authentication provider props
+ */
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+/**
+ * Authentication provider component
+ * @param props - Provider props
+ * @returns JSX element
+ */
+export function AuthProvider({
+  children,
+}: AuthProviderProps): React.JSX.Element {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,7 +57,7 @@ export function useAuth(): UseAuthReturn {
   };
 
   /**
-   * Initialize authentication state from localStorage and set up event listeners
+   * Initialize authentication state and set up event listeners
    */
   useEffect(() => {
     const initAuth = () => {
@@ -63,12 +81,15 @@ export function useAuth(): UseAuthReturn {
     // Initialize auth state
     initAuth();
 
+    // Setup API interceptors for automatic auth handling
+    setupApiInterceptors();
+
     // Set up centralized logout event listener
-    window.addEventListener('auth:logout', handleLogoutEvent);
+    window.addEventListener("auth:logout", handleLogoutEvent);
 
     // Cleanup event listener on unmount
     return () => {
-      window.removeEventListener('auth:logout', handleLogoutEvent);
+      window.removeEventListener("auth:logout", handleLogoutEvent);
     };
   }, [router]);
 
@@ -126,7 +147,7 @@ export function useAuth(): UseAuthReturn {
     setUser(currentUser);
   };
 
-  return {
+  const value: AuthContextType = {
     user,
     isAuthenticated: !!user && AuthApiService.isAuthenticated(),
     isLoading,
@@ -135,4 +156,19 @@ export function useAuth(): UseAuthReturn {
     refreshUser,
     forceLogout,
   };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+/**
+ * Hook to use authentication context
+ * @returns Authentication context
+ * @throws Error if used outside AuthProvider
+ */
+export function useAuthContext(): AuthContextType {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuthContext must be used within an AuthProvider");
+  }
+  return context;
 }

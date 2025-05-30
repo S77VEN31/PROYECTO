@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "strict": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
@@ -30,7 +31,7 @@
         "../shared/*"
       ],
       "colori-platform-shared": [
-        "../shared"
+        "../shared/dist"
       ]
     },
     "noEmit": true

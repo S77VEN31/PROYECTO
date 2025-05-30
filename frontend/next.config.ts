@@ -15,14 +15,24 @@ const nextConfig: NextConfig = {
     esmExternals: false,
   },
   webpack: (config) => {
-    // Handle the shared module properly
-    config.resolve.alias = {
-      ...config.resolve.alias,
+    // Remove any external handling for the shared module
+    // Let webpack process it normally
+
+    // Handle Node.js modules that don't work in the browser
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      path: false,
+      crypto: false,
+      os: false,
+      stream: false,
+      util: false,
     };
 
-    // Ensure proper handling of CommonJS modules
+    // Ensure proper handling of ES modules and CommonJS
     config.module.rules.push({
       test: /\.m?js$/,
+      type: "javascript/auto",
       resolve: {
         fullySpecified: false,
       },

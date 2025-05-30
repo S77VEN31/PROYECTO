@@ -1,6 +1,5 @@
 "use client";
 
-import { UserApiService } from "@/api/entities/user.api";
 import { Logo } from "@/components/common/Logo";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
@@ -12,8 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginRequest, LoginRequestSchema } from "colori-platform-shared";
+import { LoginRequestSchema } from "colori-platform-shared";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -24,6 +24,7 @@ type LoginFormData = z.infer<typeof LoginRequestSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,15 +49,13 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const loginRequest: LoginRequest = {
-        email: data.email,
-        password: data.password,
-      };
+      await login(data.email, data.password);
 
-      const authResponse = await UserApiService.login(loginRequest);
+      // Get user data from context after successful login
+      const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
 
       // Redirect based on user role
-      switch (authResponse.user.role) {
+      switch (userData.role) {
         case "admin":
           router.push("/admin");
           break;

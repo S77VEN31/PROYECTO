@@ -3,6 +3,7 @@
 import { ModeToggle } from "@/components/mode-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAuthContext } from "@/contexts/AuthContext";
 import {
   BarChart3,
   ClipboardList,
@@ -30,6 +31,7 @@ interface NavLink {
 
 export function Header({ variant, cartCount = 0 }: HeaderProps) {
   const pathname = usePathname();
+  const { logout, isLoading } = useAuthContext();
 
   const getNavLinks = (): NavLink[] => {
     switch (variant) {
@@ -137,6 +139,17 @@ export function Header({ variant, cartCount = 0 }: HeaderProps) {
     }
   };
 
+  /**
+   * Handle logout click
+   */
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 max-w-7xl flex h-16 items-center justify-between">
@@ -190,9 +203,13 @@ export function Header({ variant, cartCount = 0 }: HeaderProps) {
               variant="default"
               size="sm"
               className="flex items-center gap-2"
+              onClick={handleLogout}
+              disabled={isLoading}
             >
               <LogOut className="h-4 w-4 text-primary-foreground" />
-              <span className="hidden md:inline">Cerrar Sesión</span>
+              <span className="hidden md:inline">
+                {isLoading ? "Cerrando..." : "Cerrar Sesión"}
+              </span>
             </Button>
           )}
 
