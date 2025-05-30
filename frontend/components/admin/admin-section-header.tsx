@@ -12,12 +12,16 @@ export function AdminSectionHeader({
   icon,
 }: AdminSectionHeaderProps) {
   return (
-    <div className="flex items-center gap-3 mb-4">
-      {icon && <div className="text-primary">{icon}</div>}
-      <div>
-        <h2 className="text-xl font-semibold">{title}</h2>
+    <div className="flex items-start gap-3 mb-4">
+      {icon && (
+        <div className="text-primary flex-shrink-0 mt-1">
+          {icon}
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <h2 className="text-xl font-semibold text-foreground">{title}</h2>
         {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <p className="text-sm text-muted-foreground mt-1">{description}</p>
         )}
       </div>
     </div>

@@ -26,74 +26,151 @@ export class UserService {
   ): Promise<PaginatedResponse<User>> {
     const { page = 1, limit = 10, search, role } = options;
 
-    // TODO: Implement actual database interaction
-    // Mock implementation for now
-    const mockUsers: User[] = [];
+    try {
+      // Build query filters
+      const query: any = {};
 
-    return {
-      results: mockUsers,
-      total: mockUsers.length,
-      page,
-      limit,
-      pages: Math.ceil(mockUsers.length / limit),
-    };
+      // Add role filter if provided
+      if (role) {
+        query.role = role;
+      }
+
+      // Add search filter if provided (search in name, email, firstName, lastName)
+      if (search) {
+        query.$or = [
+          { name: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } },
+          { firstName: { $regex: search, $options: "i" } },
+          { lastName: { $regex: search, $options: "i" } },
+        ];
+      }
+
+      // Calculate pagination
+      const skip = (page - 1) * limit;
+
+      // Execute queries
+      const [users, total] = await Promise.all([
+        UserModel.find(query)
+          .select("-password") // Exclude password field
+          .sort({ createdAt: -1 }) // Sort by newest first
+          .skip(skip)
+          .limit(limit)
+          .lean(), // Use lean() for better performance
+        UserModel.countDocuments(query),
+      ]);
+
+      // Transform MongoDB documents to User format
+      const transformedUsers: User[] = users.map((user: any) => ({
+        id: user._id.toString(),
+        name: user.name,
+        description: user.description,
+        slug: user.slug,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+        active: user.active,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        lastLogin: user.lastLogin || null,
+      }));
+
+      return {
+        results: transformedUsers,
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      };
+    } catch (error: any) {
+      throw new Error(`Failed to fetch users: ${error.message}`);
+    }
   }
 
   /**
    * Find a single user by ID
    */
   static async findById(id: string): Promise<User | null> {
-    // TODO: Implement actual database interaction
-    // Mock implementation for now
-    return null;
+    try {
+      const user = await UserModel.findById(id).select("-password").lean();
+
+      if (!user) {
+        return null;
+      }
+
+      // Transform MongoDB document to User format
+      return {
+        id: user._id.toString(),
+        name: user.name,
+        description: user.description,
+        slug: user.slug,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+        active: user.active,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        lastLogin: user.lastLogin || null,
+      } as User;
+    } catch (error: any) {
+      throw new Error(`Failed to fetch user: ${error.message}`);
+    }
   }
 
   /**
    * Create a new user
    */
   static async create(data: UserCreate): Promise<User> {
-    {
-      try {
-        // Split name into firstName and lastName for the model
+    try {
+      // Use provided firstName/lastName or extract from name as fallback
+      let firstName = data.firstName;
+      let lastName = data.lastName;
+      
+      if (!firstName) {
         const nameParts = data.name.trim().split(" ");
-        const firstName = nameParts[0] || "";
-        const lastName = nameParts.slice(1).join(" ") || "";
-
-        const newUser = new UserModel({
-          name: data.name,
-          description: `User profile for ${data.name}`,
-          firstName,
-          lastName,
-          email: data.email,
-          password: data.password,
-          role: data.role,
-          active: true,
-        });
-
-        const savedUser = (await newUser.save()) as User;
-
-        // Convert to User format (excluding password)
-
-        return {
-          id: savedUser.id,
-          name: savedUser.name,
-          description: savedUser.description,
-          slug: savedUser.slug,
-          firstName: savedUser.firstName,
-          lastName: savedUser.lastName,
-          email: savedUser.email,
-          role: savedUser.role,
-          active: savedUser.active,
-          createdAt: savedUser.createdAt,
-          updatedAt: savedUser.updatedAt,
-          lastLogin: savedUser.lastLogin || null,
-        } as User;
-      } catch (error: any) {
-        if (error.code === 11000) {
-          throw new Error("Email already exists");
-        }
-        throw new Error(`Failed to create user: ${error.message}`);
+        firstName = nameParts[0] || "";
+        lastName = lastName || nameParts.slice(1).join(" ") || "";
       }
+
+      // Ensure we have at least a firstName
+      if (!firstName) {
+        throw new Error("First name is required");
+      }
+
+      const newUser = new UserModel({
+        name: data.name,
+        description: data.description || `User profile for ${data.name}`,
+        firstName,
+        lastName: lastName || "", // Default to empty string if not provided
+        email: data.email,
+        password: data.password,
+        role: data.role,
+        active: true,
+      });
+
+      const savedUser = (await newUser.save()) as User;
+
+      // Convert to User format (excluding password)
+      return {
+        id: savedUser.id,
+        name: savedUser.name,
+        description: savedUser.description,
+        slug: savedUser.slug,
+        firstName: savedUser.firstName,
+        lastName: savedUser.lastName,
+        email: savedUser.email,
+        role: savedUser.role,
+        active: savedUser.active,
+        createdAt: savedUser.createdAt,
+        updatedAt: savedUser.updatedAt,
+        lastLogin: savedUser.lastLogin || null,
+      } as User;
+    } catch (error: any) {
+      if (error.code === 11000) {
+        throw new Error("Email already exists");
+      }
+      throw new Error(`Failed to create user: ${error.message}`);
     }
   }
 
@@ -101,28 +178,66 @@ export class UserService {
    * Update an existing user
    */
   static async update(id: string, data: UserUpdate): Promise<User> {
-    // TODO: Implement actual database interaction
-    // Mock implementation for now
-    return {
-      id,
-      firstName: data.firstName || "Updated",
-      lastName: data.lastName || "User",
-      email: data.email || "updated@example.com",
-      role: data.role || "USER",
-      lastLogin: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      active: data.active ?? true,
-    } as unknown as User;
+    try {
+      // Build update object, excluding undefined values
+      const updateData: any = {};
+      
+      if (data.name !== undefined) updateData.name = data.name;
+      if (data.description !== undefined) updateData.description = data.description;
+      if (data.firstName !== undefined) updateData.firstName = data.firstName;
+      if (data.lastName !== undefined) updateData.lastName = data.lastName;
+      if (data.email !== undefined) updateData.email = data.email;
+      if (data.role !== undefined) updateData.role = data.role;
+      if (data.active !== undefined) updateData.active = data.active;
+
+      // Update the user and return the updated document
+      const updatedUser = await UserModel.findByIdAndUpdate(
+        id,
+        updateData,
+        { 
+          new: true, // Return the updated document
+          runValidators: true, // Run schema validators
+          select: "-password" // Exclude password field
+        }
+      ).lean();
+
+      if (!updatedUser) {
+        throw new Error("User not found");
+      }
+
+      // Transform MongoDB document to User format
+      return {
+        id: updatedUser._id.toString(),
+        name: updatedUser.name,
+        description: updatedUser.description,
+        slug: updatedUser.slug,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        active: updatedUser.active,
+        createdAt: updatedUser.createdAt,
+        updatedAt: updatedUser.updatedAt,
+        lastLogin: updatedUser.lastLogin || null,
+      } as User;
+    } catch (error: any) {
+      if (error.code === 11000) {
+        throw new Error("Email already exists");
+      }
+      throw new Error(`Failed to update user: ${error.message}`);
+    }
   }
 
   /**
    * Delete a user by ID
    */
   static async delete(id: string): Promise<boolean> {
-    // TODO: Implement actual database interaction
-    // Mock implementation for now
-    return true;
+    try {
+      const deletedUser = await UserModel.findByIdAndDelete(id);
+      return deletedUser !== null;
+    } catch (error: any) {
+      throw new Error(`Failed to delete user: ${error.message}`);
+    }
   }
 
   /**

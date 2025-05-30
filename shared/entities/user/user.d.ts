@@ -39,7 +39,13 @@ export declare interface User
  * @type UserCreate
  */
 export declare type UserCreate = Omit<Partial<User>, "id"> &
-  Pick<EntityBase, "name" | "description" | "password">;
+  Pick<EntityBase, "name" | "description"> & {
+    password: string;
+    firstName: string;
+    lastName?: string;
+    email: string;
+    role?: UserRole;
+  };
 
 /**
  * Input type for user profile update operations

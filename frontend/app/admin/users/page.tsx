@@ -29,6 +29,9 @@ export default function UsersManagementPage() {
       setIsLoading(true);
       setError(null);
       const response = await UserApiService.getUsers(filters);
+      console.log("API Response:", response);
+      console.log("Users results:", response.results);
+      console.log("Users length:", response.results?.length);
       setUsers(response.results || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al cargar usuarios");
@@ -102,19 +105,23 @@ export default function UsersManagementPage() {
 
       {/* User Management Section */}
       <section>
-        <div className="flex items-center justify-between mb-6">
-          <AdminSectionHeader
-            title="Lista de Usuarios"
-            description="Gestiona todos los usuarios del sistema"
-            icon={<Users className="h-6 w-6" />}
-          />
-          <Button
-            onClick={() => setIsCreateDialogOpen(true)}
-            className="flex items-center gap-2"
-          >
-            <UserPlus className="h-4 w-4" />
-            Crear Usuario
-          </Button>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div className="flex-1">
+            <AdminSectionHeader
+              title="Lista de Usuarios"
+              description="Gestiona todos los usuarios del sistema"
+              icon={<Users className="h-6 w-6" />}
+            />
+          </div>
+          <div className="flex-shrink-0">
+            <Button
+              onClick={() => setIsCreateDialogOpen(true)}
+              className="flex items-center gap-2 w-full sm:w-auto"
+            >
+              <UserPlus className="h-4 w-4" />
+              <span>Crear Usuario</span>
+            </Button>
+          </div>
         </div>
 
         <UserManagementTable

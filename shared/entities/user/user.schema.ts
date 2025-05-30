@@ -38,7 +38,7 @@ export const UserSchema = UserBaseSchema.omit({
  */
 export const UserCreateSchema = z.object({
   firstName: z.string().min(1).max(50),
-  lastName: z.string().min(1).max(50),
+  lastName: z.string().min(0).max(50).optional(),
   email: z.string().email(),
   role: z.nativeEnum(UserRole).optional(),
   name: z.string().min(1).max(100),
@@ -67,6 +67,9 @@ export const CreateUserRequestSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   role: z.nativeEnum(UserRole).optional().default(UserRole.SERVER),
+  description: z.string().min(1).optional(),
+  firstName: z.string().min(1).max(50),
+  lastName: z.string().min(0).max(50).optional(),
 });
 
 export const UpdateUserRequestSchema = z.object({

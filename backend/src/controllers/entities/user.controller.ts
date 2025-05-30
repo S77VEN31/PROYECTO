@@ -35,12 +35,8 @@ export const getUsers = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       success: true,
-      users: result.results,
-      total: result.total,
-      page: result.page,
-      limit: result.limit,
-      pages: result.pages,
-    });
+      data: result,
+    } as ApiResponse<typeof result>);
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -87,14 +83,35 @@ export const getUserById = async (
  */
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, role, description } = req.body;
+    const { name, email, password, role, description, firstName, lastName } = req.body;
+
+    // Use provided firstName/lastName or extract from name
+    let userFirstName = firstName;
+    let userLastName = lastName;
+    
+    if (!userFirstName) {
+      const nameParts = name.trim().split(" ");
+      userFirstName = nameParts[0] || "";
+      userLastName = userLastName || nameParts.slice(1).join(" ") || "";
+    }
+
+    // Ensure we have at least a firstName
+    if (!userFirstName) {
+      return res.status(400).json({
+        success: false,
+        error: "First name is required",
+        message: "First name must be provided either directly or extractable from name field",
+      } as ApiResponse);
+    }
 
     const newUser = await UserService.create({
       name,
       email,
       password,
       role,
-      description,
+      description: description || `User profile for ${name}`,
+      firstName: userFirstName,
+      lastName: userLastName,
     });
 
     return res.status(201).json({

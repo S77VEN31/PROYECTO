@@ -31,7 +31,7 @@ const userSchema = new Schema<UserDocument>(
     ...baseEntitySchemaFields,
     password: { type: String, required: true, select: false },
     firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    lastName: { type: String, required: false, default: "" },
     email: { type: String, required: true, unique: true },
     role: {
       type: String,
