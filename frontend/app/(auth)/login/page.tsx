@@ -1,5 +1,6 @@
 "use client";
 
+import { UserApiService } from "@/api/entities/user.api";
 import { Logo } from "@/components/common/Logo";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
@@ -12,9 +13,87 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginRequest } from "colori-platform-shared";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+/**
+ * Login form validation schema
+ */
+const loginSchema = z.object({
+  email: z.string().email("Correo electrónico inválido"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  rememberMe: z.boolean().optional(),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
+
+  const rememberMe = watch("rememberMe");
+
+  /**
+   * Handle form submission
+   * @param data - Form data
+   */
+  const onSubmit = async (data: LoginFormData) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const loginRequest: LoginRequest = {
+        email: data.email,
+        password: data.password,
+      };
+
+      const authResponse = await UserApiService.login(loginRequest);
+
+      // Redirect based on user role
+      switch (authResponse.user.role) {
+        case "admin":
+          router.push("/admin");
+          break;
+        case "chef":
+          router.push("/kitchen");
+          break;
+        case "manager":
+          router.push("/admin");
+          break;
+        case "server":
+        case "cashier":
+        default:
+          router.push("/client");
+          break;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al iniciar sesión");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="absolute top-4 right-4">
@@ -30,21 +109,29 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <form className="space-y-6" action="#" method="POST">
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                {error}
+              </div>
+            )}
+
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email-address" className="text-foreground">
+                <Label htmlFor="email" className="text-foreground">
                   Correo electrónico
                 </Label>
                 <Input
-                  id="email-address"
-                  name="email"
+                  id="email"
                   type="email"
                   autoComplete="email"
-                  required
                   placeholder="Correo electrónico"
                   variant="cafe"
+                  {...register("email")}
                 />
+                {errors.email && (
+                  <p className="text-sm text-red-600">{errors.email.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-foreground">
@@ -52,19 +139,30 @@ export default function LoginPage() {
                 </Label>
                 <Input
                   id="password"
-                  name="password"
                   type="password"
                   autoComplete="current-password"
-                  required
                   placeholder="Contraseña"
                   variant="cafe"
+                  {...register("password")}
                 />
+                {errors.password && (
+                  <p className="text-sm text-red-600">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox id="remember-me" variant="cafe" />
+                <Checkbox
+                  id="remember-me"
+                  variant="cafe"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) =>
+                    setValue("rememberMe", !!checked)
+                  }
+                />
                 <Label
                   htmlFor="remember-me"
                   className="text-sm font-medium text-foreground"
@@ -84,16 +182,13 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-3">
-              <Button asChild variant="cafe" className="w-full">
-                <Link href="/admin">Iniciar Sesión como Admin</Link>
-              </Button>
-
-              <Button asChild variant="celeste" className="w-full">
-                <Link href="/kitchen">Iniciar Sesión como Cocina</Link>
-              </Button>
-
-              <Button asChild variant="naranja" className="w-full">
-                <Link href="/client">Entrar como Cliente</Link>
+              <Button
+                type="submit"
+                variant="cafe"
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
               </Button>
             </div>
           </form>

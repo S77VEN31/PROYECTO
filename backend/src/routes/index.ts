@@ -1,5 +1,6 @@
 import express from "express";
 
+import authRoutes from "./auth.routes";
 import categoryRoutes from "./entities/category.routes";
 import productRoutes from "./entities/product.routes";
 import promotionRoutes from "./entities/promotion.routes";
@@ -10,6 +11,7 @@ import orderRoutes from "./transactions/order.routes";
 const router = express.Router();
 
 // Register all route modules
+router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/products", productRoutes);
 router.use("/categories", categoryRoutes);

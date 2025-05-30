@@ -7,7 +7,6 @@
   },
   "references": [
     { "path": "./shared" },
-    { "path": "./backend" },
-    { "path": "./frontend" }
+    { "path": "./backend" }
   ]
 } 

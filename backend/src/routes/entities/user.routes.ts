@@ -3,8 +3,6 @@ import {
   deleteUser,
   getUserById,
   getUsers,
-  login,
-  logout,
   updateUser,
 } from "@controllers";
 import { authMiddleware, validate } from "@middlewares";
@@ -12,7 +10,6 @@ import {
   CreateUserRequestSchema,
   DeleteUserRequestSchema,
   GetUserRequestSchema,
-  LoginRequestSchema,
   UpdateUserRequestSchema,
 } from "colori-platform-shared";
 import express from "express";
@@ -46,9 +43,5 @@ router.delete(
   validate(DeleteUserRequestSchema, "params"),
   deleteUser
 );
-
-// Auth routes
-router.post("/login", validate(LoginRequestSchema, "body"), login);
-router.post("/logout", authMiddleware, logout);
 
 export default router;
