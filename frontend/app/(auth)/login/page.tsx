@@ -10,27 +10,17 @@ import {
   CardDescription,
   CardHeader,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginRequest } from "colori-platform-shared";
+import { LoginRequest, LoginRequestSchema } from "colori-platform-shared";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-/**
- * Login form validation schema
- */
-const loginSchema = z.object({
-  email: z.string().email("Correo electrónico inválido"),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
-  rememberMe: z.boolean().optional(),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = z.infer<typeof LoginRequestSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
@@ -41,18 +31,13 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    watch,
   } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(LoginRequestSchema),
     defaultValues: {
       email: "",
       password: "",
-      rememberMe: false,
     },
   });
-
-  const rememberMe = watch("rememberMe");
 
   /**
    * Handle form submission
@@ -154,23 +139,6 @@ export default function LoginPage() {
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="remember-me"
-                  variant="cafe"
-                  checked={rememberMe}
-                  onCheckedChange={(checked) =>
-                    setValue("rememberMe", !!checked)
-                  }
-                />
-                <Label
-                  htmlFor="remember-me"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Recordarme
-                </Label>
-              </div>
-
               <div className="text-sm">
                 <Link
                   href="#"
