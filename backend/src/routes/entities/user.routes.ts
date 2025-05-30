@@ -22,7 +22,7 @@ const router = express.Router();
 // User CRUD routes
 router.post(
   "/",
-  // authMiddleware, // Temporarily disabled for initial user creation
+  authMiddleware,
   validate(CreateUserRequestSchema, "body"),
   createUser
 );
