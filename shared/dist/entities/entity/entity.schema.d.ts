@@ -122,9 +122,6 @@ export declare const FullMetadataSchema: z.ZodObject<{
     description: string;
     active: boolean;
     slug: string;
-    pageTitle?: string | undefined;
-    metaDescription?: string | undefined;
-    keywords?: string[] | undefined;
     id?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -132,15 +129,15 @@ export declare const FullMetadataSchema: z.ZodObject<{
         alt?: string | undefined;
         isPrimary?: boolean | undefined;
     }[] | undefined;
+    pageTitle?: string | undefined;
+    metaDescription?: string | undefined;
+    keywords?: string[] | undefined;
 }, {
     createdAt: string;
     updatedAt: string;
     name: string;
     description: string;
     slug: string;
-    pageTitle?: string | undefined;
-    metaDescription?: string | undefined;
-    keywords?: string[] | undefined;
     id?: string | undefined;
     active?: boolean | undefined;
     searchTerm?: string | undefined;
@@ -149,6 +146,9 @@ export declare const FullMetadataSchema: z.ZodObject<{
         alt?: string | undefined;
         isPrimary?: boolean | undefined;
     }[] | undefined;
+    pageTitle?: string | undefined;
+    metaDescription?: string | undefined;
+    keywords?: string[] | undefined;
 }>;
 /**
  * Schema for creating entities with partial metadata

@@ -6,12 +6,18 @@
 import { UserService } from "@services";
 import {
   ApiResponse,
-  CreateResponse,
   CreateUserRequestBody,
-  DeleteResponse,
+  CreateUserResponse,
+  DeleteUserRequestParams,
+  DeleteUserResponse,
+  GetUserRequestParams,
+  GetUserResponse,
+  GetUsersRequest,
+  GetUsersResponse,
   LoginRequest,
-  UpdateResponse,
   UpdateUserRequestBody,
+  UpdateUserRequestParams,
+  UpdateUserResponse,
 } from "colori-platform-shared";
 import { Request, Response } from "express";
 
@@ -20,21 +26,15 @@ import { Request, Response } from "express";
  */
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const { page = 1, limit = 10, search, role } = req.query;
+    // Query parameters are already validated by middleware
+    const filterParams = req.query as GetUsersRequest;
 
-    const options = {
-      page: Number(page),
-      limit: Number(limit),
-      search: search as string,
-      role: role as string,
-    };
-
-    const result = await UserService.findAll(options);
+    const result = await UserService.findAll(filterParams);
 
     return res.status(200).json({
       success: true,
       data: result,
-    } as ApiResponse<typeof result>);
+    } as GetUsersResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -49,9 +49,9 @@ export const getUsers = async (req: Request, res: Response) => {
  */
 export const getUserById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params; // id is validated by middleware
+    const params = req.params as unknown as GetUserRequestParams;
 
-    const user = await UserService.findById(id);
+    const user = await UserService.findById(params);
 
     if (!user) {
       return res.status(404).json({
@@ -63,7 +63,7 @@ export const getUserById = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
       data: user,
-    } as ApiResponse<typeof user>);
+    } as GetUserResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -78,15 +78,14 @@ export const getUserById = async (req: Request, res: Response) => {
  */
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, role, description, firstName, lastName } =
-      req.body as CreateUserRequestBody;
+    const userData = req.body as CreateUserRequestBody;
 
     // Use provided firstName/lastName or extract from name
-    let userFirstName = firstName;
-    let userLastName = lastName;
+    let userFirstName = userData.firstName;
+    let userLastName = userData.lastName;
 
     if (!userFirstName) {
-      const nameParts = name.trim().split(" ");
+      const nameParts = userData.name.trim().split(" ");
       userFirstName = nameParts[0] || "";
       userLastName = userLastName || nameParts.slice(1).join(" ") || "";
     }
@@ -101,21 +100,20 @@ export const createUser = async (req: Request, res: Response) => {
       } as ApiResponse);
     }
 
-    const newUser = await UserService.create({
-      name,
-      email,
-      password,
-      role,
-      description: description || `User profile for ${name}`,
+    const createData = {
+      ...userData,
       firstName: userFirstName,
       lastName: userLastName,
-    });
+      description: userData.description || `User profile for ${userData.name}`,
+    };
+
+    const newUser = await UserService.create(createData);
 
     return res.status(201).json({
       success: true,
       id: newUser.id,
-      data: newUser,
-    } as ApiResponse<typeof newUser> & CreateResponse);
+      data: createData,
+    } as CreateUserResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -130,13 +128,10 @@ export const createUser = async (req: Request, res: Response) => {
  */
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params; // id is validated by middleware
-    const userData = req.body as UpdateUserRequestBody;
+    const params = req.params as unknown as UpdateUserRequestParams;
+    const updateData = req.body as UpdateUserRequestBody;
 
-    // Get user ID from authenticated request
-    const updaterId = req.user?.id;
-
-    const existingUser = await UserService.findById(id);
+    const existingUser = await UserService.findById(params);
 
     if (!existingUser) {
       return res.status(404).json({
@@ -145,13 +140,13 @@ export const updateUser = async (req: Request, res: Response) => {
       } as ApiResponse);
     }
 
-    const updatedUser = await UserService.update(id, userData);
+    await UserService.update(params, updateData);
 
     return res.status(200).json({
       success: true,
       updated: true,
-      data: updatedUser,
-    } as ApiResponse<typeof updatedUser> & UpdateResponse);
+      data: updateData,
+    } as UpdateUserResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -166,9 +161,9 @@ export const updateUser = async (req: Request, res: Response) => {
  */
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params; // id is validated by middleware
+    const params = req.params as unknown as DeleteUserRequestParams;
 
-    const existingUser = await UserService.findById(id);
+    const existingUser = await UserService.findById(params);
 
     if (!existingUser) {
       return res.status(404).json({
@@ -177,12 +172,12 @@ export const deleteUser = async (req: Request, res: Response) => {
       } as ApiResponse);
     }
 
-    await UserService.delete(id);
+    await UserService.delete(params);
 
     return res.status(200).json({
       success: true,
       deleted: true,
-    } as ApiResponse & DeleteResponse);
+    } as DeleteUserResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -197,9 +192,9 @@ export const deleteUser = async (req: Request, res: Response) => {
  */
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body as LoginRequest;
+    const credentials = req.body as LoginRequest;
 
-    const { user, token } = await UserService.authenticate(email, password);
+    const { user, token } = await UserService.authenticate(credentials);
 
     return res.status(200).json({
       success: true,

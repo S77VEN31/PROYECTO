@@ -10,6 +10,7 @@ import {
   CreateUserRequestBodySchema,
   DeleteUserRequestParamsSchema,
   GetUserRequestParamsSchema,
+  GetUsersRequestSchema,
   UpdateUserRequestBodySchema,
   UpdateUserRequestParamsSchema,
 } from "colori-platform-shared";
@@ -24,7 +25,12 @@ router.post(
   validate(CreateUserRequestBodySchema, "body"),
   createUser
 );
-router.get("/", authMiddleware, getUsers);
+router.get(
+  "/",
+  authMiddleware,
+  validate(GetUsersRequestSchema, "query"),
+  getUsers
+);
 router.get(
   "/:id",
   authMiddleware,

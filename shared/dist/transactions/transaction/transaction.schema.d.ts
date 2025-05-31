@@ -18,15 +18,15 @@ export declare const TransactionRecordSchema: z.ZodObject<{
     createdAt: string;
     updatedAt: string;
     active: boolean;
-    completedAt?: string | null | undefined;
     id?: string | undefined;
+    completedAt?: string | null | undefined;
     reference?: string | undefined;
 }, {
     createdAt: string;
     updatedAt: string;
-    completedAt?: string | null | undefined;
     id?: string | undefined;
     active?: boolean | undefined;
+    completedAt?: string | null | undefined;
     reference?: string | undefined;
 }>;
 /**
@@ -49,8 +49,8 @@ export declare const AuditableTransactionSchema: z.ZodObject<{
     createdAt: string;
     updatedAt: string;
     active: boolean;
-    completedAt?: string | null | undefined;
     id?: string | undefined;
+    completedAt?: string | null | undefined;
     reference?: string | undefined;
     createdBy?: string | undefined;
     updatedBy?: string | undefined;
@@ -58,9 +58,9 @@ export declare const AuditableTransactionSchema: z.ZodObject<{
 }, {
     createdAt: string;
     updatedAt: string;
-    completedAt?: string | null | undefined;
     id?: string | undefined;
     active?: boolean | undefined;
+    completedAt?: string | null | undefined;
     reference?: string | undefined;
     createdBy?: string | undefined;
     updatedBy?: string | undefined;
@@ -79,16 +79,16 @@ export declare const PartialTransactionRecordSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     createdAt?: string | undefined;
     updatedAt?: string | undefined;
-    completedAt?: string | null | undefined;
     id?: string | undefined;
     active?: boolean | undefined;
+    completedAt?: string | null | undefined;
     reference?: string | undefined;
 }, {
     createdAt?: string | undefined;
     updatedAt?: string | undefined;
-    completedAt?: string | null | undefined;
     id?: string | undefined;
     active?: boolean | undefined;
+    completedAt?: string | null | undefined;
     reference?: string | undefined;
 }>;
 //# sourceMappingURL=transaction.schema.d.ts.map

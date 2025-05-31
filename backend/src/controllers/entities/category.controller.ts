@@ -34,7 +34,7 @@ export const getCategories = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       success: true,
-      categories: result.results,
+      categories: result.data,
       total: result.total,
       page: result.page,
       limit: result.limit,
@@ -94,16 +94,18 @@ export const createCategory = async (
     // Get user ID from authenticated request
     const userId = req.user?.id;
 
-    const newCategory = await CategoryService.create({
+    const categoryData = {
       ...category,
       createdBy: userId,
-    });
+    };
+
+    const newCategory = await CategoryService.create(categoryData);
 
     return res.status(201).json({
       success: true,
       id: newCategory.id,
-      data: newCategory,
-    } as ApiResponse<typeof newCategory> & CreateResponse);
+      data: category,
+    } as CreateResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -136,16 +138,18 @@ export const updateCategory = async (
       } as ApiResponse);
     }
 
-    const updatedCategory = await CategoryService.update(id, {
+    const updateData = {
       ...category,
       updatedBy: userId,
-    });
+    };
+
+    await CategoryService.update(id, updateData);
 
     return res.status(200).json({
       success: true,
       updated: true,
-      data: updatedCategory,
-    } as ApiResponse<typeof updatedCategory> & UpdateResponse);
+      data: category,
+    } as UpdateResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -179,7 +183,7 @@ export const deleteCategory = async (
     return res.status(200).json({
       success: true,
       deleted: true,
-    } as ApiResponse & DeleteResponse);
+    } as DeleteResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,

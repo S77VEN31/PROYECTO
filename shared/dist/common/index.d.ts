@@ -6,14 +6,15 @@
 /**
  * API related type definitions
  */
-import { ApiResponse, AuthResponse, CategoryFilterOptions, CreateResponse, DeleteResponse, EntityResponse, IdParam, JwtPayload, PaginatedResponse, PaginationParams, ProductFilterOptions, PromotionFilterOptions, SearchableParams, UpdateResponse, UserFilterOptions } from "./api/api.d";
-export { ApiResponse, AuthResponse, CategoryFilterOptions, CreateResponse, DeleteResponse, EntityResponse, IdParam, JwtPayload, PaginatedResponse, PaginationParams, ProductFilterOptions, PromotionFilterOptions, SearchableParams, UpdateResponse, UserFilterOptions, };
+import { ApiResponse, AuthResponse, CreateResponse, DeleteResponse, EntityResponse, GetResponse, IdParam, JwtPayload, PaginatedResponse, PaginationParams, SearchableParams, UpdateResponse } from "./api/api.d";
+import { IdParamSchema, PaginationParamsSchema, SearchableParamsSchema } from "./api/api.schema";
+export { ApiResponse, AuthResponse, CreateResponse, DeleteResponse, EntityResponse, GetResponse, IdParam, IdParamSchema, JwtPayload, PaginatedResponse, PaginationParams, PaginationParamsSchema, SearchableParams, SearchableParamsSchema, UpdateResponse, };
 /**
  * Financial data types and schemas
  */
 import { Financial, PaymentFinancial } from "./financial/financial.d";
 import { FinancialSchema, PaymentFinancialSchema } from "./financial/financial.schema";
-export { Financial, FinancialSchema, PaymentFinancial, PaymentFinancialSchema, };
+export { Financial, FinancialSchema, PaymentFinancial, PaymentFinancialSchema };
 /**
  * Image related types and schemas
  */

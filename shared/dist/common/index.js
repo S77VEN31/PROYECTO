@@ -3,9 +3,12 @@
  *
  * @module shared/common
  */
+import { IdParamSchema, PaginationParamsSchema, SearchableParamsSchema, } from "./api/api.schema";
+// Re-export API types
+export { IdParamSchema, PaginationParamsSchema, SearchableParamsSchema, };
 import { FinancialSchema, PaymentFinancialSchema, } from "./financial/financial.schema";
 // Re-export financial types
-export { FinancialSchema, PaymentFinancialSchema, };
+export { FinancialSchema, PaymentFinancialSchema };
 import { ImageSchema } from "./image/image.schema";
 // Re-export image types
 export { ImageSchema };

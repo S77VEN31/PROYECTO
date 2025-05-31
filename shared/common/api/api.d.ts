@@ -46,15 +46,15 @@ export interface ApiResponse<T = any> {
 /**
  * Generic paginated response for list endpoints
  * @interface PaginatedResponse
- * @template T - The type of items in the results array
- * @property {T[]} results - Array of result items
+ * @template T - The type of items in the data array
+ * @property {T[]} data - Array of result items
  * @property {number} total - Total count of available items
  * @property {number} page - Current page number
  * @property {number} limit - Number of items per page
  * @property {number} pages - Total number of pages
  */
 export interface PaginatedResponse<T = any> {
-  results: T[];
+  data: T[];
   total: number;
   page: number;
   limit: number;
@@ -83,61 +83,6 @@ export interface PaginationParams {
  */
 export interface SearchableParams {
   search?: string;
-}
-
-/**
- * Category filter options
- * @interface CategoryFilterOptions
- * @extends PaginationParams
- * @extends SearchableParams
- */
-export interface CategoryFilterOptions
-  extends PaginationParams,
-    SearchableParams {}
-
-/**
- * Product filter options
- * @interface ProductFilterOptions
- * @extends PaginationParams
- * @extends SearchableParams
- * @property {string} [category] - Filter by category ID
- * @property {string} [tag] - Filter by tag
- * @property {number} [minPrice] - Minimum price filter
- * @property {number} [maxPrice] - Maximum price filter
- */
-export interface ProductFilterOptions
-  extends PaginationParams,
-    SearchableParams {
-  category?: string;
-  tag?: string;
-  minPrice?: number;
-  maxPrice?: number;
-}
-
-/**
- * Promotion filter options
- * @interface PromotionFilterOptions
- * @extends PaginationParams
- * @extends SearchableParams
- * @property {boolean} [active] - Filter by active status
- * @property {string} [type] - Filter by promotion type
- */
-export interface PromotionFilterOptions
-  extends PaginationParams,
-    SearchableParams {
-  active?: boolean;
-  type?: string;
-}
-
-/**
- * User filter options
- * @interface UserFilterOptions
- * @extends PaginationParams
- * @extends SearchableParams
- * @property {string} [role] - Filter by user role
- */
-export interface UserFilterOptions extends PaginationParams, SearchableParams {
-  role?: string;
 }
 
 /**
@@ -172,28 +117,41 @@ export interface EntityResponse<T = any> {
 }
 
 /**
+ * Generic response for get operations
+ * @interface GetResponse
+ * @template T - The type of the retrieved entity
+ * @property {T} data - The retrieved entity data
+ */
+export interface GetResponse<T = any> extends ApiResponse<T> {}
+
+/**
  * Generic response for creation operations
  * @interface CreateResponse
+ * @template T - The type of the created entity
  * @property {string} id - ID of the newly created entity
+ * @property {T} data - The created entity data
  */
-export interface CreateResponse {
+export interface CreateResponse<T = any> extends ApiResponse<T> {
   id: string;
 }
 
 /**
  * Generic response for update operations
  * @interface UpdateResponse
+ * @template T - The type of the updated entity
  * @property {boolean} updated - Whether the update was successful
+ * @property {T} data - The updated entity data
  */
-export interface UpdateResponse {
+export interface UpdateResponse<T = any> extends ApiResponse<T> {
   updated: boolean;
 }
 
 /**
  * Generic response for delete operations
  * @interface DeleteResponse
+ * @template T - The type of the deleted entity
  * @property {boolean} deleted - Whether the deletion was successful
  */
-export interface DeleteResponse {
+export interface DeleteResponse<T = any> extends ApiResponse {
   deleted: boolean;
 }

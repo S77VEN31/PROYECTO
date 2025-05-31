@@ -6,11 +6,15 @@
 import { UserModel } from "@models";
 import {
   AuthResponse,
+  CreateUserRequestBody,
+  DeleteUserRequestParams,
+  GetUserRequestParams,
+  GetUsersRequest,
+  LoginRequest,
   PaginatedResponse,
+  UpdateUserRequestBody,
+  UpdateUserRequestParams,
   User,
-  UserCreate,
-  UserFilterOptions,
-  UserUpdate,
 } from "colori-platform-shared";
 import jwt from "jsonwebtoken";
 
@@ -22,9 +26,9 @@ export class UserService {
    * Find all users with optional filtering and pagination
    */
   static async findAll(
-    options: UserFilterOptions
+    filterParams: GetUsersRequest
   ): Promise<PaginatedResponse<User>> {
-    const { page = 1, limit = 10, search, role } = options;
+    const { page = 1, limit = 10, search, role } = filterParams;
 
     try {
       // Build query filters
@@ -76,7 +80,7 @@ export class UserService {
       }));
 
       return {
-        results: transformedUsers,
+        data: transformedUsers,
         total,
         page,
         limit,
@@ -90,9 +94,11 @@ export class UserService {
   /**
    * Find a single user by ID
    */
-  static async findById(id: string): Promise<User | null> {
+  static async findById(params: GetUserRequestParams): Promise<User | null> {
     try {
-      const user = await UserModel.findById(id).select("-password").lean();
+      const user = await UserModel.findById(params.id)
+        .select("-password")
+        .lean();
 
       if (!user) {
         return null;
@@ -121,12 +127,12 @@ export class UserService {
   /**
    * Create a new user
    */
-  static async create(data: UserCreate): Promise<User> {
+  static async create(data: CreateUserRequestBody): Promise<User> {
     try {
       // Use provided firstName/lastName or extract from name as fallback
       let firstName = data.firstName;
       let lastName = data.lastName;
-      
+
       if (!firstName) {
         const nameParts = data.name.trim().split(" ");
         firstName = nameParts[0] || "";
@@ -177,13 +183,17 @@ export class UserService {
   /**
    * Update an existing user
    */
-  static async update(id: string, data: UserUpdate): Promise<User> {
+  static async update(
+    params: UpdateUserRequestParams,
+    data: UpdateUserRequestBody
+  ): Promise<User> {
     try {
       // Build update object, excluding undefined values
       const updateData: any = {};
-      
+
       if (data.name !== undefined) updateData.name = data.name;
-      if (data.description !== undefined) updateData.description = data.description;
+      if (data.description !== undefined)
+        updateData.description = data.description;
       if (data.firstName !== undefined) updateData.firstName = data.firstName;
       if (data.lastName !== undefined) updateData.lastName = data.lastName;
       if (data.email !== undefined) updateData.email = data.email;
@@ -192,12 +202,12 @@ export class UserService {
 
       // Update the user and return the updated document
       const updatedUser = await UserModel.findByIdAndUpdate(
-        id,
+        params.id,
         updateData,
-        { 
+        {
           new: true, // Return the updated document
           runValidators: true, // Run schema validators
-          select: "-password" // Exclude password field
+          select: "-password", // Exclude password field
         }
       ).lean();
 
@@ -231,9 +241,9 @@ export class UserService {
   /**
    * Delete a user by ID
    */
-  static async delete(id: string): Promise<boolean> {
+  static async delete(params: DeleteUserRequestParams): Promise<boolean> {
     try {
-      const deletedUser = await UserModel.findByIdAndDelete(id);
+      const deletedUser = await UserModel.findByIdAndDelete(params.id);
       return deletedUser !== null;
     } catch (error: any) {
       throw new Error(`Failed to delete user: ${error.message}`);
@@ -243,20 +253,21 @@ export class UserService {
   /**
    * Authenticate a user with email and password
    */
-  static async authenticate(
-    email: string,
-    password: string
-  ): Promise<AuthResponse> {
+  static async authenticate(credentials: LoginRequest): Promise<AuthResponse> {
     try {
       // Find user by email and include password for verification
-      const userDoc = await UserModel.findOne({ email }).select("+password");
+      const userDoc = await UserModel.findOne({
+        email: credentials.email,
+      }).select("+password");
 
       if (!userDoc) {
         throw new Error("Invalid email or password");
       }
 
       // Verify password using the comparePassword method
-      const isPasswordValid = await userDoc.comparePassword(password);
+      const isPasswordValid = await userDoc.comparePassword(
+        credentials.password
+      );
 
       if (!isPasswordValid) {
         throw new Error("Invalid email or password");
@@ -267,7 +278,6 @@ export class UserService {
       await userDoc.save();
 
       // Convert to User format (excluding password)
-
       const user: User = {
         id: userDoc._id.toString(),
         name: userDoc.name,

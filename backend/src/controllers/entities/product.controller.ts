@@ -46,7 +46,7 @@ export const getProducts = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       success: true,
-      products: result.results,
+      products: result.data,
       total: result.total,
       page: result.page,
       limit: result.limit,
@@ -106,16 +106,18 @@ export const createProduct = async (
     // Get user ID from authenticated request
     const userId = req.user?.id;
 
-    const newProduct = await ProductService.create({
+    const productData = {
       ...product,
       createdBy: userId,
-    });
+    };
+
+    const newProduct = await ProductService.create(productData);
 
     return res.status(201).json({
       success: true,
       id: newProduct.id,
-      data: newProduct,
-    } as ApiResponse<typeof newProduct> & CreateResponse);
+      data: product,
+    } as CreateResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -148,16 +150,18 @@ export const updateProduct = async (
       } as ApiResponse);
     }
 
-    const updatedProduct = await ProductService.update(id, {
+    const updateData = {
       ...product,
       updatedBy: userId,
-    });
+    };
+
+    await ProductService.update(id, updateData);
 
     return res.status(200).json({
       success: true,
       updated: true,
-      data: updatedProduct,
-    } as ApiResponse<typeof updatedProduct> & UpdateResponse);
+      data: product,
+    } as UpdateResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -191,7 +195,7 @@ export const deleteProduct = async (
     return res.status(200).json({
       success: true,
       deleted: true,
-    } as ApiResponse & DeleteResponse);
+    } as DeleteResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,

@@ -198,7 +198,7 @@ export function Header({ variant, cartCount = 0 }: HeaderProps) {
             </Button>
           )}
 
-          {(variant === "admin" || variant === "kitchen") && (
+          {variant === "kitchen" && (
             <Button
               variant="default"
               size="sm"

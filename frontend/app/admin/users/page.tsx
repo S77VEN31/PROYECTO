@@ -7,7 +7,7 @@ import { CreateUserDialog } from "@/components/admin/users/create-user-dialog";
 import { UserManagementTable } from "@/components/admin/users/user-management-table";
 import { UserStats } from "@/components/admin/users/user-stats";
 import { Button } from "@/components/ui/button";
-import { User, UserFilterOptions } from "colori-platform-shared";
+import { GetUsersRequest, User } from "colori-platform-shared";
 import { UserPlus, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -16,7 +16,7 @@ export default function UsersManagementPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [filters, setFilters] = useState<UserFilterOptions>({
+  const [filters, setFilters] = useState<GetUsersRequest>({
     page: 1,
     limit: 10,
   });
@@ -28,11 +28,16 @@ export default function UsersManagementPage() {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await UserApiService.getUsers(filters);
-      console.log("API Response:", response);
-      console.log("Users results:", response.results);
-      console.log("Users length:", response.results?.length);
-      setUsers(response.results || []);
+      const response = await UserApiService.getUsers({
+        page: filters.page,
+        limit: filters.limit,
+        search: filters.search || undefined,
+        role: filters.role || undefined,
+      });
+
+      console.log("Users response:", response);
+      console.log("Users data:", response.data);
+      setUsers(response.data || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al cargar usuarios");
       console.error("Error loading users:", err);
@@ -68,7 +73,7 @@ export default function UsersManagementPage() {
   /**
    * Handle filter changes
    */
-  const handleFiltersChange = (newFilters: UserFilterOptions) => {
+  const handleFiltersChange = (newFilters: GetUsersRequest) => {
     setFilters(newFilters);
   };
 

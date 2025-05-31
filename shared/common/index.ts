@@ -10,72 +10,70 @@
 import {
   ApiResponse,
   AuthResponse,
-  CategoryFilterOptions,
   CreateResponse,
   DeleteResponse,
   EntityResponse,
+  GetResponse,
   IdParam,
   JwtPayload,
   PaginatedResponse,
   PaginationParams,
-  ProductFilterOptions,
-  PromotionFilterOptions,
   SearchableParams,
   UpdateResponse,
-  UserFilterOptions,
 } from "./api/api.d";
+
+import {
+  IdParamSchema,
+  PaginationParamsSchema,
+  SearchableParamsSchema,
+} from "./api/api.schema";
 
 // Re-export API types
 export {
   ApiResponse,
   AuthResponse,
-  CategoryFilterOptions,
   CreateResponse,
   DeleteResponse,
   EntityResponse,
+  GetResponse,
   IdParam,
+  IdParamSchema,
   JwtPayload,
   PaginatedResponse,
   PaginationParams,
-  ProductFilterOptions,
-  PromotionFilterOptions,
+  PaginationParamsSchema,
   SearchableParams,
+  SearchableParamsSchema,
   UpdateResponse,
-  UserFilterOptions,
 };
 
 /**
  * Financial data types and schemas
  */
-    import { Financial, PaymentFinancial } from "./financial/financial.d";
+import { Financial, PaymentFinancial } from "./financial/financial.d";
 
-    import {
-      FinancialSchema,
-      PaymentFinancialSchema,
-    } from "./financial/financial.schema";
+import {
+  FinancialSchema,
+  PaymentFinancialSchema,
+} from "./financial/financial.schema";
 
-    // Re-export financial types
-    export {
-      Financial,
-      FinancialSchema,
-      PaymentFinancial,
-      PaymentFinancialSchema,
-    };
+// Re-export financial types
+export { Financial, FinancialSchema, PaymentFinancial, PaymentFinancialSchema };
 
-    /**
-     * Image related types and schemas
-     */
-    import { Image } from "./image/image.d";
-    import { ImageSchema } from "./image/image.schema";
+/**
+ * Image related types and schemas
+ */
+import { Image } from "./image/image.d";
+import { ImageSchema } from "./image/image.schema";
 
-    // Re-export image types
-    export { Image, ImageSchema };
+// Re-export image types
+export { Image, ImageSchema };
 
-    /**
-     * Metadata types and schemas
-     */
-    import { SeoMetadata } from "./metadata/metadata.d";
-    import { SeoMetadataSchema } from "./metadata/metadata.schema";
+/**
+ * Metadata types and schemas
+ */
+import { SeoMetadata } from "./metadata/metadata.d";
+import { SeoMetadataSchema } from "./metadata/metadata.schema";
 
     // Re-export metadata types
     export { SeoMetadata, SeoMetadataSchema };

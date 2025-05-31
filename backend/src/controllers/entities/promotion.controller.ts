@@ -36,7 +36,7 @@ export const getPromotions = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       success: true,
-      promotions: result.results,
+      promotions: result.data,
       total: result.total,
       page: result.page,
       limit: result.limit,
@@ -96,16 +96,18 @@ export const createPromotion = async (
     // Get user ID from authenticated request
     const userId = req.user?.id;
 
-    const newPromotion = await PromotionService.create({
+    const promotionData = {
       ...promotion,
       createdBy: userId,
-    });
+    };
+
+    const newPromotion = await PromotionService.create(promotionData);
 
     return res.status(201).json({
       success: true,
       id: newPromotion.id,
-      data: newPromotion,
-    } as ApiResponse<typeof newPromotion> & CreateResponse);
+      data: promotion,
+    } as CreateResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -138,16 +140,18 @@ export const updatePromotion = async (
       } as ApiResponse);
     }
 
-    const updatedPromotion = await PromotionService.update(id, {
+    const updateData = {
       ...promotion,
       updatedBy: userId,
-    });
+    };
+
+    await PromotionService.update(id, updateData);
 
     return res.status(200).json({
       success: true,
       updated: true,
-      data: updatedPromotion,
-    } as ApiResponse<typeof updatedPromotion> & UpdateResponse);
+      data: promotion,
+    } as UpdateResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -181,7 +185,7 @@ export const deletePromotion = async (
     return res.status(200).json({
       success: true,
       deleted: true,
-    } as ApiResponse & DeleteResponse);
+    } as DeleteResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,

@@ -48,7 +48,7 @@ export function DeleteUserDialog({
   const handleDelete = async () => {
     setIsLoading(true);
     try {
-      await UserApiService.deleteUser(user.id as string);
+      await UserApiService.deleteUser({ id: user.id as string });
       onUserDeleted(user.id as string);
       onOpenChange(false);
     } catch (error) {

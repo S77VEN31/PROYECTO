@@ -7,14 +7,18 @@ import { AxiosError } from 'axios';
 import {
   ApiResponse,
   CreateUserRequestBody,
-  CreateUserRequestBodySchema,
-  DeleteUserRequestParamsSchema,
-  GetUserRequestParamsSchema,
+  CreateUserResponse,
+  DeleteUserRequestParams,
+  DeleteUserResponse,
+  GetUserRequestParams,
+  GetUserResponse,
+  GetUsersRequest,
+  GetUsersResponse,
   PaginatedResponse,
   UpdateUserRequestBody,
-  UpdateUserRequestBodySchema,
+  UpdateUserRequestParams,
+  UpdateUserResponse,
   User,
-  UserFilterOptions,
 } from "colori-platform-shared";
 import apiClient from "../index";
 import { AuthApiService } from "./auth.api";
@@ -25,16 +29,16 @@ import { AuthApiService } from "./auth.api";
 export class UserApiService {
   /**
    * Get all users with optional filtering
-   * @param options - Filter and pagination options
+   * @param filterParams - Filter and pagination parameters
    * @returns Promise with paginated user list
    */
   static async getUsers(
-    options: UserFilterOptions = {}
+    filterParams: GetUsersRequest = {}
   ): Promise<PaginatedResponse<User>> {
     try {
-      const response = await apiClient.get<
-        ApiResponse<PaginatedResponse<User>>
-      >("/users", { params: options });
+      const response = await apiClient.get<GetUsersResponse>("/users", {
+        params: filterParams,
+      });
 
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -53,16 +57,13 @@ export class UserApiService {
 
   /**
    * Get user by ID
-   * @param id - User ID
+   * @param params - User request parameters
    * @returns Promise with user data
    */
-  static async getUserById(id: string): Promise<User> {
+  static async getUserById(params: GetUserRequestParams): Promise<User> {
     try {
-      // Validate input using shared schema
-      const validatedParams = GetUserRequestParamsSchema.parse({ id });
-
-      const response = await apiClient.get<ApiResponse<User>>(
-        `/users/${validatedParams.id}`
+      const response = await apiClient.get<GetUserResponse>(
+        `/users/${params.id}`
       );
 
       if (response.data.success && response.data.data) {
@@ -87,16 +88,14 @@ export class UserApiService {
    */
   static async createUser(userData: CreateUserRequestBody): Promise<User> {
     try {
-      // Validate input using shared schema
-      const validatedData = CreateUserRequestBodySchema.parse(userData);
-
-      const response = await apiClient.post<ApiResponse<User>>(
+      const response = await apiClient.post<CreateUserResponse>(
         "/users",
-        validatedData
+        userData
       );
 
-      if (response.data.success && response.data.data) {
-        return response.data.data;
+      if (response.data.success && response.data.id) {
+        // Fetch the created user to return the complete User object
+        return await this.getUserById({ id: response.data.id });
       }
 
       throw new Error(response.data.message || "Failed to create user");
@@ -112,26 +111,23 @@ export class UserApiService {
 
   /**
    * Update existing user
-   * @param id - User ID
+   * @param params - User request parameters
    * @param userData - User update data
    * @returns Promise with updated user
    */
   static async updateUser(
-    id: string,
+    params: UpdateUserRequestParams,
     userData: UpdateUserRequestBody
   ): Promise<User> {
     try {
-      const validatedParams = GetUserRequestParamsSchema.parse({ id });
-
-      const validatedData = UpdateUserRequestBodySchema.parse(userData);
-
-      const response = await apiClient.put<ApiResponse<User>>(
-        `/users/${validatedParams.id}`,
-        validatedData
+      const response = await apiClient.put<UpdateUserResponse>(
+        `/users/${params.id}`,
+        userData
       );
 
-      if (response.data.success && response.data.data) {
-        return response.data.data;
+      if (response.data.success && response.data.updated) {
+        // Fetch the updated user to return the complete User object
+        return await this.getUserById({ id: params.id });
       }
 
       throw new Error(response.data.message || "Failed to update user");
@@ -147,25 +143,50 @@ export class UserApiService {
 
   /**
    * Delete user by ID
-   * @param id - User ID
+   * @param params - User request parameters
    * @returns Promise with deletion confirmation
    */
-  static async deleteUser(id: string): Promise<boolean> {
+  static async deleteUser(params: DeleteUserRequestParams): Promise<boolean> {
     try {
-      // Validate input using shared schema
-      const validatedParams = DeleteUserRequestParamsSchema.parse({ id });
+      const response = await apiClient.delete<DeleteUserResponse>(
+        `/users/${params.id}`
+      );
 
-      const response = await apiClient.delete<
-        ApiResponse<{ deleted: boolean }>
-      >(`/users/${validatedParams.id}`);
+      // Handle successful response - backend returns { success: true, deleted: true }
+      if (response.data.success && response.data.deleted !== undefined) {
+        return response.data.deleted;
+      }
 
-      if (response.data.success && response.data.data) {
-        return response.data.data.deleted;
+      // Handle successful response with different format (e.g., just success: true)
+      if (response.data.success) {
+        return true;
+      }
+
+      // Handle HTTP 200/204 status codes (successful deletion)
+      if (response.status === 200 || response.status === 204) {
+        return true;
       }
 
       throw new Error(response.data.message || "Failed to delete user");
     } catch (error: unknown) {
       const axiosError = error as AxiosError<ApiResponse>;
+
+      // If it's a 404 error, the user might already be deleted
+      if (axiosError.response?.status === 404) {
+        console.warn(
+          `User with id ${params.id} not found, might already be deleted`
+        );
+        return true;
+      }
+
+      // If it's a 200 or 204 status but caught as error due to response format
+      if (
+        axiosError.response?.status === 200 ||
+        axiosError.response?.status === 204
+      ) {
+        return true;
+      }
+
       throw new Error(
         axiosError.response?.data?.message ||
           axiosError.message ||

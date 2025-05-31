@@ -91,8 +91,8 @@ export declare const OrderTransactionSchema: z.ZodObject<{
     }[];
     customerName: string;
     tableNumber: number;
-    completedAt?: string | null | undefined;
     id?: string | undefined;
+    completedAt?: string | null | undefined;
     reference?: string | undefined;
     createdBy?: string | undefined;
     updatedBy?: string | undefined;
@@ -109,9 +109,9 @@ export declare const OrderTransactionSchema: z.ZodObject<{
     }[];
     customerName: string;
     tableNumber: number;
-    completedAt?: string | null | undefined;
     id?: string | undefined;
     active?: boolean | undefined;
+    completedAt?: string | null | undefined;
     reference?: string | undefined;
     createdBy?: string | undefined;
     updatedBy?: string | undefined;
@@ -157,9 +157,6 @@ export declare const OrderSchema: z.ZodObject<{
     id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     status: OrderStatus;
-    subtotal: number;
-    tax: number;
-    total: number;
     createdAt: string;
     updatedAt: string;
     id: string;
@@ -170,6 +167,9 @@ export declare const OrderSchema: z.ZodObject<{
         specialInstructions?: string | undefined;
         toppings?: string[] | undefined;
     }[];
+    subtotal: number;
+    tax: number;
+    total: number;
     customerName: string;
     tableNumber: number;
     tip?: number | null | undefined;
@@ -181,9 +181,6 @@ export declare const OrderSchema: z.ZodObject<{
     completedBy?: string | undefined;
 }, {
     status: OrderStatus;
-    subtotal: number;
-    tax: number;
-    total: number;
     createdAt: string;
     updatedAt: string;
     id: string;
@@ -193,12 +190,15 @@ export declare const OrderSchema: z.ZodObject<{
         specialInstructions?: string | undefined;
         toppings?: string[] | undefined;
     }[];
+    subtotal: number;
+    tax: number;
+    total: number;
     customerName: string;
     tableNumber: number;
+    active?: boolean | undefined;
     tip?: number | null | undefined;
     paymentMethod?: PaymentMethod | null | undefined;
     completedAt?: string | null | undefined;
-    active?: boolean | undefined;
     reference?: string | undefined;
     createdBy?: string | undefined;
     updatedBy?: string | undefined;

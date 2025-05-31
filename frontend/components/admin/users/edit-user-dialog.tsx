@@ -105,7 +105,7 @@ export function EditUserDialog({
       });
 
       const updatedUser = await UserApiService.updateUser(
-        user.id as string,
+        { id: user.id as string },
         updateData
       );
 

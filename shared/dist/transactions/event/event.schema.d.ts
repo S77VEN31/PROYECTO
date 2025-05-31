@@ -32,8 +32,8 @@ export declare const EventTransactionSchema: z.ZodObject<{
     source: EventSource;
     orderId: string;
     priority: EventPriority;
-    completedAt?: string | null | undefined;
     id?: string | undefined;
+    completedAt?: string | null | undefined;
     reference?: string | undefined;
     completedBy?: string | null | undefined;
     previousStatus?: OrderStatus | undefined;
@@ -45,9 +45,9 @@ export declare const EventTransactionSchema: z.ZodObject<{
     updatedAt: string;
     source: EventSource;
     orderId: string;
-    completedAt?: string | null | undefined;
     id?: string | undefined;
     active?: boolean | undefined;
+    completedAt?: string | null | undefined;
     reference?: string | undefined;
     completedBy?: string | null | undefined;
     previousStatus?: OrderStatus | undefined;
@@ -96,8 +96,8 @@ export declare const EventSchema: z.ZodObject<{
     id: string;
     source: EventSource;
     orderId: string;
-    completedAt?: string | null | undefined;
     active?: boolean | undefined;
+    completedAt?: string | null | undefined;
     reference?: string | undefined;
     completedBy?: string | null | undefined;
     previousStatus?: OrderStatus | undefined;

@@ -57,59 +57,56 @@ export declare type UserUpdate = Omit<Partial<User>, "id">;
  * @fileoverview User API request and response type definitions
  */
 
-import { PaginationParams } from "@shared/common";
-import { User, UserCreate, UserUpdate } from "@shared/entities";
+import {
+  ApiResponse,
+  CreateResponse,
+  DeleteResponse,
+  GetResponse,
+  IdParam,
+  PaginatedResponse,
+  PaginationParams,
+  SearchableParams,
+  UpdateResponse,
+} from "@shared/common";
+
+/**
+ * User filter parameters
+ * @interface UserFilterParams
+ * @extends PaginationParams
+ * @extends SearchableParams
+ * @property {string} [role] - Filter by user role
+ */
+export interface UserFilterParams extends PaginationParams, SearchableParams {
+  role?: string;
+}
 
 // GET /users
-export interface GetUsersRequest extends PaginationParams {
-  role?: string;
-  search?: string;
-}
+export interface GetUsersRequest extends UserFilterParams {}
 
-export interface GetUsersResponse {
-  users: User[];
-  total: number;
-  page: number;
-  limit: number;
-}
+export interface GetUsersResponse
+  extends ApiResponse<PaginatedResponse<User>> {}
 
 // GET /users/:id - params only
-export interface GetUserRequestParams {
-  id: string;
-}
+export interface GetUserRequestParams extends IdParam {}
 
-export interface GetUserResponse {
-  user: User;
-}
+export interface GetUserResponse extends GetResponse<User> {}
 
 // POST /users - body only (user data without nesting)
 export interface CreateUserRequestBody extends UserCreate {}
 
-export interface CreateUserResponse {
-  id: string;
-  user: User;
-}
+export interface CreateUserResponse extends CreateResponse<UserCreate> {}
 
 // PUT /users/:id - params + body (user data excluding password)
-export interface UpdateUserRequestParams {
-  id: string;
-}
+export interface UpdateUserRequestParams extends IdParam {}
 
 export interface UpdateUserRequestBody extends UserUpdate {}
 
-export interface UpdateUserResponse {
-  updated: boolean;
-  user: User;
-}
+export interface UpdateUserResponse extends UpdateResponse<UserUpdate> {}
 
 // DELETE /users/:id - params only
-export interface DeleteUserRequestParams {
-  id: string;
-}
+export interface DeleteUserRequestParams extends IdParam {}
 
-export interface DeleteUserResponse {
-  deleted: boolean;
-}
+export interface DeleteUserResponse extends DeleteResponse<User> {}
 
 // Authentication related types
 export interface LoginRequest {
@@ -126,15 +123,9 @@ export interface LogoutResponse {
   success: boolean;
 }
 
-// Express compatible request parameter types
-export type GetUserRequestParams = {
-  id: string;
-};
+// Express compatible request parameter types (keeping for backward compatibility)
+export type GetUserRequestParams = IdParam;
 
-export type UpdateUserRequestParams = {
-  id: string;
-};
+export type UpdateUserRequestParams = IdParam;
 
-export type DeleteUserRequestParams = {
-  id: string;
-};
+export type DeleteUserRequestParams = IdParam;

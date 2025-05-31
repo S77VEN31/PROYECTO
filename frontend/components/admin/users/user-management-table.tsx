@@ -32,7 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { User, UserFilterOptions, UserRole } from "colori-platform-shared";
+import { GetUsersRequest, User, UserRole } from "colori-platform-shared";
 import {
   Edit,
   MoreHorizontal,
@@ -53,8 +53,8 @@ interface UserManagementTableProps {
   users: User[];
   isLoading: boolean;
   error: string | null;
-  filters: UserFilterOptions;
-  onFiltersChange: (filters: UserFilterOptions) => void;
+  filters: GetUsersRequest;
+  onFiltersChange: (filters: GetUsersRequest) => void;
   onUserUpdated: (user: User) => void;
   onUserDeleted: (userId: string) => void;
   onRefresh: () => void;
@@ -117,7 +117,7 @@ export function UserManagementTable({
   console.log("UserManagementTable - users.length:", users.length);
   console.log("UserManagementTable - isLoading:", isLoading);
   console.log("UserManagementTable - error:", error);
-  
+
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [searchTerm, setSearchTerm] = useState(filters.search || "");
@@ -150,9 +150,10 @@ export function UserManagementTable({
    */
   const handleToggleUserStatus = async (user: User) => {
     try {
-      const updatedUser = await UserApiService.updateUser(user.id as string, {
-        active: !user.active,
-      });
+      const updatedUser = await UserApiService.updateUser(
+        { id: user.id as string },
+        { active: !user.active }
+      );
       onUserUpdated(updatedUser);
     } catch (error) {
       console.error("Error toggling user status:", error);

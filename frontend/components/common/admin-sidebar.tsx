@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import {
   BarChart3,
@@ -43,6 +44,19 @@ function SidebarLink({ href, label, icon }: SidebarLinkProps) {
 }
 
 export function AdminSidebar() {
+  const { logout, isLoading } = useAuthContext();
+
+  /**
+   * Handle logout click
+   */
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
     <aside className="hidden md:flex w-64 flex-col h-full bg-background border-r border-border">
       <div className="px-6 py-5 flex-shrink-0 border-b border-border">
@@ -111,9 +125,15 @@ export function AdminSidebar() {
       </nav>
 
       <div className="border-t border-border p-4">
-        <Button variant="default" className="w-full" size="sm">
+        <Button
+          variant="default"
+          className="w-full"
+          size="sm"
+          onClick={handleLogout}
+          disabled={isLoading}
+        >
           <LogOut className="h-4 w-4 mr-2 text-primary-foreground" />
-          Cerrar Sesión
+          {isLoading ? "Cerrando..." : "Cerrar Sesión"}
         </Button>
       </div>
     </aside>
