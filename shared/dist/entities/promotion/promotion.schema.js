@@ -1,7 +1,7 @@
 /**
  * Schemas for Promotion entities
  */
-import { ImageSchema } from "../../common";
+import { ImageSchema, MongoIdSchema, OptionalMongoIdArraySchema } from "../../common";
 import { EntityMetadataSchema } from "../../entities";
 import { PromotionType } from "../../enums";
 import { z } from "zod";
@@ -17,14 +17,14 @@ export const PromotionBaseSchema = EntityMetadataSchema.extend({
     discountPercent: z.number().min(0).max(100).optional(),
     minimumPurchase: z.number().nonnegative().optional(),
     usageLimit: z.number().int().nonnegative().optional(),
-    applicableProducts: z.array(z.string().uuid()).optional(),
-    applicableCategories: z.array(z.string().uuid()).optional(),
+    applicableProducts: OptionalMongoIdArraySchema,
+    applicableCategories: OptionalMongoIdArraySchema,
 });
 /**
  * Schema for complete promotion representation
  */
 export const PromotionSchema = PromotionBaseSchema.extend({
-    id: z.string().uuid(),
+    id: MongoIdSchema,
 });
 /**
  * Schema for promotion creation
@@ -40,8 +40,8 @@ export const PromotionCreateSchema = z.object({
     discountPercent: z.number().min(0).max(100).optional(),
     minimumPurchase: z.number().nonnegative().optional(),
     usageLimit: z.number().int().nonnegative().optional(),
-    applicableProducts: z.array(z.string().uuid()).optional(),
-    applicableCategories: z.array(z.string().uuid()).optional(),
+    applicableProducts: OptionalMongoIdArraySchema,
+    applicableCategories: OptionalMongoIdArraySchema,
     slug: z.string().optional(),
     backgroundImages: z.array(ImageSchema).optional(),
 });
@@ -55,7 +55,7 @@ export const PromotionUpdateSchema = PromotionBaseSchema.omit({
  * Promotion request validation schemas
  */
 export const GetPromotionRequestSchema = z.object({
-    id: z.string().uuid(),
+    id: MongoIdSchema,
 });
 export const CreatePromotionRequestSchema = z.object({
     promotion: z.object({
@@ -69,13 +69,13 @@ export const CreatePromotionRequestSchema = z.object({
         discountPercent: z.number().min(0).max(100).optional(),
         minimumPurchase: z.number().nonnegative().optional(),
         usageLimit: z.number().int().nonnegative().optional(),
-        applicableProducts: z.array(z.string().uuid()).optional(),
-        applicableCategories: z.array(z.string().uuid()).optional(),
+        applicableProducts: OptionalMongoIdArraySchema,
+        applicableCategories: OptionalMongoIdArraySchema,
         active: z.boolean().optional().default(true),
     }),
 });
 export const UpdatePromotionRequestSchema = z.object({
-    id: z.string().uuid(),
+    id: MongoIdSchema,
     promotion: z.object({
         name: z.string().min(2).max(100).optional(),
         description: z.string().min(1).optional(),
@@ -87,12 +87,12 @@ export const UpdatePromotionRequestSchema = z.object({
         discountPercent: z.number().min(0).max(100).optional(),
         minimumPurchase: z.number().nonnegative().optional(),
         usageLimit: z.number().int().nonnegative().optional(),
-        applicableProducts: z.array(z.string().uuid()).optional(),
-        applicableCategories: z.array(z.string().uuid()).optional(),
+        applicableProducts: OptionalMongoIdArraySchema,
+        applicableCategories: OptionalMongoIdArraySchema,
         active: z.boolean().optional(),
     }),
 });
 export const DeletePromotionRequestSchema = z.object({
-    id: z.string().uuid(),
+    id: MongoIdSchema,
 });
 //# sourceMappingURL=promotion.schema.js.map

@@ -81,7 +81,7 @@ export function AdminSidebar() {
           </li>
           <li>
             <SidebarLink
-              href="/admin/menu"
+              href="/admin/products"
               label="Gestión de Menú"
               icon={<BookOpenText className="h-4 w-4" />}
             />

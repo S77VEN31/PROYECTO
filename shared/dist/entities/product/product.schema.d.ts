@@ -76,13 +76,13 @@ export declare const ProductBaseSchema: z.ZodObject<{
     }>>;
     preparationTime: z.ZodOptional<z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
-    name: string;
-    price: number;
-    active: boolean;
     createdAt: string;
     updatedAt: string;
+    name: string;
     description: string;
+    active: boolean;
     slug: string;
+    price: number;
     id?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -101,12 +101,12 @@ export declare const ProductBaseSchema: z.ZodObject<{
     } | undefined;
     preparationTime?: number | undefined;
 }, {
-    name: string;
-    price: number;
     createdAt: string;
     updatedAt: string;
+    name: string;
     description: string;
     slug: string;
+    price: number;
     id?: string | undefined;
     active?: boolean | undefined;
     searchTerm?: string | undefined;
@@ -176,14 +176,14 @@ export declare const ProductSchema: z.ZodObject<{
 } & {
     id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    name: string;
-    price: number;
-    active: boolean;
     createdAt: string;
     updatedAt: string;
+    id: string;
+    name: string;
     description: string;
+    active: boolean;
     slug: string;
+    price: number;
     searchTerm?: string | undefined;
     backgroundImages?: {
         src: string;
@@ -201,13 +201,13 @@ export declare const ProductSchema: z.ZodObject<{
     } | undefined;
     preparationTime?: number | undefined;
 }, {
-    id: string;
-    name: string;
-    price: number;
     createdAt: string;
     updatedAt: string;
+    id: string;
+    name: string;
     description: string;
     slug: string;
+    price: number;
     active?: boolean | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -271,8 +271,8 @@ export declare const ProductCreateSchema: z.ZodObject<{
     }>, "many">>;
 }, "strip", z.ZodTypeAny, {
     name: string;
-    price: number;
     description: string;
+    price: number;
     slug?: string | undefined;
     backgroundImages?: {
         src: string;
@@ -291,8 +291,8 @@ export declare const ProductCreateSchema: z.ZodObject<{
     preparationTime?: number | undefined;
 }, {
     name: string;
-    price: number;
     description: string;
+    price: number;
     slug?: string | undefined;
     backgroundImages?: {
         src: string;
@@ -314,12 +314,11 @@ export declare const ProductCreateSchema: z.ZodObject<{
  * Schema for product updates
  */
 export declare const ProductUpdateSchema: z.ZodObject<{
-    name: z.ZodOptional<z.ZodString>;
-    price: z.ZodOptional<z.ZodNumber>;
-    active: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodBoolean>>>;
     createdAt: z.ZodOptional<z.ZodString>;
     updatedAt: z.ZodOptional<z.ZodString>;
+    name: z.ZodOptional<z.ZodString>;
     description: z.ZodOptional<z.ZodString>;
+    active: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodBoolean>>>;
     slug: z.ZodOptional<z.ZodString>;
     searchTerm: z.ZodOptional<z.ZodOptional<z.ZodString>>;
     backgroundImages: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -335,6 +334,7 @@ export declare const ProductUpdateSchema: z.ZodObject<{
         alt?: string | undefined;
         isPrimary?: boolean | undefined;
     }>, "many">>>;
+    price: z.ZodOptional<z.ZodNumber>;
     longDescription: z.ZodOptional<z.ZodOptional<z.ZodString>>;
     tags: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodString, "many">>>;
     nutritionalInfo: z.ZodOptional<z.ZodOptional<z.ZodObject<{
@@ -358,12 +358,11 @@ export declare const ProductUpdateSchema: z.ZodObject<{
     }>>>;
     preparationTime: z.ZodOptional<z.ZodOptional<z.ZodNumber>>;
 }, "strip", z.ZodTypeAny, {
-    name?: string | undefined;
-    price?: number | undefined;
-    active?: boolean | undefined;
     createdAt?: string | undefined;
     updatedAt?: string | undefined;
+    name?: string | undefined;
     description?: string | undefined;
+    active?: boolean | undefined;
     slug?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -371,6 +370,7 @@ export declare const ProductUpdateSchema: z.ZodObject<{
         alt?: string | undefined;
         isPrimary?: boolean | undefined;
     }[] | undefined;
+    price?: number | undefined;
     longDescription?: string | undefined;
     tags?: string[] | undefined;
     nutritionalInfo?: {
@@ -382,12 +382,11 @@ export declare const ProductUpdateSchema: z.ZodObject<{
     } | undefined;
     preparationTime?: number | undefined;
 }, {
-    name?: string | undefined;
-    price?: number | undefined;
-    active?: boolean | undefined;
     createdAt?: string | undefined;
     updatedAt?: string | undefined;
+    name?: string | undefined;
     description?: string | undefined;
+    active?: boolean | undefined;
     slug?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -395,6 +394,7 @@ export declare const ProductUpdateSchema: z.ZodObject<{
         alt?: string | undefined;
         isPrimary?: boolean | undefined;
     }[] | undefined;
+    price?: number | undefined;
     longDescription?: string | undefined;
     tags?: string[] | undefined;
     nutritionalInfo?: {
@@ -448,9 +448,10 @@ export declare const CreateProductRequestSchema: z.ZodObject<{
         active: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
     }, "strip", z.ZodTypeAny, {
         name: string;
-        price: number;
-        active: boolean;
         description: string;
+        active: boolean;
+        price: number;
+        category?: string | undefined;
         longDescription?: string | undefined;
         tags?: string[] | undefined;
         nutritionalInfo?: {
@@ -461,13 +462,13 @@ export declare const CreateProductRequestSchema: z.ZodObject<{
             allergens?: string[] | undefined;
         } | undefined;
         preparationTime?: number | undefined;
-        category?: string | undefined;
         images?: string[] | undefined;
     }, {
         name: string;
-        price: number;
         description: string;
+        price: number;
         active?: boolean | undefined;
+        category?: string | undefined;
         longDescription?: string | undefined;
         tags?: string[] | undefined;
         nutritionalInfo?: {
@@ -478,15 +479,15 @@ export declare const CreateProductRequestSchema: z.ZodObject<{
             allergens?: string[] | undefined;
         } | undefined;
         preparationTime?: number | undefined;
-        category?: string | undefined;
         images?: string[] | undefined;
     }>;
 }, "strip", z.ZodTypeAny, {
     product: {
         name: string;
-        price: number;
-        active: boolean;
         description: string;
+        active: boolean;
+        price: number;
+        category?: string | undefined;
         longDescription?: string | undefined;
         tags?: string[] | undefined;
         nutritionalInfo?: {
@@ -497,15 +498,15 @@ export declare const CreateProductRequestSchema: z.ZodObject<{
             allergens?: string[] | undefined;
         } | undefined;
         preparationTime?: number | undefined;
-        category?: string | undefined;
         images?: string[] | undefined;
     };
 }, {
     product: {
         name: string;
-        price: number;
         description: string;
+        price: number;
         active?: boolean | undefined;
+        category?: string | undefined;
         longDescription?: string | undefined;
         tags?: string[] | undefined;
         nutritionalInfo?: {
@@ -516,7 +517,6 @@ export declare const CreateProductRequestSchema: z.ZodObject<{
             allergens?: string[] | undefined;
         } | undefined;
         preparationTime?: number | undefined;
-        category?: string | undefined;
         images?: string[] | undefined;
     };
 }>;
@@ -553,9 +553,10 @@ export declare const UpdateProductRequestSchema: z.ZodObject<{
         active: z.ZodOptional<z.ZodBoolean>;
     }, "strip", z.ZodTypeAny, {
         name?: string | undefined;
-        price?: number | undefined;
-        active?: boolean | undefined;
         description?: string | undefined;
+        active?: boolean | undefined;
+        category?: string | undefined;
+        price?: number | undefined;
         longDescription?: string | undefined;
         tags?: string[] | undefined;
         nutritionalInfo?: {
@@ -566,13 +567,13 @@ export declare const UpdateProductRequestSchema: z.ZodObject<{
             allergens?: string[] | undefined;
         } | undefined;
         preparationTime?: number | undefined;
-        category?: string | undefined;
         images?: string[] | undefined;
     }, {
         name?: string | undefined;
-        price?: number | undefined;
-        active?: boolean | undefined;
         description?: string | undefined;
+        active?: boolean | undefined;
+        category?: string | undefined;
+        price?: number | undefined;
         longDescription?: string | undefined;
         tags?: string[] | undefined;
         nutritionalInfo?: {
@@ -583,16 +584,16 @@ export declare const UpdateProductRequestSchema: z.ZodObject<{
             allergens?: string[] | undefined;
         } | undefined;
         preparationTime?: number | undefined;
-        category?: string | undefined;
         images?: string[] | undefined;
     }>;
 }, "strip", z.ZodTypeAny, {
     id: string;
     product: {
         name?: string | undefined;
-        price?: number | undefined;
-        active?: boolean | undefined;
         description?: string | undefined;
+        active?: boolean | undefined;
+        category?: string | undefined;
+        price?: number | undefined;
         longDescription?: string | undefined;
         tags?: string[] | undefined;
         nutritionalInfo?: {
@@ -603,16 +604,16 @@ export declare const UpdateProductRequestSchema: z.ZodObject<{
             allergens?: string[] | undefined;
         } | undefined;
         preparationTime?: number | undefined;
-        category?: string | undefined;
         images?: string[] | undefined;
     };
 }, {
     id: string;
     product: {
         name?: string | undefined;
-        price?: number | undefined;
-        active?: boolean | undefined;
         description?: string | undefined;
+        active?: boolean | undefined;
+        category?: string | undefined;
+        price?: number | undefined;
         longDescription?: string | undefined;
         tags?: string[] | undefined;
         nutritionalInfo?: {
@@ -623,7 +624,6 @@ export declare const UpdateProductRequestSchema: z.ZodObject<{
             allergens?: string[] | undefined;
         } | undefined;
         preparationTime?: number | undefined;
-        category?: string | undefined;
         images?: string[] | undefined;
     };
 }>;

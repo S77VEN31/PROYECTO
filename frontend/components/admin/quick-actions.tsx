@@ -8,7 +8,7 @@ export function QuickActions() {
   const actions = [
     {
       label: "Gestionar Menú",
-      href: "/admin/menu",
+      href: "/admin/products",
       variant: "default" as const,
       icon: <BookOpenText className="h-5 w-5 mr-2" />,
     },
