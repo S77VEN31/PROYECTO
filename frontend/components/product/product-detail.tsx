@@ -189,10 +189,20 @@ export function ProductDetail({
               {product.nutritionalInfo.allergens &&
                 product.nutritionalInfo.allergens.length > 0 && (
                   <div className="mt-4">
-                    <p className="text-sm">
-                      <span className="font-medium">Alérgenos: </span>
-                      {product.nutritionalInfo.allergens.join(", ")}
-                    </p>
+                    <h4 className="font-medium mb-2">Alérgenos</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {product.nutritionalInfo.allergens.map(
+                        (allergen, index) => (
+                          <Badge
+                            key={index}
+                            variant="destructive"
+                            className="text-xs"
+                          >
+                            {allergen}
+                          </Badge>
+                        )
+                      )}
+                    </div>
                   </div>
                 )}
             </div>

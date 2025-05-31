@@ -6,6 +6,7 @@
 "use client";
 
 import { ProductApiService } from "@/api/entities/product.api";
+import { TagInput } from "@/components/common/tag-input";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,8 +25,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { Product } from "colori-platform-shared";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -36,13 +37,13 @@ interface CreateProductFormData {
   description: string;
   price: number;
   longDescription?: string;
-  tags?: string;
+  tags: string[];
   preparationTime?: number;
   calories?: number;
   protein?: number;
   carbs?: number;
   fat?: number;
-  allergens?: string;
+  allergens: string[];
   active: boolean;
 }
 
@@ -73,13 +74,13 @@ export function CreateProductDialog({
       description: "",
       price: 0,
       longDescription: "",
-      tags: "",
+      tags: [],
       preparationTime: undefined,
       calories: undefined,
       protein: undefined,
       carbs: undefined,
       fat: undefined,
-      allergens: "",
+      allergens: [],
       active: true,
     },
   });
@@ -96,17 +97,25 @@ export function CreateProductDialog({
           description: data.description,
           price: data.price,
           longDescription: data.longDescription || undefined,
-          tags: data.tags ? data.tags.split(',').map(tag => tag.trim()).filter(Boolean) : undefined,
+          tags: data.tags.length > 0 ? data.tags : undefined,
           preparationTime: data.preparationTime || undefined,
-          nutritionalInfo: (data.calories || data.protein || data.carbs || data.fat || data.allergens) ? {
-            calories: data.calories || undefined,
-            protein: data.protein || undefined,
-            carbs: data.carbs || undefined,
-            fat: data.fat || undefined,
-            allergens: data.allergens ? data.allergens.split(',').map(allergen => allergen.trim()).filter(Boolean) : undefined,
-          } : undefined,
+          nutritionalInfo:
+            data.calories ||
+            data.protein ||
+            data.carbs ||
+            data.fat ||
+            data.allergens.length > 0
+              ? {
+                  calories: data.calories || undefined,
+                  protein: data.protein || undefined,
+                  carbs: data.carbs || undefined,
+                  fat: data.fat || undefined,
+                  allergens:
+                    data.allergens.length > 0 ? data.allergens : undefined,
+                }
+              : undefined,
           active: data.active,
-        }
+        },
       };
 
       const newProduct = await ProductApiService.createProduct(productData);
@@ -144,7 +153,7 @@ export function CreateProductDialog({
             {/* Basic Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Información Básica</h3>
-              
+
               <FormField
                 control={form.control}
                 name="name"
@@ -166,9 +175,9 @@ export function CreateProductDialog({
                   <FormItem>
                     <FormLabel>Descripción</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Descripción breve del producto" 
-                        {...field} 
+                      <Textarea
+                        placeholder="Descripción breve del producto"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -183,9 +192,9 @@ export function CreateProductDialog({
                   <FormItem>
                     <FormLabel>Descripción Detallada</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Descripción detallada del producto (opcional)" 
-                        {...field} 
+                      <Textarea
+                        placeholder="Descripción detallada del producto (opcional)"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -201,13 +210,15 @@ export function CreateProductDialog({
                     <FormItem>
                       <FormLabel>Precio (€)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          step="0.01" 
+                        <Input
+                          type="number"
+                          step="0.01"
                           min="0"
-                          placeholder="0.00" 
+                          placeholder="0.00"
                           {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value) || 0)
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -222,12 +233,16 @@ export function CreateProductDialog({
                     <FormItem>
                       <FormLabel>Tiempo de Preparación (min)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
+                        <Input
+                          type="number"
                           min="0"
-                          placeholder="15" 
+                          placeholder="15"
                           {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
+                          onChange={(e) =>
+                            field.onChange(
+                              parseInt(e.target.value) || undefined
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -241,11 +256,14 @@ export function CreateProductDialog({
                 name="tags"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Etiquetas</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="vegetariano, sin gluten, picante (separadas por comas)" 
-                        {...field}
+                      <TagInput
+                        label="Etiquetas"
+                        placeholder="Escribe una etiqueta y presiona Enter..."
+                        value={field.value}
+                        onChange={field.onChange}
+                        description="Ej: vegetariano, sin gluten, picante, etc."
+                        maxTags={10}
                       />
                     </FormControl>
                     <FormMessage />
@@ -256,8 +274,10 @@ export function CreateProductDialog({
 
             {/* Nutritional Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Información Nutricional (Opcional)</h3>
-              
+              <h3 className="text-lg font-medium">
+                Información Nutricional (Opcional)
+              </h3>
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -266,12 +286,16 @@ export function CreateProductDialog({
                     <FormItem>
                       <FormLabel>Calorías</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
+                        <Input
+                          type="number"
                           min="0"
-                          placeholder="250" 
+                          placeholder="250"
                           {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
+                          onChange={(e) =>
+                            field.onChange(
+                              parseInt(e.target.value) || undefined
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -286,13 +310,17 @@ export function CreateProductDialog({
                     <FormItem>
                       <FormLabel>Proteínas (g)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
+                        <Input
+                          type="number"
                           step="0.1"
                           min="0"
-                          placeholder="15.5" 
+                          placeholder="15.5"
                           {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                          onChange={(e) =>
+                            field.onChange(
+                              parseFloat(e.target.value) || undefined
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -307,13 +335,17 @@ export function CreateProductDialog({
                     <FormItem>
                       <FormLabel>Carbohidratos (g)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
+                        <Input
+                          type="number"
                           step="0.1"
                           min="0"
-                          placeholder="30.2" 
+                          placeholder="30.2"
                           {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                          onChange={(e) =>
+                            field.onChange(
+                              parseFloat(e.target.value) || undefined
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -328,13 +360,17 @@ export function CreateProductDialog({
                     <FormItem>
                       <FormLabel>Grasas (g)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
+                        <Input
+                          type="number"
                           step="0.1"
                           min="0"
-                          placeholder="8.7" 
+                          placeholder="8.7"
                           {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                          onChange={(e) =>
+                            field.onChange(
+                              parseFloat(e.target.value) || undefined
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -348,11 +384,14 @@ export function CreateProductDialog({
                 name="allergens"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Alérgenos</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="gluten, lácteos, frutos secos (separados por comas)" 
-                        {...field}
+                      <TagInput
+                        label="Alérgenos"
+                        placeholder="Escribe un alérgeno y presiona Enter..."
+                        value={field.value}
+                        onChange={field.onChange}
+                        description="Ej: gluten, lácteos, frutos secos, etc."
+                        maxTags={15}
                       />
                     </FormControl>
                     <FormMessage />

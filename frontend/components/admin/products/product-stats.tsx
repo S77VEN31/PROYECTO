@@ -6,20 +6,18 @@
 "use client";
 
 import { AdminCard } from "@/components/admin/admin-card";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Activity, 
-  DollarSign, 
-  Package, 
-  PackageCheck, 
+import {
+  DollarSign,
+  Package,
+  PackageCheck,
   PackageX,
-  Utensils
+  Utensils,
 } from "lucide-react";
 
 /**
  * Product statistics data structure
  */
-interface ProductStatsData {
+export interface ProductStatsData {
   total: number;
   active: number;
   inactive: number;
@@ -28,10 +26,74 @@ interface ProductStatsData {
 }
 
 /**
- * Product stats component props
+ * Product statistics props
  */
 interface ProductStatsProps {
   stats: ProductStatsData;
+}
+
+/**
+ * Individual stat card props
+ */
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ReactNode;
+  variant?: "default" | "active" | "inactive" | "price" | "nutrition";
+  description?: string;
+}
+
+/**
+ * Individual stat card component
+ */
+function StatCard({
+  title,
+  value,
+  icon,
+  variant = "default",
+  description,
+}: StatCardProps) {
+  const getVariantStyles = () => {
+    switch (variant) {
+      case "active":
+        return "text-emerald-600 bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-400";
+      case "inactive":
+        return "text-red-600 bg-red-50 dark:bg-red-950 dark:text-red-400";
+      case "price":
+        return "text-orange-600 bg-orange-50 dark:bg-orange-950 dark:text-orange-400";
+      case "nutrition":
+        return "text-purple-600 bg-purple-50 dark:bg-purple-950 dark:text-purple-400";
+      default:
+        return "text-primary bg-primary/10";
+    }
+  };
+
+  return (
+    <AdminCard
+      flat
+      className="hover:shadow-lg transition-shadow h-full w-full"
+      contentClassName="p-4"
+    >
+      <div className="flex flex-col gap-3">
+        <p className="text-sm font-medium text-muted-foreground">{title}</p>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-col">
+            <p className="text-3xl font-bold text-foreground">{value}</p>
+            {description && (
+              <p className="text-xs text-muted-foreground mt-1">
+                {description}
+              </p>
+            )}
+          </div>
+          <div
+            className={`p-2.5 rounded-full flex-shrink-0 ${getVariantStyles()}`}
+          >
+            {icon}
+          </div>
+        </div>
+      </div>
+    </AdminCard>
+  );
 }
 
 /**
@@ -41,90 +103,69 @@ interface ProductStatsProps {
  */
 export function ProductStats({ stats }: ProductStatsProps): React.JSX.Element {
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'EUR',
+    return new Intl.NumberFormat("es-ES", {
+      style: "currency",
+      currency: "EUR",
     }).format(price);
   };
 
-  const statsCards = [
+  const statCards = [
     {
       title: "Total de Productos",
-      value: stats.total.toString(),
+      value: stats.total,
       icon: <Package className="h-5 w-5" />,
+      variant: "default" as const,
       description: "Productos registrados",
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
     },
     {
       title: "Productos Activos",
-      value: stats.active.toString(),
+      value: stats.active,
       icon: <PackageCheck className="h-5 w-5" />,
-      description: "Disponibles en el menú",
-      color: "text-green-600",
-      bgColor: "bg-green-50",
+      variant: "active" as const,
+      description:
+        stats.total > 0
+          ? `${Math.round((stats.active / stats.total) * 100)}% del total`
+          : "Disponibles en el menú",
     },
     {
       title: "Productos Inactivos",
-      value: stats.inactive.toString(),
+      value: stats.inactive,
       icon: <PackageX className="h-5 w-5" />,
+      variant: "inactive" as const,
       description: "No disponibles",
-      color: "text-red-600",
-      bgColor: "bg-red-50",
     },
     {
       title: "Precio Promedio",
       value: formatPrice(stats.averagePrice),
       icon: <DollarSign className="h-5 w-5" />,
+      variant: "price" as const,
       description: "Precio medio de productos",
-      color: "text-yellow-600",
-      bgColor: "bg-yellow-50",
     },
     {
       title: "Con Información Nutricional",
-      value: stats.withNutrition.toString(),
+      value: stats.withNutrition,
       icon: <Utensils className="h-5 w-5" />,
-      description: "Productos con datos nutricionales",
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
+      variant: "nutrition" as const,
+      description:
+        stats.total > 0
+          ? `${Math.round(
+              (stats.withNutrition / stats.total) * 100
+            )}% del total`
+          : "Con datos nutricionales",
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-      {statsCards.map((stat, index) => (
-        <AdminCard key={index} className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <p className="text-sm font-medium text-muted-foreground mb-1">
-                {stat.title}
-              </p>
-              <div className="flex items-center gap-2">
-                <p className="text-2xl font-bold text-foreground">
-                  {stat.value}
-                </p>
-                {stat.title === "Productos Activos" && stats.total > 0 && (
-                  <Badge variant="secondary" className="text-xs">
-                    {Math.round((stats.active / stats.total) * 100)}%
-                  </Badge>
-                )}
-                {stat.title === "Con Información Nutricional" && stats.total > 0 && (
-                  <Badge variant="secondary" className="text-xs">
-                    {Math.round((stats.withNutrition / stats.total) * 100)}%
-                  </Badge>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {stat.description}
-              </p>
-            </div>
-            <div className={`p-3 rounded-full ${stat.bgColor}`}>
-              <div className={stat.color}>
-                {stat.icon}
-              </div>
-            </div>
-          </div>
-        </AdminCard>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      {statCards.map((stat, index) => (
+        <StatCard
+          key={index}
+          title={stat.title}
+          value={stat.value}
+          icon={stat.icon}
+          variant={stat.variant}
+          description={stat.description}
+        />
       ))}
     </div>
   );

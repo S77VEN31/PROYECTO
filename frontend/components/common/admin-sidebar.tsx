@@ -5,7 +5,6 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import {
   BarChart3,
-  BookOpenText,
   ClipboardList,
   LogOut,
   Package,
@@ -81,9 +80,9 @@ export function AdminSidebar() {
           </li>
           <li>
             <SidebarLink
-              href="/admin/menu"
-              label="Gestión de Menú"
-              icon={<BookOpenText className="h-4 w-4" />}
+              href="/admin/products"
+              label="Productos"
+              icon={<Package className="h-4 w-4" />}
             />
           </li>
           <li>
