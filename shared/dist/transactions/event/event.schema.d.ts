@@ -26,9 +26,9 @@ export declare const EventTransactionSchema: z.ZodObject<{
     completedBy: z.ZodOptional<z.ZodNullable<z.ZodString>>;
 }, "strip", z.ZodTypeAny, {
     status: OrderStatus;
+    active: boolean;
     createdAt: string;
     updatedAt: string;
-    active: boolean;
     source: EventSource;
     orderId: string;
     priority: EventPriority;
@@ -76,10 +76,10 @@ export declare const EventSchema: z.ZodObject<{
     id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     status: OrderStatus;
-    createdAt: string;
-    updatedAt: string;
     id: string;
     active: boolean;
+    createdAt: string;
+    updatedAt: string;
     source: EventSource;
     orderId: string;
     priority: EventPriority;
@@ -91,9 +91,9 @@ export declare const EventSchema: z.ZodObject<{
     reason?: string | undefined;
 }, {
     status: OrderStatus;
+    id: string;
     createdAt: string;
     updatedAt: string;
-    id: string;
     source: EventSource;
     orderId: string;
     active?: boolean | undefined;

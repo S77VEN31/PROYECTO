@@ -15,9 +15,9 @@ export declare const TransactionRecordSchema: z.ZodObject<{
     active: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
     reference: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
+    active: boolean;
     createdAt: string;
     updatedAt: string;
-    active: boolean;
     id?: string | undefined;
     completedAt?: string | null | undefined;
     reference?: string | undefined;
@@ -46,9 +46,9 @@ export declare const AuditableTransactionSchema: z.ZodObject<{
     updatedBy: z.ZodOptional<z.ZodString>;
     completedBy: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
+    active: boolean;
     createdAt: string;
     updatedAt: string;
-    active: boolean;
     id?: string | undefined;
     completedAt?: string | null | undefined;
     reference?: string | undefined;
@@ -77,17 +77,17 @@ export declare const PartialTransactionRecordSchema: z.ZodObject<{
     active: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodBoolean>>>;
     reference: z.ZodOptional<z.ZodOptional<z.ZodString>>;
 }, "strip", z.ZodTypeAny, {
-    createdAt?: string | undefined;
-    updatedAt?: string | undefined;
     id?: string | undefined;
     active?: boolean | undefined;
+    createdAt?: string | undefined;
+    updatedAt?: string | undefined;
     completedAt?: string | null | undefined;
     reference?: string | undefined;
 }, {
-    createdAt?: string | undefined;
-    updatedAt?: string | undefined;
     id?: string | undefined;
     active?: boolean | undefined;
+    createdAt?: string | undefined;
+    updatedAt?: string | undefined;
     completedAt?: string | null | undefined;
     reference?: string | undefined;
 }>;

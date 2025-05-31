@@ -38,11 +38,11 @@ export declare const UserBaseSchema: z.ZodObject<{
     lastLogin: z.ZodNullable<z.ZodString>;
     password: z.ZodString;
 }, "strip", z.ZodTypeAny, {
+    name: string;
+    active: boolean;
     createdAt: string;
     updatedAt: string;
-    name: string;
     description: string;
-    active: boolean;
     slug: string;
     firstName: string;
     lastName: string;
@@ -58,9 +58,9 @@ export declare const UserBaseSchema: z.ZodObject<{
         isPrimary?: boolean | undefined;
     }[] | undefined;
 }, {
+    name: string;
     createdAt: string;
     updatedAt: string;
-    name: string;
     description: string;
     slug: string;
     firstName: string;
@@ -82,11 +82,11 @@ export declare const UserBaseSchema: z.ZodObject<{
  * Schema for complete user representation
  */
 export declare const UserSchema: z.ZodObject<{
+    name: z.ZodString;
+    active: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
     createdAt: z.ZodString;
     updatedAt: z.ZodString;
-    name: z.ZodString;
     description: z.ZodString;
-    active: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
     slug: z.ZodString;
     searchTerm: z.ZodOptional<z.ZodString>;
     backgroundImages: z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -110,12 +110,12 @@ export declare const UserSchema: z.ZodObject<{
 } & {
     id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    createdAt: string;
-    updatedAt: string;
     id: string;
     name: string;
-    description: string;
     active: boolean;
+    createdAt: string;
+    updatedAt: string;
+    description: string;
     slug: string;
     firstName: string;
     lastName: string;
@@ -129,10 +129,10 @@ export declare const UserSchema: z.ZodObject<{
         isPrimary?: boolean | undefined;
     }[] | undefined;
 }, {
-    createdAt: string;
-    updatedAt: string;
     id: string;
     name: string;
+    createdAt: string;
+    updatedAt: string;
     description: string;
     slug: string;
     firstName: string;
@@ -190,8 +190,8 @@ export declare const UserUpdateSchema: z.ZodObject<{
     lastLogin: z.ZodOptional<z.ZodNullable<z.ZodString>>;
 }, "strip", z.ZodTypeAny, {
     name?: string | undefined;
-    description?: string | undefined;
     active?: boolean | undefined;
+    description?: string | undefined;
     firstName?: string | undefined;
     lastName?: string | undefined;
     email?: string | undefined;
@@ -199,8 +199,8 @@ export declare const UserUpdateSchema: z.ZodObject<{
     lastLogin?: string | null | undefined;
 }, {
     name?: string | undefined;
-    description?: string | undefined;
     active?: boolean | undefined;
+    description?: string | undefined;
     firstName?: string | undefined;
     lastName?: string | undefined;
     email?: string | undefined;
@@ -284,8 +284,8 @@ export declare const UpdateUserRequestBodySchema: z.ZodObject<{
     lastLogin: z.ZodOptional<z.ZodNullable<z.ZodString>>;
 }, "strip", z.ZodTypeAny, {
     name?: string | undefined;
-    description?: string | undefined;
     active?: boolean | undefined;
+    description?: string | undefined;
     firstName?: string | undefined;
     lastName?: string | undefined;
     email?: string | undefined;
@@ -293,8 +293,8 @@ export declare const UpdateUserRequestBodySchema: z.ZodObject<{
     lastLogin?: string | null | undefined;
 }, {
     name?: string | undefined;
-    description?: string | undefined;
     active?: boolean | undefined;
+    description?: string | undefined;
     firstName?: string | undefined;
     lastName?: string | undefined;
     email?: string | undefined;

@@ -1,10 +1,10 @@
 import { ApiError } from "@/middlewares";
 import { ProductModel } from "@models";
 import {
-  PaginatedResponse,
+  GetProductsRequest,
+  GetProductsResponse,
   Product,
   ProductCreate,
-  ProductFilterOptions,
   ProductUpdate,
 } from "colori-platform-shared";
 
@@ -17,8 +17,8 @@ export class ProductService {
    * Find all products with optional filtering and pagination
    */
   static async findAll(
-    options: ProductFilterOptions
-  ): Promise<PaginatedResponse<Product>> {
+    options: GetProductsRequest
+  ): Promise<GetProductsResponse> {
     const {
       page = 1,
       limit = 10,
@@ -29,16 +29,50 @@ export class ProductService {
       maxPrice,
     } = options;
 
-    // TODO: Implement actual database interaction
-    // Mock implementation for now
-    const mockProducts: Product[] = [];
+    // Build filter query
+    const filter: any = {};
+    
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    if (category) {
+      filter.category = category;
+    }
+    
+    if (tag) {
+      filter.tags = { $in: [tag] };
+    }
+    
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      filter.price = {};
+      if (minPrice !== undefined) filter.price.$gte = minPrice;
+      if (maxPrice !== undefined) filter.price.$lte = maxPrice;
+    }
+
+    const skip = (page - 1) * limit;
+    
+    const [products, total] = await Promise.all([
+      ProductModel.find(filter).skip(skip).limit(limit).lean(),
+      ProductModel.countDocuments(filter)
+    ]);
+
+    // Transform MongoDB documents to Product objects
+    const transformedProducts = products.map(product => ({
+      ...product,
+      id: product._id.toString(),
+      _id: undefined,
+      __v: undefined,
+    })) as unknown as Product[];
 
     return {
-      results: mockProducts,
-      total: mockProducts.length,
+      products: transformedProducts,
+      total,
       page,
       limit,
-      pages: Math.ceil(mockProducts.length / limit),
     };
   }
 
@@ -46,9 +80,20 @@ export class ProductService {
    * Find a single product by ID
    */
   static async findById(id: string): Promise<Product | null> {
-    // TODO: Implement actual database interaction
-    // Mock implementation for now
-    return null;
+    try {
+      const product = await ProductModel.findById(id).lean();
+      if (!product) return null;
+      
+      // Transform MongoDB document to Product object
+      return {
+        ...product,
+        id: product._id.toString(),
+        _id: undefined,
+        __v: undefined,
+      } as unknown as Product;
+    } catch (error) {
+      return null;
+    }
   }
 
   /**
@@ -57,28 +102,32 @@ export class ProductService {
   static async create(
     data: ProductCreate & { createdBy?: string }
   ): Promise<Product> {
-    // TODO: Implement actual database interaction
-    // Mock implementation for now
-    return {
-      id: "mock-id",
-      name: data.name,
-      description: data.description,
-      slug: data.name.toLowerCase().replace(/\s+/g, "-"),
-      price: data.price || 0,
-      longDescription: data.longDescription || "",
-      tags: data.tags || [],
-      nutritionalInfo: data.nutritionalInfo || {
-        calories: 0,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-        allergens: [],
-      },
-      preparationTime: data.preparationTime || 10,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      active: true,
-    } as unknown as Product;
+    try {
+      // Check if product with name already exists
+      const existingProduct = await ProductModel.findOne({
+        name: data.name,
+      });
+      if (existingProduct) {
+        throw new ApiError(400, "Product with this name already exists");
+      }
+
+      // Create product in database
+      const product = await ProductModel.create(data);
+      const productObj = product.toObject();
+      
+      // Transform MongoDB document to Product object
+      return {
+        ...productObj,
+        id: productObj._id.toString(),
+        _id: undefined,
+        __v: undefined,
+      } as unknown as Product;
+    } catch (error: any) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, `Failed to create product: ${error.message}`);
+    }
   }
 
   /**
@@ -88,37 +137,53 @@ export class ProductService {
     id: string,
     data: ProductUpdate & { updatedBy?: string }
   ): Promise<Product> {
-    // TODO: Implement actual database interaction
-    // Mock implementation for now
-    return {
-      id,
-      name: data.name || "Updated Product",
-      description: data.description || "Updated Description",
-      slug: (data.name || "updated-product").toLowerCase().replace(/\s+/g, "-"),
-      price: data.price || 0,
-      longDescription: data.longDescription || "",
-      tags: data.tags || [],
-      nutritionalInfo: data.nutritionalInfo || {
-        calories: 0,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-        allergens: [],
-      },
-      preparationTime: data.preparationTime || 10,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      active: data.active ?? true,
-    } as unknown as Product;
+    try {
+      const product = await ProductModel.findById(id);
+
+      if (!product) {
+        throw new ApiError(404, "Product not found");
+      }
+
+      // Update product fields
+      Object.assign(product, data);
+      await product.save();
+      
+      const productObj = product.toObject();
+      
+      // Transform MongoDB document to Product object
+      return {
+        ...productObj,
+        id: productObj._id.toString(),
+        _id: undefined,
+        __v: undefined,
+      } as unknown as Product;
+    } catch (error: any) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, `Failed to update product: ${error.message}`);
+    }
   }
 
   /**
    * Delete a product by ID
    */
   static async delete(id: string): Promise<boolean> {
-    // TODO: Implement actual database interaction
-    // Mock implementation for now
-    return true;
+    try {
+      const product = await ProductModel.findById(id);
+
+      if (!product) {
+        throw new ApiError(404, "Product not found");
+      }
+
+      await ProductModel.deleteOne({ _id: id });
+      return true;
+    } catch (error: any) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(500, `Failed to delete product: ${error.message}`);
+    }
   }
 
   /**

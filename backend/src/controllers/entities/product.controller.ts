@@ -44,14 +44,7 @@ export const getProducts = async (req: Request, res: Response) => {
 
     const result = await ProductService.findAll(options);
 
-    return res.status(200).json({
-      success: true,
-      products: result.data,
-      total: result.total,
-      page: result.page,
-      limit: result.limit,
-      pages: result.pages,
-    });
+    return res.status(200).json(result);
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -81,9 +74,8 @@ export const getProductById = async (
     }
 
     return res.status(200).json({
-      success: true,
-      data: product,
-    } as ApiResponse<typeof product>);
+      product: product,
+    });
   } catch (error: any) {
     return res.status(500).json({
       success: false,
@@ -114,10 +106,9 @@ export const createProduct = async (
     const newProduct = await ProductService.create(productData);
 
     return res.status(201).json({
-      success: true,
       id: newProduct.id,
-      data: product,
-    } as CreateResponse);
+      product: newProduct,
+    });
   } catch (error: any) {
     return res.status(500).json({
       success: false,

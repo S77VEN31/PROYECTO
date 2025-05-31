@@ -4,6 +4,11 @@
  * @module shared/common
  */
 /**
+ * Common validation schemas
+ */
+import { MongoIdSchema, OptionalMongoIdSchema, MongoIdArraySchema, OptionalMongoIdArraySchema } from "./schemas";
+export { MongoIdSchema, OptionalMongoIdSchema, MongoIdArraySchema, OptionalMongoIdArraySchema, };
+/**
  * API related type definitions
  */
 import { ApiResponse, AuthResponse, CreateResponse, DeleteResponse, EntityResponse, GetResponse, IdParam, JwtPayload, PaginatedResponse, PaginationParams, SearchableParams, UpdateResponse } from "./api/api.d";

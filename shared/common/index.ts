@@ -5,6 +5,24 @@
  */
 
 /**
+ * Common validation schemas
+ */
+import {
+  MongoIdSchema,
+  OptionalMongoIdSchema,
+  MongoIdArraySchema,
+  OptionalMongoIdArraySchema,
+} from "./schemas";
+
+// Re-export common schemas
+export {
+  MongoIdSchema,
+  OptionalMongoIdSchema,
+  MongoIdArraySchema,
+  OptionalMongoIdArraySchema,
+};
+
+/**
  * API related type definitions
  */
 import {

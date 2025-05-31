@@ -3,6 +3,12 @@
  *
  * @module shared/common
  */
+/**
+ * Common validation schemas
+ */
+import { MongoIdSchema, OptionalMongoIdSchema, MongoIdArraySchema, OptionalMongoIdArraySchema, } from "./schemas";
+// Re-export common schemas
+export { MongoIdSchema, OptionalMongoIdSchema, MongoIdArraySchema, OptionalMongoIdArraySchema, };
 import { IdParamSchema, PaginationParamsSchema, SearchableParamsSchema, } from "./api/api.schema";
 // Re-export API types
 export { IdParamSchema, PaginationParamsSchema, SearchableParamsSchema, };

@@ -36,15 +36,15 @@ export declare const CategoryBaseSchema: z.ZodObject<{
     products: z.ZodArray<z.ZodString, "many">;
     variant: z.ZodNativeEnum<typeof CategoryVariant>;
 }, "strip", z.ZodTypeAny, {
+    name: string;
+    active: boolean;
     createdAt: string;
     updatedAt: string;
-    name: string;
+    products: string[];
     description: string;
-    active: boolean;
     slug: string;
     icon: string;
     displayOrder: number;
-    products: string[];
     variant: CategoryVariant;
     id?: string | undefined;
     searchTerm?: string | undefined;
@@ -54,14 +54,14 @@ export declare const CategoryBaseSchema: z.ZodObject<{
         isPrimary?: boolean | undefined;
     }[] | undefined;
 }, {
+    name: string;
     createdAt: string;
     updatedAt: string;
-    name: string;
+    products: string[];
     description: string;
     slug: string;
     icon: string;
     displayOrder: number;
-    products: string[];
     variant: CategoryVariant;
     id?: string | undefined;
     active?: boolean | undefined;
@@ -103,16 +103,16 @@ export declare const CategorySchema: z.ZodObject<{
 } & {
     id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    createdAt: string;
-    updatedAt: string;
     id: string;
     name: string;
-    description: string;
     active: boolean;
+    createdAt: string;
+    updatedAt: string;
+    products: string[];
+    description: string;
     slug: string;
     icon: string;
     displayOrder: number;
-    products: string[];
     variant: CategoryVariant;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -121,15 +121,15 @@ export declare const CategorySchema: z.ZodObject<{
         isPrimary?: boolean | undefined;
     }[] | undefined;
 }, {
-    createdAt: string;
-    updatedAt: string;
     id: string;
     name: string;
+    createdAt: string;
+    updatedAt: string;
+    products: string[];
     description: string;
     slug: string;
     icon: string;
     displayOrder: number;
-    products: string[];
     variant: CategoryVariant;
     active?: boolean | undefined;
     searchTerm?: string | undefined;
@@ -166,6 +166,7 @@ export declare const CategoryCreateSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     name: string;
     description: string;
+    products?: string[] | undefined;
     slug?: string | undefined;
     backgroundImages?: {
         src: string;
@@ -174,11 +175,11 @@ export declare const CategoryCreateSchema: z.ZodObject<{
     }[] | undefined;
     icon?: string | undefined;
     displayOrder?: number | undefined;
-    products?: string[] | undefined;
     variant?: CategoryVariant | undefined;
 }, {
     name: string;
     description: string;
+    products?: string[] | undefined;
     slug?: string | undefined;
     backgroundImages?: {
         src: string;
@@ -187,18 +188,18 @@ export declare const CategoryCreateSchema: z.ZodObject<{
     }[] | undefined;
     icon?: string | undefined;
     displayOrder?: number | undefined;
-    products?: string[] | undefined;
     variant?: CategoryVariant | undefined;
 }>;
 /**
  * Schema for category updates
  */
 export declare const CategoryUpdateSchema: z.ZodObject<{
+    name: z.ZodOptional<z.ZodString>;
+    active: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodBoolean>>>;
     createdAt: z.ZodOptional<z.ZodString>;
     updatedAt: z.ZodOptional<z.ZodString>;
-    name: z.ZodOptional<z.ZodString>;
+    products: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     description: z.ZodOptional<z.ZodString>;
-    active: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodBoolean>>>;
     slug: z.ZodOptional<z.ZodString>;
     searchTerm: z.ZodOptional<z.ZodOptional<z.ZodString>>;
     backgroundImages: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -216,14 +217,14 @@ export declare const CategoryUpdateSchema: z.ZodObject<{
     }>, "many">>>;
     icon: z.ZodOptional<z.ZodString>;
     displayOrder: z.ZodOptional<z.ZodNumber>;
-    products: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     variant: z.ZodOptional<z.ZodNativeEnum<typeof CategoryVariant>>;
 }, "strip", z.ZodTypeAny, {
+    name?: string | undefined;
+    active?: boolean | undefined;
     createdAt?: string | undefined;
     updatedAt?: string | undefined;
-    name?: string | undefined;
+    products?: string[] | undefined;
     description?: string | undefined;
-    active?: boolean | undefined;
     slug?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -233,14 +234,14 @@ export declare const CategoryUpdateSchema: z.ZodObject<{
     }[] | undefined;
     icon?: string | undefined;
     displayOrder?: number | undefined;
-    products?: string[] | undefined;
     variant?: CategoryVariant | undefined;
 }, {
+    name?: string | undefined;
+    active?: boolean | undefined;
     createdAt?: string | undefined;
     updatedAt?: string | undefined;
-    name?: string | undefined;
+    products?: string[] | undefined;
     description?: string | undefined;
-    active?: boolean | undefined;
     slug?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -250,7 +251,6 @@ export declare const CategoryUpdateSchema: z.ZodObject<{
     }[] | undefined;
     icon?: string | undefined;
     displayOrder?: number | undefined;
-    products?: string[] | undefined;
     variant?: CategoryVariant | undefined;
 }>;
 /**
@@ -280,8 +280,8 @@ export declare const CreateCategoryRequestSchema: z.ZodObject<{
         metadata?: Record<string, string> | undefined;
     }, {
         name: string;
-        description?: string | undefined;
         active?: boolean | undefined;
+        description?: string | undefined;
         image?: string | undefined;
         order?: number | undefined;
         metadata?: Record<string, string> | undefined;
@@ -298,8 +298,8 @@ export declare const CreateCategoryRequestSchema: z.ZodObject<{
 }, {
     category: {
         name: string;
-        description?: string | undefined;
         active?: boolean | undefined;
+        description?: string | undefined;
         image?: string | undefined;
         order?: number | undefined;
         metadata?: Record<string, string> | undefined;
@@ -316,15 +316,15 @@ export declare const UpdateCategoryRequestSchema: z.ZodObject<{
         metadata: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
     }, "strip", z.ZodTypeAny, {
         name?: string | undefined;
-        description?: string | undefined;
         active?: boolean | undefined;
+        description?: string | undefined;
         image?: string | undefined;
         order?: number | undefined;
         metadata?: Record<string, string> | undefined;
     }, {
         name?: string | undefined;
-        description?: string | undefined;
         active?: boolean | undefined;
+        description?: string | undefined;
         image?: string | undefined;
         order?: number | undefined;
         metadata?: Record<string, string> | undefined;
@@ -333,8 +333,8 @@ export declare const UpdateCategoryRequestSchema: z.ZodObject<{
     id: string;
     category: {
         name?: string | undefined;
-        description?: string | undefined;
         active?: boolean | undefined;
+        description?: string | undefined;
         image?: string | undefined;
         order?: number | undefined;
         metadata?: Record<string, string> | undefined;
@@ -343,8 +343,8 @@ export declare const UpdateCategoryRequestSchema: z.ZodObject<{
     id: string;
     category: {
         name?: string | undefined;
-        description?: string | undefined;
         active?: boolean | undefined;
+        description?: string | undefined;
         image?: string | undefined;
         order?: number | undefined;
         metadata?: Record<string, string> | undefined;

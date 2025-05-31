@@ -14,16 +14,16 @@ export declare const EntityBaseSchema: z.ZodObject<{
     description: z.ZodString;
     active: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
 }, "strip", z.ZodTypeAny, {
+    name: string;
+    active: boolean;
     createdAt: string;
     updatedAt: string;
-    name: string;
     description: string;
-    active: boolean;
     id?: string | undefined;
 }, {
+    name: string;
     createdAt: string;
     updatedAt: string;
-    name: string;
     description: string;
     id?: string | undefined;
     active?: boolean | undefined;
@@ -56,11 +56,11 @@ export declare const EntityMetadataSchema: z.ZodObject<{
         isPrimary?: boolean | undefined;
     }>, "many">>;
 }, "strip", z.ZodTypeAny, {
+    name: string;
+    active: boolean;
     createdAt: string;
     updatedAt: string;
-    name: string;
     description: string;
-    active: boolean;
     slug: string;
     id?: string | undefined;
     searchTerm?: string | undefined;
@@ -70,9 +70,9 @@ export declare const EntityMetadataSchema: z.ZodObject<{
         isPrimary?: boolean | undefined;
     }[] | undefined;
 }, {
+    name: string;
     createdAt: string;
     updatedAt: string;
-    name: string;
     description: string;
     slug: string;
     id?: string | undefined;
@@ -116,11 +116,11 @@ export declare const FullMetadataSchema: z.ZodObject<{
     metaDescription: z.ZodOptional<z.ZodString>;
     keywords: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
+    name: string;
+    active: boolean;
     createdAt: string;
     updatedAt: string;
-    name: string;
     description: string;
-    active: boolean;
     slug: string;
     id?: string | undefined;
     searchTerm?: string | undefined;
@@ -133,9 +133,9 @@ export declare const FullMetadataSchema: z.ZodObject<{
     metaDescription?: string | undefined;
     keywords?: string[] | undefined;
 }, {
+    name: string;
     createdAt: string;
     updatedAt: string;
-    name: string;
     description: string;
     slug: string;
     id?: string | undefined;
@@ -176,12 +176,12 @@ export declare const PartialMetadataSchema: z.ZodObject<{
         isPrimary?: boolean | undefined;
     }>, "many">>>;
 }, "strip", z.ZodTypeAny, {
-    createdAt?: string | undefined;
-    updatedAt?: string | undefined;
     id?: string | undefined;
     name?: string | undefined;
-    description?: string | undefined;
     active?: boolean | undefined;
+    createdAt?: string | undefined;
+    updatedAt?: string | undefined;
+    description?: string | undefined;
     slug?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
@@ -190,12 +190,12 @@ export declare const PartialMetadataSchema: z.ZodObject<{
         isPrimary?: boolean | undefined;
     }[] | undefined;
 }, {
-    createdAt?: string | undefined;
-    updatedAt?: string | undefined;
     id?: string | undefined;
     name?: string | undefined;
-    description?: string | undefined;
     active?: boolean | undefined;
+    createdAt?: string | undefined;
+    updatedAt?: string | undefined;
+    description?: string | undefined;
     slug?: string | undefined;
     searchTerm?: string | undefined;
     backgroundImages?: {
