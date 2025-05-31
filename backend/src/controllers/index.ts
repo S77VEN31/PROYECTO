@@ -22,13 +22,7 @@ import {
   updateProduct,
 } from "./entities/product.controller";
 
-import {
-  createPromotion,
-  deletePromotion,
-  getPromotionById,
-  getPromotions,
-  updatePromotion,
-} from "./entities/promotion.controller";
+import { PromotionController } from "./entities/promotion.controller";
 
 import {
   createUser,
@@ -78,13 +72,7 @@ export {
   };
 
 // Promotion controller exports
-  export {
-    createPromotion,
-    deletePromotion,
-    getPromotionById,
-    getPromotions,
-    updatePromotion
-  };
+export { PromotionController };
 
 // User controller exports
   export {
