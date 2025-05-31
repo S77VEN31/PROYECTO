@@ -20,3 +20,4 @@ declare const userUpdateModel: UserUpdate;
  */
 declare const serverUserModel: UserCreate;
 export { newUserModel, serverUserModel, userModel, userUpdateModel };
+//# sourceMappingURL=user.example.d.ts.map

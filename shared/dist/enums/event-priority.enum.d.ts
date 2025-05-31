@@ -20,3 +20,4 @@ export declare enum EventPriority {
      */
     CRITICAL = 3
 }
+//# sourceMappingURL=event-priority.enum.d.ts.map

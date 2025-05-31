@@ -204,3 +204,4 @@ export declare const PartialMetadataSchema: z.ZodObject<{
         isPrimary?: boolean | undefined;
     }[] | undefined;
 }>;
+//# sourceMappingURL=entity.schema.d.ts.map

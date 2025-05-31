@@ -91,3 +91,4 @@ export declare const PartialTransactionRecordSchema: z.ZodObject<{
     active?: boolean | undefined;
     reference?: string | undefined;
 }>;
+//# sourceMappingURL=transaction.schema.d.ts.map

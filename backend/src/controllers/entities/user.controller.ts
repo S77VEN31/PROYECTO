@@ -7,13 +7,11 @@ import { UserService } from "@services";
 import {
   ApiResponse,
   CreateResponse,
+  CreateUserRequestBody,
   DeleteResponse,
-  DeleteUserRequestParams,
-  GetUserRequestParams,
   LoginRequest,
   UpdateResponse,
-  UpdateUserRequest,
-  UpdateUserRequestParams,
+  UpdateUserRequestBody,
 } from "colori-platform-shared";
 import { Request, Response } from "express";
 
@@ -49,12 +47,9 @@ export const getUsers = async (req: Request, res: Response) => {
 /**
  * Get a single user by ID
  */
-export const getUserById = async (
-  req: Request<GetUserRequestParams>,
-  res: Response
-) => {
+export const getUserById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params; // id is validated by middleware
 
     const user = await UserService.findById(id);
 
@@ -83,12 +78,13 @@ export const getUserById = async (
  */
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, role, description, firstName, lastName } = req.body;
+    const { name, email, password, role, description, firstName, lastName } =
+      req.body as CreateUserRequestBody;
 
     // Use provided firstName/lastName or extract from name
     let userFirstName = firstName;
     let userLastName = lastName;
-    
+
     if (!userFirstName) {
       const nameParts = name.trim().split(" ");
       userFirstName = nameParts[0] || "";
@@ -100,7 +96,8 @@ export const createUser = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         error: "First name is required",
-        message: "First name must be provided either directly or extractable from name field",
+        message:
+          "First name must be provided either directly or extractable from name field",
       } as ApiResponse);
     }
 
@@ -131,13 +128,10 @@ export const createUser = async (req: Request, res: Response) => {
 /**
  * Update an existing user
  */
-export const updateUser = async (
-  req: Request<UpdateUserRequestParams, any, UpdateUserRequest>,
-  res: Response
-) => {
+export const updateUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const { user } = req.body;
+    const { id } = req.params; // id is validated by middleware
+    const userData = req.body as UpdateUserRequestBody;
 
     // Get user ID from authenticated request
     const updaterId = req.user?.id;
@@ -151,9 +145,7 @@ export const updateUser = async (
       } as ApiResponse);
     }
 
-    const updatedUser = await UserService.update(id, {
-      ...user,
-    });
+    const updatedUser = await UserService.update(id, userData);
 
     return res.status(200).json({
       success: true,
@@ -172,12 +164,9 @@ export const updateUser = async (
 /**
  * Delete a user by ID
  */
-export const deleteUser = async (
-  req: Request<DeleteUserRequestParams>,
-  res: Response
-) => {
+export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params; // id is validated by middleware
 
     const existingUser = await UserService.findById(id);
 

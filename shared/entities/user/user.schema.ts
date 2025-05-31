@@ -11,6 +11,13 @@ import {
 } from "@shared/entities";
 import { UserRole } from "@shared/enums";
 import { z } from "zod";
+import {
+  CreateUserRequestBody,
+  DeleteUserRequestParams,
+  GetUserRequestParams,
+  UpdateUserRequestBody,
+  UpdateUserRequestParams,
+} from "./user.d";
 
 /**
  * Schema for core user profile information
@@ -30,7 +37,7 @@ export const UserBaseSchema = EntityMetadataSchema.extend({
 export const UserSchema = UserBaseSchema.omit({
   password: true,
 }).extend({
-  id: z.string().uuid(),
+  id: z.string().min(1),
 }) satisfies z.ZodType<User>;
 
 /**
@@ -58,30 +65,28 @@ export const UserUpdateSchema = UserBaseSchema.omit({
  * User request validation schemas
  */
 
-export const GetUserRequestSchema = z.object({
-  id: z.string().uuid(),
-});
+// GET /users/:id - validate params
+export const GetUserRequestParamsSchema = z.object({
+  id: z.string().min(1),
+}) satisfies z.ZodType<GetUserRequestParams>;
 
-export const CreateUserRequestSchema = z.object({
-  name: z.string().min(1).max(100),
-  email: z.string().email(),
-  password: z.string().min(6),
-  role: z.nativeEnum(UserRole).optional().default(UserRole.SERVER),
-  description: z.string().min(1).optional(),
-  firstName: z.string().min(1).max(50),
-  lastName: z.string().min(0).max(50).optional(),
-});
+// POST /users - validate body (user data without nesting)
+export const CreateUserRequestBodySchema =
+  UserCreateSchema satisfies z.ZodType<CreateUserRequestBody>;
 
-export const UpdateUserRequestSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
-  email: z.string().email().optional(),
-  role: z.nativeEnum(UserRole).optional(),
-  active: z.boolean().optional(),
-});
+// PUT /users/:id - validate params
+export const UpdateUserRequestParamsSchema = z.object({
+  id: z.string().min(1),
+}) satisfies z.ZodType<UpdateUserRequestParams>;
 
-export const DeleteUserRequestSchema = z.object({
-  id: z.string().uuid(),
-});
+// PUT /users/:id - validate body (user data excluding password)
+export const UpdateUserRequestBodySchema =
+  UserUpdateSchema satisfies z.ZodType<UpdateUserRequestBody>;
+
+// DELETE /users/:id - validate params
+export const DeleteUserRequestParamsSchema = z.object({
+  id: z.string().min(1),
+}) satisfies z.ZodType<DeleteUserRequestParams>;
 
 export const LoginRequestSchema = z.object({
   email: z.string().email(),

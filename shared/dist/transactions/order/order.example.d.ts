@@ -24,3 +24,4 @@ declare const orderUpdateModel: OrderUpdate;
  */
 declare const cancelledOrderModel: Order;
 export { cancelledOrderModel, newOrderModel, orderModel, orderProductsModel, orderUpdateModel, };
+//# sourceMappingURL=order.example.d.ts.map

@@ -240,12 +240,10 @@ export {
  * User entity types and schemas
  */
 import {
-  CreateUserRequest,
+  CreateUserRequestBody,
   CreateUserResponse,
-  DeleteUserRequest,
   DeleteUserRequestParams,
   DeleteUserResponse,
-  GetUserRequest,
   GetUserRequestParams,
   GetUserResponse,
   GetUsersRequest,
@@ -253,7 +251,7 @@ import {
   LoginRequest,
   LoginResponse,
   LogoutResponse,
-  UpdateUserRequest,
+  UpdateUserRequestBody,
   UpdateUserRequestParams,
   UpdateUserResponse,
   User,
@@ -263,11 +261,12 @@ import {
 } from "./user/user.d";
 
 import {
-  CreateUserRequestSchema,
-  DeleteUserRequestSchema,
-  GetUserRequestSchema,
+  CreateUserRequestBodySchema,
+  DeleteUserRequestParamsSchema,
+  GetUserRequestParamsSchema,
   LoginRequestSchema,
-  UpdateUserRequestSchema,
+  UpdateUserRequestBodySchema,
+  UpdateUserRequestParamsSchema,
   UserBaseSchema,
   UserCreateSchema,
   UserSchema,
@@ -277,17 +276,15 @@ import {
 // Re-export user types
 export {
   // User types
-  CreateUserRequest,
-  // Request validation schemas
-  CreateUserRequestSchema,
+  CreateUserRequestBody,
+  // User schemas
+  CreateUserRequestBodySchema,
   CreateUserResponse,
-  DeleteUserRequest,
   DeleteUserRequestParams,
-  DeleteUserRequestSchema,
+  DeleteUserRequestParamsSchema,
   DeleteUserResponse,
-  GetUserRequest,
   GetUserRequestParams,
-  GetUserRequestSchema,
+  GetUserRequestParamsSchema,
   GetUserResponse,
   GetUsersRequest,
   GetUsersResponse,
@@ -295,13 +292,13 @@ export {
   LoginRequestSchema,
   LoginResponse,
   LogoutResponse,
-  UpdateUserRequest,
+  UpdateUserRequestBody,
+  UpdateUserRequestBodySchema,
   UpdateUserRequestParams,
-  UpdateUserRequestSchema,
+  UpdateUserRequestParamsSchema,
   UpdateUserResponse,
   User,
   UserBase,
-  // User schemas
   UserBaseSchema,
   UserCreate,
   UserCreateSchema,

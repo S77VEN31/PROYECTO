@@ -161,3 +161,4 @@ export declare const EventUpdateSchema: z.ZodObject<{
     reason?: string | undefined;
     priority?: EventPriority | undefined;
 }>;
+//# sourceMappingURL=event.schema.d.ts.map

@@ -57,7 +57,7 @@ export declare type UserUpdate = Omit<Partial<User>, "id">;
  * @fileoverview User API request and response type definitions
  */
 
-import { IdParam, PaginationParams } from "@shared/common";
+import { PaginationParams } from "@shared/common";
 import { User, UserCreate, UserUpdate } from "@shared/entities";
 
 // GET /users
@@ -73,36 +73,39 @@ export interface GetUsersResponse {
   limit: number;
 }
 
-// GET /users/:id
-export interface GetUserRequest extends IdParam {}
+// GET /users/:id - params only
+export interface GetUserRequestParams {
+  id: string;
+}
 
 export interface GetUserResponse {
   user: User;
 }
 
-// POST /users
-export interface CreateUserRequest {
-  user: UserCreate;
-  password: string;
-}
+// POST /users - body only (user data without nesting)
+export interface CreateUserRequestBody extends UserCreate {}
 
 export interface CreateUserResponse {
   id: string;
   user: User;
 }
 
-// PUT /users/:id
-export interface UpdateUserRequest extends IdParam {
-  user: UserUpdate;
+// PUT /users/:id - params + body (user data excluding password)
+export interface UpdateUserRequestParams {
+  id: string;
 }
+
+export interface UpdateUserRequestBody extends UserUpdate {}
 
 export interface UpdateUserResponse {
   updated: boolean;
   user: User;
 }
 
-// DELETE /users/:id
-export interface DeleteUserRequest extends IdParam {}
+// DELETE /users/:id - params only
+export interface DeleteUserRequestParams {
+  id: string;
+}
 
 export interface DeleteUserResponse {
   deleted: boolean;

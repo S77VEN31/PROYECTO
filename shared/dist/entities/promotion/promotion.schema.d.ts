@@ -499,3 +499,4 @@ export declare const DeletePromotionRequestSchema: z.ZodObject<{
 }, {
     id: string;
 }>;
+//# sourceMappingURL=promotion.schema.d.ts.map

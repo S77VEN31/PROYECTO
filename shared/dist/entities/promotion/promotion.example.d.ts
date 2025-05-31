@@ -24,3 +24,4 @@ declare const promotionUpdateModel: PromotionUpdate;
  */
 declare const seasonalPromotionModel: PromotionCreate;
 export { bogoPromotionModel, discountPromotionModel, promotionModel, promotionUpdateModel, seasonalPromotionModel, };
+//# sourceMappingURL=promotion.example.d.ts.map

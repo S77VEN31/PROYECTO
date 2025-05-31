@@ -20,3 +20,4 @@ export declare enum PaymentMethod {
      */
     MOBILE_PAYMENT = "mobile-payment"
 }
+//# sourceMappingURL=payment-method.enum.d.ts.map

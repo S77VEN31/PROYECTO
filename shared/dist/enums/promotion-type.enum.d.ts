@@ -28,3 +28,4 @@ export declare enum PromotionType {
      */
     SEASONAL = "seasonal"
 }
+//# sourceMappingURL=promotion-type.enum.d.ts.map

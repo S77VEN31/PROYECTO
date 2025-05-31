@@ -634,3 +634,4 @@ export declare const DeleteProductRequestSchema: z.ZodObject<{
 }, {
     id: string;
 }>;
+//# sourceMappingURL=product.schema.d.ts.map

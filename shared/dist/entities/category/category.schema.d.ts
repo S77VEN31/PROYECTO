@@ -357,3 +357,4 @@ export declare const DeleteCategoryRequestSchema: z.ZodObject<{
 }, {
     id: string;
 }>;
+//# sourceMappingURL=category.schema.d.ts.map

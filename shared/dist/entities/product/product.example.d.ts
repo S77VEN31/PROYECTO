@@ -24,3 +24,4 @@ declare const productUpdateModel: ProductUpdate;
  */
 declare const minimalProductModel: ProductCreate;
 export { minimalProductModel, newProductModel, nutritionalInfoModel, productModel, productUpdateModel, };
+//# sourceMappingURL=product.example.d.ts.map

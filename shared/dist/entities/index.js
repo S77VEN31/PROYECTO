@@ -29,11 +29,9 @@ export {
 CreatePromotionRequestSchema, DeletePromotionRequestSchema, GetPromotionRequestSchema, 
 // Promotion schemas
 PromotionBaseSchema, PromotionCreateSchema, PromotionSchema, PromotionUpdateSchema, UpdatePromotionRequestSchema, };
-import { CreateUserRequestSchema, DeleteUserRequestSchema, GetUserRequestSchema, LoginRequestSchema, UpdateUserRequestSchema, UserBaseSchema, UserCreateSchema, UserSchema, UserUpdateSchema, } from "./user/user.schema";
+import { CreateUserRequestBodySchema, DeleteUserRequestParamsSchema, GetUserRequestParamsSchema, LoginRequestSchema, UpdateUserRequestBodySchema, UpdateUserRequestParamsSchema, UserBaseSchema, UserCreateSchema, UserSchema, UserUpdateSchema, } from "./user/user.schema";
 // Re-export user types
 export { 
-// Request validation schemas
-CreateUserRequestSchema, DeleteUserRequestSchema, GetUserRequestSchema, LoginRequestSchema, UpdateUserRequestSchema, 
 // User schemas
-UserBaseSchema, UserCreateSchema, UserSchema, UserUpdateSchema, };
+CreateUserRequestBodySchema, DeleteUserRequestParamsSchema, GetUserRequestParamsSchema, LoginRequestSchema, UpdateUserRequestBodySchema, UpdateUserRequestParamsSchema, UserBaseSchema, UserCreateSchema, UserSchema, UserUpdateSchema, };
 //# sourceMappingURL=index.js.map

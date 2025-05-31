@@ -18,3 +18,4 @@ export declare const SeoMetadataSchema: z.ZodObject<{
     metaDescription?: string | undefined;
     keywords?: string[] | undefined;
 }>;
+//# sourceMappingURL=metadata.schema.d.ts.map

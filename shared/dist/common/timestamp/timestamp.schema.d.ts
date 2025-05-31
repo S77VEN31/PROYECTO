@@ -29,3 +29,4 @@ export declare const CompletableTimestampSchema: z.ZodObject<{
 }, {
     completedAt?: string | null | undefined;
 }>;
+//# sourceMappingURL=timestamp.schema.d.ts.map

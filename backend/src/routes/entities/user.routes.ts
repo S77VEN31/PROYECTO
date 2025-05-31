@@ -7,10 +7,11 @@ import {
 } from "@controllers";
 import { authMiddleware, validate } from "@middlewares";
 import {
-  CreateUserRequestSchema,
-  DeleteUserRequestSchema,
-  GetUserRequestSchema,
-  UpdateUserRequestSchema,
+  CreateUserRequestBodySchema,
+  DeleteUserRequestParamsSchema,
+  GetUserRequestParamsSchema,
+  UpdateUserRequestBodySchema,
+  UpdateUserRequestParamsSchema,
 } from "colori-platform-shared";
 import express from "express";
 
@@ -20,27 +21,27 @@ const router = express.Router();
 router.post(
   "/",
   authMiddleware,
-  validate(CreateUserRequestSchema, "body"),
+  validate(CreateUserRequestBodySchema, "body"),
   createUser
 );
 router.get("/", authMiddleware, getUsers);
 router.get(
   "/:id",
   authMiddleware,
-  validate(GetUserRequestSchema, "params"),
+  validate(GetUserRequestParamsSchema, "params"),
   getUserById
 );
 router.put(
   "/:id",
   authMiddleware,
-  validate(GetUserRequestSchema, "params"),
-  validate(UpdateUserRequestSchema, "body"),
+  validate(UpdateUserRequestParamsSchema, "params"),
+  validate(UpdateUserRequestBodySchema, "body"),
   updateUser
 );
 router.delete(
   "/:id",
   authMiddleware,
-  validate(DeleteUserRequestSchema, "params"),
+  validate(DeleteUserRequestParamsSchema, "params"),
   deleteUser
 );
 

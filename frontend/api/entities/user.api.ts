@@ -6,15 +6,15 @@
 import { AxiosError } from 'axios';
 import {
   ApiResponse,
-  DeleteUserRequestSchema,
-  GetUserRequestSchema,
+  CreateUserRequestBody,
+  CreateUserRequestBodySchema,
+  DeleteUserRequestParamsSchema,
+  GetUserRequestParamsSchema,
   PaginatedResponse,
+  UpdateUserRequestBody,
+  UpdateUserRequestBodySchema,
   User,
-  UserCreate,
-  UserCreateSchema,
   UserFilterOptions,
-  UserUpdate,
-  UserUpdateSchema,
 } from "colori-platform-shared";
 import apiClient from "../index";
 import { AuthApiService } from "./auth.api";
@@ -59,7 +59,7 @@ export class UserApiService {
   static async getUserById(id: string): Promise<User> {
     try {
       // Validate input using shared schema
-      const validatedParams = GetUserRequestSchema.parse({ id });
+      const validatedParams = GetUserRequestParamsSchema.parse({ id });
 
       const response = await apiClient.get<ApiResponse<User>>(
         `/users/${validatedParams.id}`
@@ -85,10 +85,10 @@ export class UserApiService {
    * @param userData - User creation data
    * @returns Promise with created user
    */
-  static async createUser(userData: UserCreate): Promise<User> {
+  static async createUser(userData: CreateUserRequestBody): Promise<User> {
     try {
       // Validate input using shared schema
-      const validatedData = UserCreateSchema.parse(userData);
+      const validatedData = CreateUserRequestBodySchema.parse(userData);
 
       const response = await apiClient.post<ApiResponse<User>>(
         "/users",
@@ -116,11 +116,14 @@ export class UserApiService {
    * @param userData - User update data
    * @returns Promise with updated user
    */
-  static async updateUser(id: string, userData: UserUpdate): Promise<User> {
+  static async updateUser(
+    id: string,
+    userData: UpdateUserRequestBody
+  ): Promise<User> {
     try {
-      // Validate input using shared schemas
-      const validatedParams = GetUserRequestSchema.parse({ id });
-      const validatedData = UserUpdateSchema.parse(userData);
+      const validatedParams = GetUserRequestParamsSchema.parse({ id });
+
+      const validatedData = UpdateUserRequestBodySchema.parse(userData);
 
       const response = await apiClient.put<ApiResponse<User>>(
         `/users/${validatedParams.id}`,
@@ -150,7 +153,7 @@ export class UserApiService {
   static async deleteUser(id: string): Promise<boolean> {
     try {
       // Validate input using shared schema
-      const validatedParams = DeleteUserRequestSchema.parse({ id });
+      const validatedParams = DeleteUserRequestParamsSchema.parse({ id });
 
       const response = await apiClient.delete<
         ApiResponse<{ deleted: boolean }>

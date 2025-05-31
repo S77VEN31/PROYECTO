@@ -32,14 +32,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { User, UserRole, UserUpdateSchema } from "colori-platform-shared";
+import { UpdateUserRequestBody, User, UserRole } from "colori-platform-shared";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
-// Form type based on the schema
-type EditUserFormData = z.infer<typeof UserUpdateSchema>;
+// Use the proper type from shared
+type EditUserFormData = Pick<
+  UpdateUserRequestBody,
+  "firstName" | "lastName" | "email" | "role" | "active"
+>;
 
 /**
  * Edit user dialog props
@@ -65,7 +66,6 @@ export function EditUserDialog({
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<EditUserFormData>({
-    resolver: zodResolver(UserUpdateSchema),
     defaultValues: {
       firstName: user.firstName,
       lastName: user.lastName,
@@ -90,12 +90,26 @@ export function EditUserDialog({
    * Handle form submission
    */
   const onSubmit = async (data: EditUserFormData) => {
+    console.log("Form submitted with data:", data);
     setIsLoading(true);
     try {
+      // Construct the update data
+      const updateData: UpdateUserRequestBody = {
+        ...data,
+        name: `${data.firstName} ${data.lastName}`.trim(),
+      };
+
+      console.log("Calling UserApiService.updateUser with:", {
+        id: user.id,
+        updateData,
+      });
+
       const updatedUser = await UserApiService.updateUser(
         user.id as string,
-        data
+        updateData
       );
+
+      console.log("User updated successfully:", updatedUser);
       onUserUpdated(updatedUser);
       onOpenChange(false);
     } catch (error) {

@@ -26,3 +26,4 @@ export declare const createEventExample: EventCreate;
  * Example of updating an event status
  */
 export declare const updateEventExample: EventUpdate;
+//# sourceMappingURL=event.example.d.ts.map

@@ -42,3 +42,4 @@ export declare const PaymentFinancialSchema: z.ZodObject<{
     tip?: number | null | undefined;
     paymentMethod?: PaymentMethod | null | undefined;
 }>;
+//# sourceMappingURL=financial.schema.d.ts.map

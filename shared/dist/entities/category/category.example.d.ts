@@ -20,3 +20,4 @@ declare const categoryUpdateModel: CategoryUpdate;
  */
 declare const minimalCategoryModel: CategoryCreate;
 export { categoryModel, categoryUpdateModel, minimalCategoryModel, newCategoryModel, };
+//# sourceMappingURL=category.example.d.ts.map

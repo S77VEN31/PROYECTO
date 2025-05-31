@@ -212,3 +212,4 @@ export declare const OrderCreateSchema: z.ZodType<OrderCreate>;
  * Schema for order updates
  */
 export declare const OrderUpdateSchema: z.ZodType<OrderUpdate>;
+//# sourceMappingURL=order.schema.d.ts.map

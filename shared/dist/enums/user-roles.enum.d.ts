@@ -24,3 +24,4 @@ export declare enum UserRole {
      */
     CASHIER = "cashier"
 }
+//# sourceMappingURL=user-roles.enum.d.ts.map

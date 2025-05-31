@@ -77,14 +77,20 @@ function StatCard({ title, value, icon, variant = "default" }: StatCardProps) {
   };
 
   return (
-    <AdminCard flat className="hover:shadow-lg transition-shadow">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-muted-foreground truncate">{title}</p>
-          <p className="text-2xl font-bold text-foreground">{value}</p>
-        </div>
-        <div className={`p-3 rounded-full flex-shrink-0 ${getVariantStyles()}`}>
-          {icon}
+    <AdminCard
+      flat
+      className="hover:shadow-lg transition-shadow h-full w-full"
+      contentClassName="p-4"
+    >
+      <div className="flex flex-col gap-3">
+        <p className="text-sm font-medium text-muted-foreground">{title}</p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-3xl font-bold text-foreground">{value}</p>
+          <div
+            className={`p-2.5 rounded-full flex-shrink-0 ${getVariantStyles()}`}
+          >
+            {icon}
+          </div>
         </div>
       </div>
     </AdminCard>

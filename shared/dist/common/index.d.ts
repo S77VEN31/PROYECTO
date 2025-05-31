@@ -32,3 +32,4 @@ export { SeoMetadata, SeoMetadataSchema };
 import { CompletableTimestamp, TimeStamps, TimestampField } from "./timestamp/timestamp.d";
 import { CompletableTimestampSchema, TimeStampsSchema } from "./timestamp/timestamp.schema";
 export { CompletableTimestamp, CompletableTimestampSchema, TimeStamps, TimeStampsSchema, TimestampField, };
+//# sourceMappingURL=index.d.ts.map

@@ -18,3 +18,4 @@ export declare const ImageSchema: z.ZodObject<{
     alt?: string | undefined;
     isPrimary?: boolean | undefined;
 }>;
+//# sourceMappingURL=image.schema.d.ts.map

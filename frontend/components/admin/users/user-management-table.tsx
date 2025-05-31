@@ -189,9 +189,9 @@ export function UserManagementTable({
 
   return (
     <>
-      <AdminCard>
+      <AdminCard className="overflow-hidden">
         {/* Filters */}
-        <div className="flex flex-col gap-4 mb-6">
+        <div className="flex flex-col gap-4 p-6 border-b">
           {/* Search and Role Filter Row */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1 min-w-0">
@@ -220,9 +220,9 @@ export function UserManagementTable({
                   <SelectItem value={UserRole.CASHIER}>Cajero</SelectItem>
                 </SelectContent>
               </Select>
-              <Button 
-                onClick={onRefresh} 
-                variant="outline" 
+              <Button
+                onClick={onRefresh}
+                variant="outline"
                 size="icon"
                 className="flex-shrink-0"
                 title="Actualizar lista"
@@ -234,133 +234,148 @@ export function UserManagementTable({
         </div>
 
         {/* Table Container with Horizontal Scroll */}
-        <div className="rounded-md border overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-[150px]">Usuario</TableHead>
+                <TableHead className="min-w-[200px] hidden sm:table-cell">
+                  Email
+                </TableHead>
+                <TableHead className="min-w-[120px]">Rol</TableHead>
+                <TableHead className="min-w-[100px] hidden md:table-cell">
+                  Estado
+                </TableHead>
+                <TableHead className="min-w-[130px] hidden lg:table-cell">
+                  Último Acceso
+                </TableHead>
+                <TableHead className="text-right min-w-[80px]">
+                  Acciones
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
                 <TableRow>
-                  <TableHead className="min-w-[150px]">Usuario</TableHead>
-                  <TableHead className="min-w-[200px] hidden sm:table-cell">Email</TableHead>
-                  <TableHead className="min-w-[120px]">Rol</TableHead>
-                  <TableHead className="min-w-[100px] hidden md:table-cell">Estado</TableHead>
-                  <TableHead className="min-w-[130px] hidden lg:table-cell">Último Acceso</TableHead>
-                  <TableHead className="text-right min-w-[80px]">Acciones</TableHead>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    <div className="flex items-center justify-center">
+                      <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                      Cargando usuarios...
+                    </div>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8">
-                      <div className="flex items-center justify-center">
-                        <RefreshCw className="h-4 w-4 animate-spin mr-2" />
-                        Cargando usuarios...
+              ) : users.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    <p className="text-muted-foreground">
+                      No se encontraron usuarios
+                    </p>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                users.map((user) => (
+                  <TableRow key={user.id as string}>
+                    <TableCell className="min-w-[150px]">
+                      <div className="space-y-1">
+                        <p className="font-medium text-sm">
+                          {user.firstName} {user.lastName}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {user.name}
+                        </p>
+                        {/* Show email on mobile when email column is hidden */}
+                        <p className="text-xs text-muted-foreground sm:hidden">
+                          {user.email}
+                        </p>
                       </div>
                     </TableCell>
-                  </TableRow>
-                ) : users.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8">
-                      <p className="text-muted-foreground">
-                        No se encontraron usuarios
-                      </p>
+                    <TableCell className="hidden sm:table-cell min-w-[200px]">
+                      <span className="text-sm">{user.email}</span>
                     </TableCell>
-                  </TableRow>
-                ) : (
-                  users.map((user) => (
-                    <TableRow key={user.id as string}>
-                      <TableCell className="min-w-[150px]">
-                        <div className="space-y-1">
-                          <p className="font-medium text-sm">
-                            {user.firstName} {user.lastName}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {user.name}
-                          </p>
-                          {/* Show email on mobile when email column is hidden */}
-                          <p className="text-xs text-muted-foreground sm:hidden">
-                            {user.email}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell min-w-[200px]">
-                        <span className="text-sm">{user.email}</span>
-                      </TableCell>
-                      <TableCell className="min-w-[120px]">
-                        <Badge variant={getRoleBadgeVariant(user.role)} className="text-xs">
-                          {getRoleDisplayName(user.role)}
-                        </Badge>
-                        {/* Show status on mobile when status column is hidden */}
-                        <div className="md:hidden mt-1">
-                          <Badge variant={user.active ? "default" : "secondary"} className="text-xs">
-                            {user.active ? "Activo" : "Inactivo"}
-                          </Badge>
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell min-w-[100px]">
-                        <Badge variant={user.active ? "default" : "secondary"} className="text-xs">
+                    <TableCell className="min-w-[120px]">
+                      <Badge
+                        variant={getRoleBadgeVariant(user.role)}
+                        className="text-xs"
+                      >
+                        {getRoleDisplayName(user.role)}
+                      </Badge>
+                      {/* Show status on mobile when status column is hidden */}
+                      <div className="md:hidden mt-1">
+                        <Badge
+                          variant={user.active ? "default" : "secondary"}
+                          className="text-xs"
+                        >
                           {user.active ? "Activo" : "Inactivo"}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell min-w-[130px]">
-                        <span className="text-sm">
-                          {user.lastLogin
-                            ? new Date(user.lastLogin).toLocaleDateString("es-ES")
-                            : "Nunca"}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right min-w-[80px]">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              className="h-8 w-8 flex-shrink-0"
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Abrir menú</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem
-                              onClick={() => handleEditUser(user)}
-                              className="cursor-pointer"
-                            >
-                              <Edit className="h-4 w-4 mr-2 flex-shrink-0" />
-                              <span>Editar</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleToggleUserStatus(user)}
-                              className="cursor-pointer"
-                            >
-                              {user.active ? (
-                                <>
-                                  <UserX className="h-4 w-4 mr-2 flex-shrink-0" />
-                                  <span>Desactivar</span>
-                                </>
-                              ) : (
-                                <>
-                                  <UserCheck className="h-4 w-4 mr-2 flex-shrink-0" />
-                                  <span>Activar</span>
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => handleDeleteUser(user)}
-                              className="text-red-600 cursor-pointer"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2 flex-shrink-0" />
-                              <span>Eliminar</span>
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell min-w-[100px]">
+                      <Badge
+                        variant={user.active ? "default" : "secondary"}
+                        className="text-xs"
+                      >
+                        {user.active ? "Activo" : "Inactivo"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell min-w-[130px]">
+                      <span className="text-sm">
+                        {user.lastLogin
+                          ? new Date(user.lastLogin).toLocaleDateString("es-ES")
+                          : "Nunca"}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right min-w-[80px]">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 flex-shrink-0"
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Abrir menú</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem
+                            onClick={() => handleEditUser(user)}
+                            className="cursor-pointer"
+                          >
+                            <Edit className="h-4 w-4 mr-2 flex-shrink-0" />
+                            <span>Editar</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleToggleUserStatus(user)}
+                            className="cursor-pointer"
+                          >
+                            {user.active ? (
+                              <>
+                                <UserX className="h-4 w-4 mr-2 flex-shrink-0" />
+                                <span>Desactivar</span>
+                              </>
+                            ) : (
+                              <>
+                                <UserCheck className="h-4 w-4 mr-2 flex-shrink-0" />
+                                <span>Activar</span>
+                              </>
+                            )}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => handleDeleteUser(user)}
+                            className="text-red-600 cursor-pointer"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2 flex-shrink-0" />
+                            <span>Eliminar</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </div>
       </AdminCard>
 
