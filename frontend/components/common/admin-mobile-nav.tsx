@@ -11,7 +11,6 @@ import {
 import { cn } from "@/lib/utils";
 import {
   BarChart3,
-  BookOpenText,
   ClipboardList,
   LogOut,
   Menu,
@@ -97,8 +96,8 @@ export function AdminMobileNav() {
               <li>
                 <MobileLink
                   href="/admin/products"
-                  label="Gestión de Menú"
-                  icon={<BookOpenText className="h-4 w-4" />}
+                  label="Productos"
+                  icon={<Package className="h-4 w-4" />}
                   onClose={() => {}}
                 />
               </li>
