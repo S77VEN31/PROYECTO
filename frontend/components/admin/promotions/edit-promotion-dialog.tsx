@@ -10,9 +10,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -21,9 +27,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Promotion, PromotionType, UpdatePromotionRequest } from "colori-platform-shared";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Promotion,
+  PromotionType,
+  UpdatePromotionRequest,
+} from "colori-platform-shared";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
+// Simple form data type
+interface EditPromotionFormData {
+  name: string;
+  description: string;
+  type: PromotionType;
+  startDate: string;
+  endDate: string;
+  code?: string;
+  discountValue?: number;
+  discountPercent?: number;
+  minimumPurchase?: number;
+  usageLimit?: number;
+  active: boolean;
+}
+
+/**
+ * Edit promotion dialog props
+ */
 interface EditPromotionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -32,75 +62,103 @@ interface EditPromotionDialogProps {
 }
 
 /**
- * Dialog component for editing existing promotions
+ * Edit promotion dialog component
+ * @param props - Component props
+ * @returns JSX element
  */
 export function EditPromotionDialog({
   open,
   onOpenChange,
   promotion,
   onPromotionUpdated,
-}: EditPromotionDialogProps) {
+}: EditPromotionDialogProps): React.JSX.Element | null {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    type: PromotionType.DISCOUNT,
-    startDate: "",
-    endDate: "",
-    code: "",
-    discountValue: "",
-    discountPercent: "",
-    minimumPurchase: "",
-    usageLimit: "",
-    active: true,
+
+  const form = useForm<EditPromotionFormData>({
+    defaultValues: {
+      name: "",
+      description: "",
+      type: PromotionType.DISCOUNT,
+      startDate: "",
+      endDate: "",
+      code: "",
+      discountValue: undefined,
+      discountPercent: undefined,
+      minimumPurchase: undefined,
+      usageLimit: undefined,
+      active: true,
+    },
   });
 
   // Update form data when promotion changes
   useEffect(() => {
     if (promotion) {
-      setFormData({
+      form.reset({
         name: promotion.name || "",
         description: promotion.description || "",
         type: promotion.type,
-        startDate: promotion.startDate ? new Date(promotion.startDate).toISOString().slice(0, 16) : "",
-        endDate: promotion.endDate ? new Date(promotion.endDate).toISOString().slice(0, 16) : "",
+        startDate: promotion.startDate
+          ? new Date(promotion.startDate).toISOString().slice(0, 16)
+          : "",
+        endDate: promotion.endDate
+          ? new Date(promotion.endDate).toISOString().slice(0, 16)
+          : "",
         code: promotion.code || "",
-        discountValue: promotion.discountValue?.toString() || "",
-        discountPercent: promotion.discountPercent?.toString() || "",
-        minimumPurchase: promotion.minimumPurchase?.toString() || "",
-        usageLimit: promotion.usageLimit?.toString() || "",
+        discountValue: promotion.discountValue || undefined,
+        discountPercent: promotion.discountPercent || undefined,
+        minimumPurchase: promotion.minimumPurchase || undefined,
+        usageLimit: promotion.usageLimit || undefined,
         active: promotion.active ?? true,
       });
     }
-  }, [promotion]);
+  }, [promotion, form]);
 
   /**
    * Handle form submission
    */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: EditPromotionFormData) => {
     if (!promotion) return;
 
     setIsLoading(true);
-    setError(null);
-
     try {
-      // Prepare promotion update data
+      // Validate discount fields for DISCOUNT type promotions
+      if (data.type === PromotionType.DISCOUNT) {
+        if (!data.discountValue && !data.discountPercent) {
+          form.setError("discountValue", {
+            message:
+              "Para promociones de descuento, debe especificar al menos un valor de descuento",
+          });
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Validate dates
+      const startDate = new Date(data.startDate);
+      const endDate = new Date(data.endDate);
+
+      if (endDate <= startDate) {
+        form.setError("endDate", {
+          message: "La fecha de fin debe ser posterior a la fecha de inicio",
+        });
+        setIsLoading(false);
+        return;
+      }
+
       const updateData: UpdatePromotionRequest = {
         id: promotion.id,
         promotion: {
-          name: formData.name,
-          description: formData.description,
-          type: formData.type,
-          startDate: new Date(formData.startDate).toISOString(),
-          endDate: new Date(formData.endDate).toISOString(),
-          code: formData.code || undefined,
-          discountValue: formData.discountValue ? parseFloat(formData.discountValue) : undefined,
-          discountPercent: formData.discountPercent ? parseFloat(formData.discountPercent) : undefined,
-          minimumPurchase: formData.minimumPurchase ? parseFloat(formData.minimumPurchase) : undefined,
-          usageLimit: formData.usageLimit ? parseInt(formData.usageLimit) : undefined,
-          active: formData.active,
+          name: data.name,
+          description: data.description,
+          type: data.type,
+          startDate: new Date(data.startDate).toISOString(),
+          endDate: new Date(data.endDate).toISOString(),
+          code: data.code || undefined,
+          discountValue: data.discountValue || undefined,
+          discountPercent: data.discountPercent || undefined,
+          minimumPurchase: data.minimumPurchase || undefined,
+          usageLimit: data.usageLimit || undefined,
+          active: data.active,
         },
       };
 
@@ -109,9 +167,10 @@ export function EditPromotionDialog({
         updateData
       );
       onPromotionUpdated(updatedPromotion);
-      handleClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al actualizar la promoción");
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Error updating promotion:", error);
+      // You could add toast notification here
     } finally {
       setIsLoading(false);
     }
@@ -121,207 +180,317 @@ export function EditPromotionDialog({
    * Handle dialog close
    */
   const handleClose = () => {
-    setError(null);
     onOpenChange(false);
   };
 
   /**
-   * Handle input changes
+   * Get promotion type label
    */
-  const handleInputChange = (field: string, value: string | boolean | PromotionType) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const getPromotionTypeLabel = (type: PromotionType): string => {
+    const typeLabels: Record<PromotionType, string> = {
+      [PromotionType.DISCOUNT]: "Descuento",
+      [PromotionType.BOGO]: "Compra 1 Lleva 2",
+      [PromotionType.BUNDLE]: "Paquete",
+      [PromotionType.FREE_SHIPPING]: "Envío Gratis",
+      [PromotionType.GIFT_WITH_PURCHASE]: "Regalo con Compra",
+      [PromotionType.SEASONAL]: "Estacional",
+    };
+    return typeLabels[type] || type;
   };
 
   if (!promotion) return null;
 
+  const selectedType = form.watch("type");
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Editar Promoción</DialogTitle>
           <DialogDescription>
-            Modifica los datos de la promoción "{promotion.name}"
+            Modifica la información de la promoción &quot;{promotion.name}
+            &quot;.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Basic Information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Información Básica</h3>
-            
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <Label htmlFor="edit-name">Nombre de la Promoción *</Label>
-                <Input
-                  id="edit-name"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange("name", e.target.value)}
-                  placeholder="Ej: Descuento de Fin de Semana"
-                  required
-                />
-              </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Basic Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Información Básica</h3>
 
-              <div>
-                <Label htmlFor="edit-description">Descripción *</Label>
-                <Textarea
-                  id="edit-description"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
-                  placeholder="Describe los detalles de la promoción"
-                  required
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre de la Promoción</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ej: Descuento de Fin de Semana"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <div>
-                <Label htmlFor="edit-type">Tipo de Promoción *</Label>
-                <Select
-                  value={formData.type}
-                  onValueChange={(value) => handleInputChange("type", value as PromotionType)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona el tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={PromotionType.DISCOUNT}>Descuento</SelectItem>
-                    <SelectItem value={PromotionType.BOGO}>Compra 1 Lleva 2</SelectItem>
-                    <SelectItem value={PromotionType.BUNDLE}>Paquete</SelectItem>
-                    <SelectItem value={PromotionType.FREE_SHIPPING}>Envío Gratis</SelectItem>
-                    <SelectItem value={PromotionType.GIFT_WITH_PURCHASE}>Regalo con Compra</SelectItem>
-                    <SelectItem value={PromotionType.SEASONAL}>Estacional</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descripción</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe los detalles de la promoción"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          {/* Dates and Code */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Fechas y Código</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-startDate">Fecha de Inicio *</Label>
-                <Input
-                  id="edit-startDate"
-                  type="datetime-local"
-                  value={formData.startDate}
-                  onChange={(e) => handleInputChange("startDate", e.target.value)}
-                  required
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de Promoción</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona el tipo" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Object.values(PromotionType).map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {getPromotionTypeLabel(type)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <div>
-                <Label htmlFor="edit-endDate">Fecha de Fin *</Label>
-                <Input
-                  id="edit-endDate"
-                  type="datetime-local"
-                  value={formData.endDate}
-                  onChange={(e) => handleInputChange("endDate", e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="edit-code">Código Promocional</Label>
-              <Input
-                id="edit-code"
-                value={formData.code}
-                onChange={(e) => handleInputChange("code", e.target.value)}
-                placeholder="Ej: WEEKEND15"
+              <FormField
+                control={form.control}
+                name="code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Código Promocional (Opcional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ej: DESCUENTO20" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-          </div>
 
-          {/* Discount Configuration */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Configuración de Descuento</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-discountValue">Descuento Fijo (€)</Label>
-                <Input
-                  id="edit-discountValue"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.discountValue}
-                  onChange={(e) => handleInputChange("discountValue", e.target.value)}
-                  placeholder="0.00"
+            {/* Date Range */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Período de Validez</h3>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Fecha de Inicio</FormLabel>
+                      <FormControl>
+                        <Input type="datetime-local" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div>
-                <Label htmlFor="edit-discountPercent">Descuento Porcentual (%)</Label>
-                <Input
-                  id="edit-discountPercent"
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={formData.discountPercent}
-                  onChange={(e) => handleInputChange("discountPercent", e.target.value)}
-                  placeholder="0"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-minimumPurchase">Compra Mínima (€)</Label>
-                <Input
-                  id="edit-minimumPurchase"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.minimumPurchase}
-                  onChange={(e) => handleInputChange("minimumPurchase", e.target.value)}
-                  placeholder="0.00"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="edit-usageLimit">Límite de Uso</Label>
-                <Input
-                  id="edit-usageLimit"
-                  type="number"
-                  min="1"
-                  value={formData.usageLimit}
-                  onChange={(e) => handleInputChange("usageLimit", e.target.value)}
-                  placeholder="Sin límite"
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Fecha de Fin</FormLabel>
+                      <FormControl>
+                        <Input type="datetime-local" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
             </div>
-          </div>
 
-          {/* Status */}
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="edit-active"
-              checked={formData.active}
-              onCheckedChange={(checked) => handleInputChange("active", checked)}
-            />
-            <Label htmlFor="edit-active">Promoción activa</Label>
-          </div>
+            {/* Discount Configuration */}
+            {selectedType === PromotionType.DISCOUNT && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">
+                  Configuración de Descuento
+                </h3>
 
-          {/* Error Display */}
-          {error && (
-            <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
-              {error}
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="discountValue"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Descuento Fijo (€)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="0.00"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value
+                                  ? parseFloat(e.target.value)
+                                  : undefined
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="discountPercent"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Descuento Porcentual (%)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min="0"
+                            max="100"
+                            placeholder="0"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value
+                                  ? parseFloat(e.target.value)
+                                  : undefined
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Additional Settings */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Configuración Adicional</h3>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="minimumPurchase"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Compra Mínima (€)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          placeholder="0.00"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value
+                                ? parseFloat(e.target.value)
+                                : undefined
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="usageLimit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Límite de Uso</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="1"
+                          placeholder="Sin límite"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value
+                                ? parseInt(e.target.value)
+                                : undefined
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="active"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">
+                        Promoción Activa
+                      </FormLabel>
+                      <div className="text-sm text-muted-foreground">
+                        La promoción estará disponible para los clientes
+                      </div>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </div>
-          )}
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleClose}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Actualizando..." : "Actualizar Promoción"}
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                disabled={isLoading}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Guardando..." : "Guardar Cambios"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
