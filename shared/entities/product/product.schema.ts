@@ -2,7 +2,7 @@
  * Schemas for Product entities
  */
 
-import { ImageSchema } from "@shared/common";
+import { ImageSchema, MongoIdSchema } from "@shared/common";
 import {
   EntityMetadataSchema,
   NutritionalInfo,
@@ -39,7 +39,7 @@ export const ProductBaseSchema = EntityMetadataSchema.extend({
  * Schema for complete product representation
  */
 export const ProductSchema = ProductBaseSchema.extend({
-  id: z.string().uuid(),
+  id: MongoIdSchema,
 }) satisfies z.ZodType<Product>;
 
 /**
@@ -69,7 +69,7 @@ export const ProductUpdateSchema = ProductBaseSchema.omit({
  */
 
 export const GetProductRequestSchema = z.object({
-  id: z.string().uuid(),
+  id: MongoIdSchema,
 });
 
 export const CreateProductRequestSchema = z.object({
@@ -80,7 +80,7 @@ export const CreateProductRequestSchema = z.object({
     longDescription: z.string().optional(),
     tags: z.array(z.string()).optional(),
     nutritionalInfo: NutritionalInfoSchema.optional(),
-    category: z.string().uuid().optional(),
+    category: MongoIdSchema.optional(),
     preparationTime: z.number().int().positive().optional(),
     images: z.array(z.string().url()).optional(),
     active: z.boolean().optional().default(true),
@@ -88,7 +88,7 @@ export const CreateProductRequestSchema = z.object({
 });
 
 export const UpdateProductRequestSchema = z.object({
-  id: z.string().uuid(),
+  id: MongoIdSchema,
   product: z.object({
     name: z.string().min(2).max(100).optional(),
     description: z.string().min(1).optional(),
@@ -96,7 +96,7 @@ export const UpdateProductRequestSchema = z.object({
     longDescription: z.string().optional(),
     tags: z.array(z.string()).optional(),
     nutritionalInfo: NutritionalInfoSchema.optional(),
-    category: z.string().uuid().optional(),
+    category: MongoIdSchema.optional(),
     preparationTime: z.number().int().positive().optional(),
     images: z.array(z.string().url()).optional(),
     active: z.boolean().optional(),
@@ -104,5 +104,5 @@ export const UpdateProductRequestSchema = z.object({
 });
 
 export const DeleteProductRequestSchema = z.object({
-  id: z.string().uuid(),
+  id: MongoIdSchema,
 });

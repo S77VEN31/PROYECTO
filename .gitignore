@@ -15,18 +15,18 @@ yarn.lock
 
 # Build output
 dist/
+**/dist/
+**/dist
 /dist
 /build
 /out
 dist
-shared/dist/
 
 # Shared package build output
 shared/dist/*
 !shared/dist/package.json
 !shared/dist/index.d.ts
 !shared/dist/index.js
-
 
 # TypeScript cache
 *.tsbuildinfo

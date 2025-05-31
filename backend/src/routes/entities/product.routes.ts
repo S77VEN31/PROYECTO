@@ -20,21 +20,21 @@ const router = Router();
 router.post(
   "/",
   authMiddleware,
-  validate(CreateProductRequestSchema),
+  validate(CreateProductRequestSchema, "body"),
   createProduct
 );
 router.get("/", getProducts);
-router.get("/:id", validate(GetProductRequestSchema), getProductById);
+router.get("/:id", validate(GetProductRequestSchema, "params"), getProductById);
 router.put(
   "/:id",
   authMiddleware,
-  validate(UpdateProductRequestSchema),
+  validate(UpdateProductRequestSchema, "body"),
   updateProduct
 );
 router.delete(
   "/:id",
   authMiddleware,
-  validate(DeleteProductRequestSchema),
+  validate(DeleteProductRequestSchema, "params"),
   deleteProduct
 );
 
