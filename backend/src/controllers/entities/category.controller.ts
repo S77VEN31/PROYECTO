@@ -146,12 +146,18 @@ export const updateCategory = async (
       updatedBy: userId,
     };
 
-    await CategoryService.update(params, updateDataWithUser);
+    const updatedCategory = await CategoryService.update(
+      params,
+      updateDataWithUser
+    );
+
+    // Return the updated category data without the ID
+    const { id: categoryId, ...categoryDataWithoutId } = updatedCategory;
 
     const response: UpdateCategoryResponse = {
       success: true,
       updated: true,
-      data: updateData,
+      data: categoryDataWithoutId,
     };
     return res.status(200).json(response);
   } catch (error: any) {

@@ -349,12 +349,12 @@ export function CategoryManagementTable({
                               {isActive ? (
                                 <>
                                   <EyeOff className="h-4 w-4 mr-2" />
-                                  {getToggleStatusActionText(true)}
+                                  {getToggleStatusActionText(true, "category")}
                                 </>
                               ) : (
                                 <>
                                   <Eye className="h-4 w-4 mr-2" />
-                                  {getToggleStatusActionText(false)}
+                                  {getToggleStatusActionText(false, "category")}
                                 </>
                               )}
                             </DropdownMenuItem>

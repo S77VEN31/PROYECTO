@@ -112,7 +112,7 @@ export function getStatusBadgeClass(status?: boolean | string): string {
  */
 export function getToggleStatusActionText(
   isActive?: boolean,
-  entityType: "user" | "product" | "promotion" = "user"
+  entityType: "user" | "product" | "promotion" | "category" = "user"
 ): string {
   if (isActive === true) {
     return `Deactivate ${entityType}`;

@@ -1,5 +1,6 @@
 "use client";
 
+import { PromotionApiService } from "@/api/entities/promotion.api";
 import { AdminCard } from "@/components/admin/admin-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,12 +32,14 @@ import {
   getPromotionTypeDisplayText,
   getStatusBadgeClass,
   getStatusDisplayText,
+  getToggleStatusActionText,
 } from "@/lib/utils";
 import {
   GetPromotionsRequestParams,
   Promotion,
   PromotionCreate,
   PromotionType,
+  UpdatePromotionRequestBody,
 } from "colori-platform-shared";
 import {
   CalendarCheck,
@@ -142,18 +145,15 @@ export function PromotionManagementTable({
   const handleTogglePromotionStatus = async (promotion: Promotion) => {
     try {
       setUpdatingPromotion(promotion);
-
-      // Note: Since 'active' is not part of PromotionUpdate, we would need to handle this differently
-      // For now, we'll comment this out until the backend supports updating active status
-      console.warn(
-        "Active status toggle not implemented - active field not in PromotionUpdate type"
+      const promotionData = promotion as unknown as PromotionCreate;
+      const updateData = {
+        active: !promotionData.active,
+      };
+      const updatedPromotion = await PromotionApiService.updatePromotion(
+        { id: promotion.id },
+        updateData as UpdatePromotionRequestBody
       );
-
-      // await PromotionApiService.updatePromotion(
-      //   { id: promotion.id },
-      //   { /* active field not available in PromotionUpdate */ }
-      // );
-      // onPromotionUpdated({ ...promotion, active: !promotionData.active } as Promotion);
+      onPromotionUpdated(updatedPromotion);
     } catch (error) {
       console.error("Error toggling promotion status:", error);
     } finally {
@@ -450,12 +450,18 @@ export function PromotionManagementTable({
                               {promotionData.active ? (
                                 <>
                                   <EyeOff className="mr-2 h-4 w-4" />
-                                  Desactivar promoción
+                                  {getToggleStatusActionText(
+                                    promotionData.active,
+                                    "promotion"
+                                  )}
                                 </>
                               ) : (
                                 <>
                                   <Eye className="mr-2 h-4 w-4" />
-                                  Activar promoción
+                                  {getToggleStatusActionText(
+                                    promotionData.active,
+                                    "promotion"
+                                  )}
                                 </>
                               )}
                             </DropdownMenuItem>

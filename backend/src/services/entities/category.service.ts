@@ -188,6 +188,7 @@ export class CategoryService {
         updateData.displayOrder = data.displayOrder;
       if (data.products !== undefined) updateData.products = data.products;
       if (data.variant !== undefined) updateData.variant = data.variant;
+      if (data.active !== undefined) updateData.active = data.active;
       if (data.updatedBy !== undefined) updateData.updatedBy = data.updatedBy;
 
       // Update the category and return the updated document

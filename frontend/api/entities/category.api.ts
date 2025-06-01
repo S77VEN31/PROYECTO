@@ -117,9 +117,16 @@ export class CategoryApiService {
         categoryData
       );
 
-      if (response.data.success && response.data.updated) {
-        // For updates, we need to fetch the updated category since the response doesn't include it
-        return await this.getCategoryById({ id: params.id });
+      if (
+        response.data.success &&
+        response.data.updated &&
+        response.data.data
+      ) {
+        // Return the updated category data with the ID added back
+        return {
+          id: params.id,
+          ...response.data.data,
+        } as Category;
       }
 
       throw new Error(response.data.error || "Failed to update category");
