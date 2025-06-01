@@ -128,7 +128,7 @@ export default function CategoryPage({
   }, [categorySlug]);
 
   const handleSelectProduct = (product: Product) => {
-    router.push(`/client/category/${categorySlug}/product/${product.id}`);
+    router.push(`/client/category/${categorySlug}/product/${product.slug}`);
   };
 
   if (loading) {

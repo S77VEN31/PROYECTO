@@ -6,24 +6,53 @@ import { Button } from "@/components/ui/button";
 import { Promotion } from "colori-platform-shared";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
-export default function PromotionDetailPage() {
-  const params = useParams();
-  const promotionId = params.id as string;
+interface PromotionPageProps {
+  params: Promise<{
+    promotion: string;
+  }>;
+}
+
+export default function PromotionDetailPage({ params }: PromotionPageProps) {
   const [promotion, setPromotion] = useState<Promotion | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Unwrap params using React.use() as recommended by Next.js
+  const unwrappedParams = use(params);
+  const promotionSlug = unwrappedParams.promotion;
+
   useEffect(() => {
     const fetchPromotion = async () => {
+      if (!promotionSlug) return;
+
       try {
         setIsLoading(true);
-        const fetchedPromotion = await PromotionApiService.getPromotionById({
-          id: promotionId,
+        setError(null);
+
+        // Fetch all promotions to find by slug (same pattern as products)
+        const promotionsResponse = await PromotionApiService.getPromotions({
+          page: 1,
+          limit: 100,
         });
-        setPromotion(fetchedPromotion);
+
+        // Find the promotion by slug first, then get full details by ID
+        if (promotionsResponse && promotionsResponse.data) {
+          const foundPromotion = promotionsResponse.data.find(
+            (promo) => promo.slug === promotionSlug
+          );
+
+          if (foundPromotion) {
+            // Now get the full promotion details by ID
+            const fullPromotion = await PromotionApiService.getPromotionById({
+              id: foundPromotion.id,
+            });
+            setPromotion(fullPromotion);
+          } else {
+            setPromotion(null);
+          }
+        }
       } catch (err) {
         console.error("Error fetching promotion:", err);
         setError("Error al cargar la promoción");
@@ -32,10 +61,8 @@ export default function PromotionDetailPage() {
       }
     };
 
-    if (promotionId) {
-      fetchPromotion();
-    }
-  }, [promotionId]);
+    fetchPromotion();
+  }, [promotionSlug]);
 
   if (isLoading) {
     return (

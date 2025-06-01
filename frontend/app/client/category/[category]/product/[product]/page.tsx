@@ -20,7 +20,7 @@ const addToCart = (productId: string, quantity: number) => {
 interface ProductPageProps {
   params: Promise<{
     category: string;
-    id: string;
+    product: string;
   }>;
 }
 
@@ -34,23 +34,38 @@ export default function CategoryProductPage({ params }: ProductPageProps) {
   // Unwrap params using React.use() as recommended by Next.js
   const unwrappedParams = use(params);
   const categorySlug = unwrappedParams.category;
-  const productId = unwrappedParams.id;
+  const productSlug = unwrappedParams.product;
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!productId || !categorySlug) return;
+      if (!productSlug || !categorySlug) return;
 
       try {
         setLoading(true);
         setError(null);
 
-        // Fetch both product and category data
-        const [fetchedProduct, categoriesResponse] = await Promise.all([
-          ProductApiService.getProductById({ id: productId }),
+        // Fetch both products and categories data to find by slug
+        const [productsResponse, categoriesResponse] = await Promise.all([
+          ProductApiService.getProducts({ page: 1, limit: 100 }),
           CategoryApiService.getCategories({ page: 1, limit: 100 }),
         ]);
 
-        setProduct(fetchedProduct);
+        // Find the product by slug first, then get full details by ID
+        if (productsResponse && productsResponse.data) {
+          const foundProduct = productsResponse.data.find(
+            (prod) => prod.slug === productSlug
+          );
+
+          if (foundProduct) {
+            // Now get the full product details by ID
+            const fullProduct = await ProductApiService.getProductById({
+              id: foundProduct.id,
+            });
+            setProduct(fullProduct);
+          } else {
+            setProduct(null);
+          }
+        }
 
         // Find the category by slug
         if (categoriesResponse && categoriesResponse.data) {
@@ -70,7 +85,7 @@ export default function CategoryProductPage({ params }: ProductPageProps) {
     };
 
     fetchData();
-  }, [productId, categorySlug]);
+  }, [productSlug, categorySlug]);
 
   // Manejar la adición al carrito - matches CartContextType.addToCart signature
   const handleAddToCart = (id: string, quantity: number) => {

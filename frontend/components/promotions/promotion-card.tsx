@@ -53,8 +53,7 @@ export function PromotionCard({ promotion }: PromotionCardProps) {
       <div className="relative h-48 w-full">
         <Image
           src={
-            promotion.backgroundImages?.[0]?.src ||
-            "/placeholder-promotion.jpg"
+            promotion.backgroundImages?.[0]?.src || "/placeholder-promotion.jpg"
           }
           alt={promotion.name}
           fill
@@ -68,9 +67,7 @@ export function PromotionCard({ promotion }: PromotionCardProps) {
         </div>
       </div>
       <CardContent className="p-4">
-        <CardTitle className="text-lg font-bold">
-          {promotion.name}
-        </CardTitle>
+        <CardTitle className="text-lg font-bold">{promotion.name}</CardTitle>
         <CardDescription className="mt-2 line-clamp-2 text-sm">
           {promotion.description}
         </CardDescription>
@@ -100,8 +97,8 @@ export function PromotionCard({ promotion }: PromotionCardProps) {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between p-4 pt-0">
-        <Button variant="rojo" size="sm" className="w-full" asChild>
-          <Link href={`/client/category/promotions/${promotion.id}`}>
+        <Button variant="red" size="sm" className="w-full" asChild>
+          <Link href={`/client/category/promotions/${promotion.slug}`}>
             <Info className="mr-2 h-4 w-4" />
             Ver detalles
           </Link>
