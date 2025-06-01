@@ -1,6 +1,5 @@
 "use client";
 
-import { ProductsGrid } from "@/components/product/products-grid";
 import { Button } from "@/components/ui/button";
 import { CategoryApiService } from "@/api/entities/category.api";
 import { ProductApiService } from "@/api/entities/product.api";
@@ -9,6 +8,53 @@ import { ChevronLeft, Coffee } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
+
+// Crear un ProductsGrid mínimo si no está disponible
+import { ProductCard } from "@/components/product/product-card";
+
+// Extender el tipo Product para incluir la propiedad categories
+interface ExtendedProduct extends Product {
+  categories?: string[];
+}
+
+// Definir un componente ProductsGrid compatible
+function ProductsGrid({ 
+  products, 
+  onSelectProduct, 
+  showInactive = true 
+}: { 
+  products: Product[]; 
+  onSelectProduct?: (product: Product) => void; 
+  showInactive?: boolean;
+}) {
+  // Filtrar productos inactivos si showInactive es false
+  const filteredProducts = showInactive
+    ? products
+    : products.filter((product) => product.active !== false);
+
+  if (filteredProducts.length === 0) {
+    return (
+      <div className="p-6 bg-destructive/10 border border-destructive/20 rounded-md">
+        <p className="text-center font-medium">No hay productos disponibles</p>
+        <p className="text-center text-sm text-muted-foreground mt-2">
+          No se encontraron productos en esta categoría. Por favor, intenta con otra categoría.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {filteredProducts.map((product) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          onSelect={onSelectProduct}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function CategoryPage({
   params,
@@ -20,7 +66,7 @@ export default function CategoryPage({
   const categorySlug = unwrappedParams.category;
 
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
-  const [categoryProducts, setCategoryProducts] = useState<Product[]>([]);
+  const [categoryProducts, setCategoryProducts] = useState<ExtendedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,15 +97,37 @@ export default function CategoryPage({
 
         setCurrentCategory(category);
 
-        // Obtener productos de la categoría
+        // Productos asociados a esta categoría
+        const categoryProductIds = category.products || [];
+        
+        // Obtener todos los productos necesarios
         const productsResponse = await ProductApiService.getProducts({
           page: 1,
-          limit: 50,
-          category: category.id, // Filtrar por ID de categoría
+          limit: 100, // Aumentar el límite para obtener más productos
         });
 
         if (productsResponse && productsResponse.data) {
-          setCategoryProducts(productsResponse.data);
+          // Filtrar productos que pertenecen a esta categoría (tanto por ID como por el campo products)
+          const filteredProducts = productsResponse.data.filter(product => {
+            const extendedProduct = product as ExtendedProduct;
+            return (
+              // Productos específicamente asignados a esta categoría
+              categoryProductIds.includes(product.id) || 
+              // Productos que tienen esta categoría asignada (compatibilidad con el sistema anterior)
+              (extendedProduct.categories && extendedProduct.categories.includes(category.id))
+            );
+          });
+          
+          // Eliminar duplicados (por si un producto aparece en ambas listas)
+          const uniqueProducts = filteredProducts.reduce((acc: ExtendedProduct[], current) => {
+            const duplicate = acc.find(item => item.id === current.id);
+            if (!duplicate) {
+              acc.push(current as ExtendedProduct);
+            }
+            return acc;
+          }, []);
+          
+          setCategoryProducts(uniqueProducts);
         } else {
           setCategoryProducts([]);
         }
