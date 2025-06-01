@@ -154,6 +154,8 @@ export default function CategoryProductPage({ params }: ProductPageProps) {
         product={product}
         onAddToCart={handleAddToCart}
         onBack={handleBack}
+        currentCategory={category?.name}
+        categoryVariant={category?.variant}
       />
     </div>
   );

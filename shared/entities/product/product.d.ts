@@ -118,6 +118,10 @@ export declare type ProductUpdate = Partial<{
   tags: string[];
   nutritionalInfo: NutritionalInfo;
   preparationTime: number;
+  active: boolean;
+  slug: string;
+  searchTerm: string;
+  backgroundImages: Image[];
 }>;
 
 /**

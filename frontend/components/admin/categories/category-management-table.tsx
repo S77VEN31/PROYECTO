@@ -33,6 +33,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  getCategoryVariantBadgeClass,
+  getCategoryVariantDisplayName,
+  getStatusBadgeClass,
+  getStatusDisplayText,
+  getToggleStatusActionText,
+} from "@/lib/utils";
+import {
   Category,
   CategoryVariant,
   GetCategoriesRequestParams,
@@ -148,48 +155,6 @@ export function CategoryManagementTable({
     });
   };
 
-  /**
-   * Get variant display name
-   */
-  const getVariantDisplayName = (variant: CategoryVariant) => {
-    switch (variant) {
-      case CategoryVariant.COFFEE:
-        return "Café";
-      case CategoryVariant.ORANGE:
-        return "Naranja";
-      case CategoryVariant.PINK:
-        return "Rosa";
-      case CategoryVariant.SKYBLUE:
-        return "Azul Cielo";
-      case CategoryVariant.RED:
-        return "Rojo";
-      case CategoryVariant.DEFAULT:
-      default:
-        return "Por Defecto";
-    }
-  };
-
-  /**
-   * Get variant color class
-   */
-  const getVariantColorClass = (variant: CategoryVariant) => {
-    switch (variant) {
-      case CategoryVariant.COFFEE:
-        return "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200";
-      case CategoryVariant.ORANGE:
-        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
-      case CategoryVariant.PINK:
-        return "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200";
-      case CategoryVariant.SKYBLUE:
-        return "bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200";
-      case CategoryVariant.RED:
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
-      case CategoryVariant.DEFAULT:
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
-    }
-  };
-
   if (error) {
     return (
       <AdminCard title="Error">
@@ -197,7 +162,7 @@ export function CategoryManagementTable({
           <p className="text-red-600 mb-4">{error}</p>
           <Button onClick={onRefresh} variant="outline">
             <RefreshCw className="h-4 w-4 mr-2" />
-            Reintentar
+            Retry
           </Button>
         </div>
       </AdminCard>
@@ -212,7 +177,7 @@ export function CategoryManagementTable({
           {/* Search and Variant Filter Row */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1 min-w-0">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 z-10" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary h-4 w-4 z-10" />
               <Input
                 placeholder="Buscar categorías..."
                 value={searchTerm}
@@ -246,7 +211,7 @@ export function CategoryManagementTable({
               </Select>
               <Button
                 onClick={onRefresh}
-                variant="outline"
+                variant="default"
                 size="icon"
                 className="flex-shrink-0"
                 title="Actualizar lista"
@@ -262,12 +227,12 @@ export function CategoryManagementTable({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Categoría</TableHead>
-                <TableHead>Variante</TableHead>
-                <TableHead>Orden</TableHead>
-                <TableHead>Productos</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Variant</TableHead>
+                <TableHead>Order</TableHead>
+                <TableHead>Products</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -275,7 +240,7 @@ export function CategoryManagementTable({
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
                     <div className="flex items-center justify-center gap-2">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      <RefreshCw className="h-4 w-4 animate-spin text-primary" />
                       Cargando categorías...
                     </div>
                   </TableCell>
@@ -290,6 +255,13 @@ export function CategoryManagementTable({
                 </TableRow>
               ) : (
                 categories.map((category) => {
+                  const isActive = category[
+                    "active" as keyof typeof category
+                  ] as unknown as boolean;
+                  const variant = category[
+                    "variant" as keyof typeof category
+                  ] as CategoryVariant;
+
                   return (
                     <TableRow key={category.id}>
                       <TableCell>
@@ -313,17 +285,9 @@ export function CategoryManagementTable({
                       <TableCell>
                         <Badge
                           variant="secondary"
-                          className={getVariantColorClass(
-                            category[
-                              "variant" as keyof typeof category
-                            ] as CategoryVariant
-                          )}
+                          className={getCategoryVariantBadgeClass(variant)}
                         >
-                          {getVariantDisplayName(
-                            category[
-                              "variant" as keyof typeof category
-                            ] as CategoryVariant
-                          )}
+                          {getCategoryVariantDisplayName(variant)}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -337,7 +301,7 @@ export function CategoryManagementTable({
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
-                          <Package className="h-4 w-4 text-muted-foreground" />
+                          <Package className="h-4 w-4 text-primary" />
                           <span className="text-sm">
                             {(
                               category[
@@ -350,32 +314,18 @@ export function CategoryManagementTable({
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Badge
-                            variant={
-                              (category[
-                                "active" as keyof typeof category
-                              ] as unknown as boolean)
-                                ? "default"
-                                : "secondary"
-                            }
-                            className={
-                              (category[
-                                "active" as keyof typeof category
-                              ] as unknown as boolean)
-                                ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200"
-                                : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                            }
+                            variant={isActive ? "default" : "secondary"}
+                            className={getStatusBadgeClass(isActive)}
                           >
-                            {(category[
-                              "active" as keyof typeof category
-                            ] as unknown as boolean) ? (
+                            {isActive ? (
                               <>
                                 <FolderCheck className="h-3 w-3 mr-1" />
-                                Activa
+                                {getStatusDisplayText(true)}
                               </>
                             ) : (
                               <>
                                 <FolderX className="h-3 w-3 mr-1" />
-                                Inactiva
+                                {getStatusDisplayText(false)}
                               </>
                             )}
                           </Badge>
@@ -394,27 +344,27 @@ export function CategoryManagementTable({
                                 setSelectedCategory(category);
                                 setIsEditDialogOpen(true);
                               }}
+                              className="text-primary"
                             >
                               <Edit className="h-4 w-4 mr-2" />
-                              Editar
+                              Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
                                 handleToggleCategoryStatus(category)
                               }
                               disabled={updatingCategory?.id === category.id}
+                              className="text-primary"
                             >
-                              {(category[
-                                "active" as keyof typeof category
-                              ] as unknown as boolean) ? (
+                              {isActive ? (
                                 <>
                                   <EyeOff className="h-4 w-4 mr-2" />
-                                  Desactivar
+                                  {getToggleStatusActionText(true)}
                                 </>
                               ) : (
                                 <>
                                   <Eye className="h-4 w-4 mr-2" />
-                                  Activar
+                                  {getToggleStatusActionText(false)}
                                 </>
                               )}
                             </DropdownMenuItem>
@@ -427,7 +377,7 @@ export function CategoryManagementTable({
                               className="text-red-600 dark:text-red-400"
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
-                              Eliminar
+                              Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>

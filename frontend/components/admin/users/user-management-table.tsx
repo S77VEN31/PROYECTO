@@ -32,7 +32,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { GetUsersRequest, User, UserRole } from "colori-platform-shared";
+import {
+  getRoleBadgeClass,
+  getRoleDisplayName,
+  getStatusBadgeClass,
+  getStatusDisplayText,
+  getToggleStatusActionText,
+} from "@/lib/utils";
+import { GetUsersRequestParams, User, UserRole } from "colori-platform-shared";
 import {
   Edit,
   MoreHorizontal,
@@ -53,49 +60,11 @@ interface UserManagementTableProps {
   users: User[];
   isLoading: boolean;
   error: string | null;
-  filters: GetUsersRequest;
-  onFiltersChange: (filters: GetUsersRequest) => void;
+  filters: GetUsersRequestParams;
+  onFiltersChange: (filters: GetUsersRequestParams) => void;
   onUserUpdated: (user: User) => void;
   onUserDeleted: (userId: string) => void;
   onRefresh: () => void;
-}
-
-/**
- * Get role badge variant
- */
-function getRoleBadgeVariant(
-  role: UserRole
-): "default" | "secondary" | "destructive" | "outline" {
-  switch (role) {
-    case UserRole.ADMIN:
-      return "destructive";
-    case UserRole.MANAGER:
-      return "default";
-    case UserRole.CHEF:
-      return "secondary";
-    default:
-      return "outline";
-  }
-}
-
-/**
- * Get role display name
- */
-function getRoleDisplayName(role: UserRole): string {
-  switch (role) {
-    case UserRole.ADMIN:
-      return "Administrador";
-    case UserRole.MANAGER:
-      return "Gerente";
-    case UserRole.CHEF:
-      return "Chef";
-    case UserRole.SERVER:
-      return "Mesero";
-    case UserRole.CASHIER:
-      return "Cajero";
-    default:
-      return role;
-  }
 }
 
 /**
@@ -178,10 +147,10 @@ export function UserManagementTable({
     return (
       <AdminCard title="Error">
         <div className="text-center py-8">
-          <p className="text-red-600 mb-4">{error}</p>
+          <p className="text-destructive mb-4">{error}</p>
           <Button onClick={onRefresh} variant="outline">
             <RefreshCw className="h-4 w-4 mr-2" />
-            Reintentar
+            Retry
           </Button>
         </div>
       </AdminCard>
@@ -196,7 +165,7 @@ export function UserManagementTable({
           {/* Search and Role Filter Row */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1 min-w-0">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 z-10" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary h-4 w-4 z-10" />
               <Input
                 placeholder="Buscar usuarios..."
                 value={searchTerm}
@@ -223,7 +192,7 @@ export function UserManagementTable({
               </Select>
               <Button
                 onClick={onRefresh}
-                variant="outline"
+                variant="default"
                 size="icon"
                 className="flex-shrink-0"
                 title="Actualizar lista"
@@ -239,19 +208,19 @@ export function UserManagementTable({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="min-w-[150px]">Usuario</TableHead>
+                <TableHead className="min-w-[150px]">User</TableHead>
                 <TableHead className="min-w-[200px] hidden sm:table-cell">
                   Email
                 </TableHead>
-                <TableHead className="min-w-[120px]">Rol</TableHead>
+                <TableHead className="min-w-[120px]">Role</TableHead>
                 <TableHead className="min-w-[100px] hidden md:table-cell">
-                  Estado
+                  Status
                 </TableHead>
                 <TableHead className="min-w-[130px] hidden lg:table-cell">
-                  Último Acceso
+                  Last Access
                 </TableHead>
                 <TableHead className="text-right min-w-[80px]">
-                  Acciones
+                  Actions
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -260,7 +229,7 @@ export function UserManagementTable({
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
                     <div className="flex items-center justify-center">
-                      <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                      <RefreshCw className="h-4 w-4 animate-spin mr-2 text-primary" />
                       Cargando usuarios...
                     </div>
                   </TableCell>
@@ -294,35 +263,34 @@ export function UserManagementTable({
                       <span className="text-sm">{user.email}</span>
                     </TableCell>
                     <TableCell className="min-w-[120px]">
-                      <Badge
-                        variant={getRoleBadgeVariant(user.role)}
-                        className="text-xs"
-                      >
+                      <Badge className={`text-xs ${getRoleBadgeClass()}`}>
                         {getRoleDisplayName(user.role)}
                       </Badge>
                       {/* Show status on mobile when status column is hidden */}
                       <div className="md:hidden mt-1">
                         <Badge
-                          variant={user.active ? "default" : "secondary"}
-                          className="text-xs"
+                          className={`text-xs ${getStatusBadgeClass(
+                            user.active
+                          )}`}
                         >
-                          {user.active ? "Activo" : "Inactivo"}
+                          {getStatusDisplayText(user.active)}
                         </Badge>
                       </div>
                     </TableCell>
                     <TableCell className="hidden md:table-cell min-w-[100px]">
                       <Badge
-                        variant={user.active ? "default" : "secondary"}
-                        className="text-xs"
+                        className={`text-xs ${getStatusBadgeClass(
+                          user.active
+                        )}`}
                       >
-                        {user.active ? "Activo" : "Inactivo"}
+                        {getStatusDisplayText(user.active)}
                       </Badge>
                     </TableCell>
                     <TableCell className="hidden lg:table-cell min-w-[130px]">
                       <span className="text-sm">
                         {user.lastLogin
-                          ? new Date(user.lastLogin).toLocaleDateString("es-ES")
-                          : "Nunca"}
+                          ? new Date(user.lastLogin).toLocaleDateString("en-US")
+                          : "Never"}
                       </span>
                     </TableCell>
                     <TableCell className="text-right min-w-[80px]">
@@ -334,40 +302,50 @@ export function UserManagementTable({
                             className="h-8 w-8 flex-shrink-0"
                           >
                             <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Abrir menú</span>
+                            <span className="sr-only">Open menu</span>
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
                           <DropdownMenuItem
                             onClick={() => handleEditUser(user)}
-                            className="cursor-pointer"
+                            className="cursor-pointer text-primary"
                           >
                             <Edit className="h-4 w-4 mr-2 flex-shrink-0" />
-                            <span>Editar</span>
+                            <span>Edit</span>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleToggleUserStatus(user)}
-                            className="cursor-pointer"
+                            className="cursor-pointer text-primary"
                           >
                             {user.active ? (
                               <>
                                 <UserX className="h-4 w-4 mr-2 flex-shrink-0" />
-                                <span>Desactivar</span>
+                                <span>
+                                  {getToggleStatusActionText(
+                                    user.active,
+                                    "user"
+                                  )}
+                                </span>
                               </>
                             ) : (
                               <>
                                 <UserCheck className="h-4 w-4 mr-2 flex-shrink-0" />
-                                <span>Activar</span>
+                                <span>
+                                  {getToggleStatusActionText(
+                                    user.active,
+                                    "user"
+                                  )}
+                                </span>
                               </>
                             )}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             onClick={() => handleDeleteUser(user)}
-                            className="text-red-600 cursor-pointer"
+                            className="text-red-600 dark:text-red-400 cursor-pointer"
                           >
                             <Trash2 className="h-4 w-4 mr-2 flex-shrink-0" />
-                            <span>Eliminar</span>
+                            <span>Delete</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

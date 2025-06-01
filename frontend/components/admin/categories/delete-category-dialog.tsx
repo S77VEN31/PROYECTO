@@ -75,8 +75,8 @@ export function DeleteCategoryDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
-              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+              <AlertTriangle className="h-5 w-5 text-primary" />
             </div>
             <div>
               <DialogTitle>Eliminar Categoría</DialogTitle>
@@ -90,11 +90,11 @@ export function DeleteCategoryDialog({
         <div className="py-4">
           <p className="text-sm text-muted-foreground">
             ¿Estás seguro de que quieres eliminar la categoría{" "}
-            <span className="font-medium text-foreground">
-              {category["name" as keyof typeof category]}
-            </span>
-            ? Esta acción eliminará permanentemente la categoría y no se puede
-            deshacer.
+            <span className="font-medium text-foreground">{category.name}</span>
+            ?
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Se perderán todos los datos asociados a esta categoría.
           </p>
         </div>
 

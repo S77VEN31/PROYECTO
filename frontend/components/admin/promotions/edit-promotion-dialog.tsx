@@ -43,6 +43,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { getPromotionTypeDisplayText } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Category,
@@ -226,21 +227,6 @@ export function EditPromotionDialog({
     onOpenChange(false);
   };
 
-  /**
-   * Get promotion type label
-   */
-  const getPromotionTypeLabel = (type: PromotionType): string => {
-    const typeLabels: Record<PromotionType, string> = {
-      [PromotionType.DISCOUNT]: "Descuento",
-      [PromotionType.BOGO]: "Compra 1 Lleva 2",
-      [PromotionType.BUNDLE]: "Paquete",
-      [PromotionType.FREE_SHIPPING]: "Envío Gratis",
-      [PromotionType.GIFT_WITH_PURCHASE]: "Regalo con Compra",
-      [PromotionType.SEASONAL]: "Estacional",
-    };
-    return typeLabels[type] || type;
-  };
-
   if (!promotion) return null;
 
   const selectedType = form.watch("type");
@@ -312,7 +298,7 @@ export function EditPromotionDialog({
                       <SelectContent>
                         {Object.values(PromotionType).map((type) => (
                           <SelectItem key={type} value={type}>
-                            {getPromotionTypeLabel(type)}
+                            {getPromotionTypeDisplayText(type)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -398,7 +384,7 @@ export function EditPromotionDialog({
                           value={
                             field.value ? new Date(field.value) : undefined
                           }
-                          onChange={(date) =>
+                          onChange={(date: Date | undefined) =>
                             field.onChange(date?.toISOString())
                           }
                           placeholder="Selecciona fecha y hora de inicio"
@@ -427,7 +413,7 @@ export function EditPromotionDialog({
                             value={
                               field.value ? new Date(field.value) : undefined
                             }
-                            onChange={(date) =>
+                            onChange={(date: Date | undefined) =>
                               field.onChange(date?.toISOString())
                             }
                             placeholder="Selecciona fecha y hora de fin"

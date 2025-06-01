@@ -112,18 +112,45 @@ export class ProductApiService {
     productData: UpdateProductRequestBody
   ): Promise<Product> {
     try {
+      console.log("=== API SERVICE UPDATE DEBUG ===");
+      console.log("API params:", JSON.stringify(params, null, 2));
+      console.log("API productData:", JSON.stringify(productData, null, 2));
+      console.log("API productData keys:", Object.keys(productData));
+      console.log("API productData has id?", "id" in productData);
+      console.log("URL will be:", `/products/${params.id}`);
+
+      // Log exactly what axios will send
+      const axiosConfig = {
+        method: "PUT",
+        url: `/products/${params.id}`,
+        data: productData,
+      };
+      console.log("Axios config:", JSON.stringify(axiosConfig, null, 2));
+
       const response = await apiClient.put<UpdateProductResponse>(
         `/products/${params.id}`,
         productData
       );
 
-      if (response.data.success && response.data.updated) {
-        // For updates, we need to fetch the updated product since the response doesn't include it
-        return await this.getProductById({ id: params.id });
+      console.log("API response status:", response.status);
+      console.log("API response data:", JSON.stringify(response.data, null, 2));
+      console.log("=== END API SERVICE UPDATE DEBUG ===");
+
+      if (
+        response.data.success &&
+        response.data.updated &&
+        response.data.data
+      ) {
+        // Return the updated product data with the ID added back
+        return {
+          id: params.id,
+          ...response.data.data,
+        } as Product;
       }
 
       throw new Error(response.data.error || "Failed to update product");
     } catch (error: unknown) {
+      console.error("API Service error:", error);
       const axiosError = error as AxiosError;
       throw new Error(axiosError.message || "Failed to update product");
     }

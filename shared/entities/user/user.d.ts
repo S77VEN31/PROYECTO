@@ -30,9 +30,35 @@ export declare interface UserBase extends EntityMetadata {
  * @interface User
  * @extends ClientEntity<UserBase>
  * @property {string} id - Unique identifier for the user
+ * @property {string} name - Name of the user
+ * @property {string} description - Description of the user
+ * @property {boolean} [active] - Whether the user is active
+ * @property {string} slug - URL-friendly identifier
+ * @property {string} [searchTerm] - Additional search keywords
+ * @property {Image[]} [backgroundImages] - Background images for the user
+ * @property {string} firstName - User's first name
+ * @property {string} lastName - User's last name
+ * @property {string} email - User's email address
+ * @property {UserRole} role - User's role/permission level
+ * @property {string} lastLogin - ISO timestamp of the user's most recent login
  */
-export declare interface User
-  extends ClientEntity<Omit<UserBase, "password">> {}
+export declare interface User extends ClientEntity<Omit<UserBase, "password">> {
+  // Explicit declaration of inherited properties for better type resolution
+  // From EntityBase
+  name: string;
+  description: string;
+  active?: boolean;
+  // From EntityMetadata
+  slug: string;
+  searchTerm?: string;
+  backgroundImages?: Image[];
+  // From UserBase (excluding password)
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: UserRole;
+  lastLogin: string | null;
+}
 
 /**
  * User representation for database operations (backend)
@@ -77,6 +103,10 @@ export declare type UserUpdate = Partial<{
   role: UserRole;
   name: string;
   description: string;
+  active: boolean;
+  slug: string;
+  searchTerm: string;
+  backgroundImages: Image[];
 }>;
 
 /**

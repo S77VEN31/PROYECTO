@@ -3,6 +3,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Category Colors - Consistent across light and dark modes */
+:root {
+  --color-coffee: #40041A;
+  --color-skyblue: #B0D9D5;
+  --color-orange: #F2B988;
+  --color-red: #F29991;
+  --color-pink: #F2D0D0;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -42,13 +51,6 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   
-  /* Custom Colori Palette */
-  --color-cafe: #40041A;
-  --color-celeste: #B0D9D5;
-  --color-naranja: #F2B988;
-  --color-rojo: #F29991;
-  --color-rosa: #F2D0D0;
-  
   /* Status Colors */
   --color-status-pending: var(--status-pending);
   --color-status-inprogress: var(--status-inprogress);
@@ -56,6 +58,7 @@
   --color-status-cancelled: var(--status-cancelled);
 }
 
+/* Light Mode */
 :root {
   --radius: 0.625rem;
   
@@ -71,47 +74,47 @@
   --popover: #FFFFFF;
   --popover-foreground: #1A1A1A;
   
-  /* Primary = Café */
-  --primary: var(--color-cafe);
+  /* Primary = Coffee */
+  --primary: var(--color-coffee);
   --primary-foreground: #FFFFFF;
   
-  /* Secondary = Celeste */
-  --secondary: var(--color-celeste);
+  /* Secondary = Skyblue */
+  --secondary: var(--color-skyblue);
   --secondary-foreground: #1A1A1A;
   
   /* Muted */
   --muted: #F8F8F8;
   --muted-foreground: #6F6F6F;
   
-  /* Accent = Naranja */
-  --accent: var(--color-naranja);
+  /* Accent = Orange */
+  --accent: var(--color-orange);
   --accent-foreground: #1A1A1A;
   
-  /* Destructive = Rojo */
-  --destructive: var(--color-rojo);
+  /* Destructive = Red */
+  --destructive: var(--color-red);
   --destructive-foreground: #FFFFFF;
   
   /* Border, Input, Ring */
   --border: #E0E0E0;
   --input: #E0E0E0;
-  --ring: rgba(242, 185, 136, 0.5);
+  --ring: var(--primary);
   
   /* Charts */
-  --chart-1: var(--color-cafe);
-  --chart-2: var(--color-celeste);
-  --chart-3: var(--color-naranja);
-  --chart-4: var(--color-rojo);
-  --chart-5: var(--color-rosa);
+  --chart-1: var(--color-coffee);
+  --chart-2: var(--color-skyblue);
+  --chart-3: var(--color-orange);
+  --chart-4: var(--color-red);
+  --chart-5: var(--color-pink);
   
   /* Sidebar */
   --sidebar: #FFFFFF;
   --sidebar-foreground: #1A1A1A;
-  --sidebar-primary: var(--color-cafe);
+  --sidebar-primary: var(--color-coffee);
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: var(--color-naranja);
+  --sidebar-accent: var(--color-orange);
   --sidebar-accent-foreground: #1A1A1A;
   --sidebar-border: #E0E0E0;
-  --sidebar-ring: rgba(242, 185, 136, 0.5);
+  --sidebar-ring: var(--primary);
   
   /* Status Colors - Light Mode */
   --status-pending: #F59E0B;
@@ -124,6 +127,7 @@
   --status-cancelled-foreground: #FFFFFF;
 }
 
+/* Dark Mode */
 .dark {
   /* Base colors */
   --background: #121212;
@@ -137,47 +141,47 @@
   --popover: #1E1E1E;
   --popover-foreground: #FAFAFA;
   
-  /* Primary = Rosa en modo oscuro para mejor contraste */
-  --primary: var(--color-rosa);
-  --primary-foreground: #121212;
+  /* Primary = Coffee (same as light mode) */
+  --primary: var(--color-coffee);
+  --primary-foreground: #FFFFFF;
   
-  /* Secondary = Celeste pero con buen contraste en oscuro */
-  --secondary: var(--color-celeste);
+  /* Secondary = Skyblue (same as light mode) */
+  --secondary: var(--color-skyblue);
   --secondary-foreground: #121212;
   
   /* Muted */
   --muted: #2A2A2A;
   --muted-foreground: #A0A0A0;
   
-  /* Accent = Naranja */
-  --accent: var(--color-naranja);
+  /* Accent = Orange (same as light mode) */
+  --accent: var(--color-orange);
   --accent-foreground: #121212;
   
-  /* Destructive = Rojo */
-  --destructive: var(--color-rojo);
-  --destructive-foreground: #121212;
+  /* Destructive = Red (same as light mode) */
+  --destructive: var(--color-red);
+  --destructive-foreground: #FFFFFF;
   
   /* Border, Input, Ring */
   --border: #2A2A2A;
   --input: #2A2A2A;
-  --ring: rgba(242, 185, 136, 0.3);
+  --ring: var(--primary);
   
-  /* Charts */
-  --chart-1: var(--color-rosa);
-  --chart-2: var(--color-celeste);
-  --chart-3: var(--color-naranja);
-  --chart-4: var(--color-rojo);
-  --chart-5: var(--color-cafe);
+  /* Charts - Keep category colors consistent */
+  --chart-1: var(--color-coffee);
+  --chart-2: var(--color-skyblue);
+  --chart-3: var(--color-orange);
+  --chart-4: var(--color-red);
+  --chart-5: var(--color-pink);
   
-  /* Sidebar con acento café */
+  /* Sidebar - Keep category colors consistent */
   --sidebar: #1E1E1E;
   --sidebar-foreground: #FAFAFA;
-  --sidebar-primary: var(--color-rosa);
-  --sidebar-primary-foreground: #121212;
-  --sidebar-accent: var(--color-naranja);
+  --sidebar-primary: var(--color-coffee);
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: var(--color-orange);
   --sidebar-accent-foreground: #121212;
   --sidebar-border: #2A2A2A;
-  --sidebar-ring: rgba(242, 185, 136, 0.3);
+  --sidebar-ring: var(--primary);
   
   /* Status Colors - Dark Mode */
   --status-pending: #FBBF24;

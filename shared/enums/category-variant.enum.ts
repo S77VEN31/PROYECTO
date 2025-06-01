@@ -9,24 +9,24 @@ export enum CategoryVariant {
   COFFEE = "coffee",
 
   /**
-   * Orange-themed styling
-   */
-  ORANGE = "orange",
-
-  /**
-   * Pink-themed styling
-   */
-  PINK = "pink",
-
-  /**
    * Sky blue-themed styling
    */
   SKYBLUE = "skyblue",
 
   /**
+   * Orange-themed styling
+   */
+  ORANGE = "orange",
+
+  /**
    * Red-themed styling
    */
   RED = "red",
+
+  /**
+   * Pink-themed styling
+   */
+  PINK = "pink",
 
   /**
    * Default styling theme

@@ -27,25 +27,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Product } from "colori-platform-shared";
+import { Product, ProductCreate } from "colori-platform-shared";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-
-// Simple form data type
-interface CreateProductFormData {
-  name: string;
-  description: string;
-  price: number;
-  longDescription?: string;
-  tags: string[];
-  preparationTime?: number;
-  calories?: number;
-  protein?: number;
-  carbs?: number;
-  fat?: number;
-  allergens: string[];
-  active: boolean;
-}
 
 /**
  * Create product dialog props
@@ -68,7 +52,7 @@ export function CreateProductDialog({
 }: CreateProductDialogProps): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<CreateProductFormData>({
+  const form = useForm<ProductCreate>({
     defaultValues: {
       name: "",
       description: "",
@@ -76,11 +60,13 @@ export function CreateProductDialog({
       longDescription: "",
       tags: [],
       preparationTime: undefined,
-      calories: undefined,
-      protein: undefined,
-      carbs: undefined,
-      fat: undefined,
-      allergens: [],
+      nutritionalInfo: {
+        calories: undefined,
+        protein: undefined,
+        carbs: undefined,
+        fat: undefined,
+        allergens: [],
+      },
       active: true,
     },
   });
@@ -88,37 +74,10 @@ export function CreateProductDialog({
   /**
    * Handle form submission
    */
-  const onSubmit = async (data: CreateProductFormData) => {
+  const onSubmit = async (data: ProductCreate) => {
     setIsLoading(true);
     try {
-      const productData = {
-        product: {
-          name: data.name,
-          description: data.description,
-          price: data.price,
-          longDescription: data.longDescription || undefined,
-          tags: data.tags.length > 0 ? data.tags : undefined,
-          preparationTime: data.preparationTime || undefined,
-          nutritionalInfo:
-            data.calories ||
-            data.protein ||
-            data.carbs ||
-            data.fat ||
-            data.allergens.length > 0
-              ? {
-                  calories: data.calories || undefined,
-                  protein: data.protein || undefined,
-                  carbs: data.carbs || undefined,
-                  fat: data.fat || undefined,
-                  allergens:
-                    data.allergens.length > 0 ? data.allergens : undefined,
-                }
-              : undefined,
-          active: data.active,
-        },
-      };
-
-      const newProduct = await ProductApiService.createProduct(productData);
+      const newProduct = await ProductApiService.createProduct(data);
       onProductCreated(newProduct);
       form.reset();
       onOpenChange(false);
@@ -260,7 +219,7 @@ export function CreateProductDialog({
                       <TagInput
                         label="Etiquetas"
                         placeholder="Escribe una etiqueta y presiona Enter..."
-                        value={field.value}
+                        value={field.value || []}
                         onChange={field.onChange}
                         description="Ej: vegetariano, sin gluten, picante, etc."
                         maxTags={10}
@@ -281,7 +240,7 @@ export function CreateProductDialog({
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="calories"
+                  name="nutritionalInfo.calories"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Calorías</FormLabel>
@@ -290,7 +249,7 @@ export function CreateProductDialog({
                           type="number"
                           min="0"
                           placeholder="250"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(
                               parseInt(e.target.value) || undefined
@@ -305,7 +264,7 @@ export function CreateProductDialog({
 
                 <FormField
                   control={form.control}
-                  name="protein"
+                  name="nutritionalInfo.protein"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Proteínas (g)</FormLabel>
@@ -315,7 +274,7 @@ export function CreateProductDialog({
                           step="0.1"
                           min="0"
                           placeholder="15.5"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(
                               parseFloat(e.target.value) || undefined
@@ -330,7 +289,7 @@ export function CreateProductDialog({
 
                 <FormField
                   control={form.control}
-                  name="carbs"
+                  name="nutritionalInfo.carbs"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Carbohidratos (g)</FormLabel>
@@ -340,7 +299,7 @@ export function CreateProductDialog({
                           step="0.1"
                           min="0"
                           placeholder="30.2"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(
                               parseFloat(e.target.value) || undefined
@@ -355,7 +314,7 @@ export function CreateProductDialog({
 
                 <FormField
                   control={form.control}
-                  name="fat"
+                  name="nutritionalInfo.fat"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Grasas (g)</FormLabel>
@@ -365,7 +324,7 @@ export function CreateProductDialog({
                           step="0.1"
                           min="0"
                           placeholder="8.7"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(
                               parseFloat(e.target.value) || undefined
@@ -381,14 +340,14 @@ export function CreateProductDialog({
 
               <FormField
                 control={form.control}
-                name="allergens"
+                name="nutritionalInfo.allergens"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <TagInput
                         label="Alérgenos"
                         placeholder="Escribe un alérgeno y presiona Enter..."
-                        value={field.value}
+                        value={field.value || []}
                         onChange={field.onChange}
                         description="Ej: gluten, lácteos, frutos secos, etc."
                         maxTags={15}

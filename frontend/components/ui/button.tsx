@@ -13,34 +13,32 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-white dark:hover:text-accent-foreground",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        cafe: "bg-[#40041A] text-white hover:bg-[#40041A]/90 dark:bg-[#F2D0D0] dark:text-[#121212] dark:hover:bg-[#F2D0D0]/90",
-        celeste:
-          "bg-[#85C5BF] text-[#1A1A1A] hover:bg-[#85C5BF]/90 dark:bg-[#7ECBC5] dark:hover:bg-[#7ECBC5]/90",
-        naranja:
-          "bg-[#F2B988] text-[#1A1A1A] hover:bg-[#F2B988]/90 dark:bg-[#FFB97C] dark:hover:bg-[#FFB97C]/90",
-        rojo: "bg-[#F29991] text-white hover:bg-[#F29991]/90 dark:bg-[#FF7A70] dark:text-[#121212] dark:hover:bg-[#FF7A70]/90",
-        rosa: "bg-[#F2D0D0] text-[#1A1A1A] hover:bg-[#F2D0D0]/90",
+
+        // CategoryVariant-based colors using CSS variables
+        coffee:
+          "bg-[var(--color-coffee)] text-white hover:bg-[var(--color-coffee)]/90",
+        skyblue:
+          "bg-[var(--color-skyblue)] text-black hover:bg-[var(--color-skyblue)]/90",
         orange:
-          "bg-[#F2B988] text-[#1A1A1A] hover:bg-[#F2B988]/90 dark:bg-[#FFB97C] dark:hover:bg-[#FFB97C]/90",
-        blue: "bg-[#85C5BF] text-[#1A1A1A] hover:bg-[#85C5BF]/90 dark:bg-[#7ECBC5] dark:hover:bg-[#7ECBC5]/90",
-        green:
-          "bg-[#40041A] text-white hover:bg-[#40041A]/90 dark:bg-[#F2D0D0] dark:text-[#121212] dark:hover:bg-[#F2D0D0]/90",
+          "bg-[var(--color-orange)] text-black hover:bg-[var(--color-orange)]/90",
+        red: "bg-[var(--color-red)] text-white hover:bg-[var(--color-red)]/90",
+        pink: "bg-[var(--color-pink)] text-black hover:bg-[var(--color-pink)]/90",
 
         /* Status variants */
-        all: "bg-primary text-primary-foreground hover:bg-primary/80 hover:text-white dark:hover:text-primary-foreground border-primary",
+        all: "bg-primary text-primary-foreground hover:bg-primary/80 border-primary",
         pending:
-          "bg-[var(--status-pending)] text-[var(--status-pending-foreground)] hover:bg-[var(--status-pending)]/80 hover:text-white dark:hover:text-[var(--status-pending-foreground)] border-[var(--status-pending)]",
+          "bg-[var(--status-pending)] text-[var(--status-pending-foreground)] hover:bg-[var(--status-pending)]/80 border-[var(--status-pending)]",
         "in-progress":
-          "bg-[var(--status-inprogress)] text-[var(--status-inprogress-foreground)] hover:bg-[var(--status-inprogress)]/80 hover:text-white dark:hover:text-[var(--status-inprogress-foreground)] border-[var(--status-inprogress)]",
+          "bg-[var(--status-inprogress)] text-[var(--status-inprogress-foreground)] hover:bg-[var(--status-inprogress)]/80 border-[var(--status-inprogress)]",
         completed:
-          "bg-[var(--status-completed)] text-[var(--status-completed-foreground)] hover:bg-[var(--status-completed)]/80 hover:text-white dark:hover:text-[var(--status-completed-foreground)] border-[var(--status-completed)]",
+          "bg-[var(--status-completed)] text-[var(--status-completed-foreground)] hover:bg-[var(--status-completed)]/80 border-[var(--status-completed)]",
         cancelled:
-          "bg-[var(--status-cancelled)] text-[var(--status-cancelled-foreground)] hover:bg-[var(--status-cancelled)]/80 hover:text-white dark:hover:text-[var(--status-cancelled-foreground)] border-[var(--status-cancelled)]",
+          "bg-[var(--status-cancelled)] text-[var(--status-cancelled-foreground)] hover:bg-[var(--status-cancelled)]/80 border-[var(--status-cancelled)]",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -77,3 +75,4 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button";
 
 export { Button, buttonVariants };
+

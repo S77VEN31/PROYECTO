@@ -1,6 +1,6 @@
 import { mockCategories } from "@/data/mock";
-import { CategoryVariant } from "@/types/category";
 import { clsx, type ClassValue } from "clsx";
+import { CategoryVariant, PromotionType } from "colori-platform-shared";
 import { LucideIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -9,38 +9,195 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Maps CategoryVariant enum to button variant strings
+ * @param variant The CategoryVariant enum value
+ * @returns The corresponding button variant string
+ */
+export function getButtonVariantFromCategory(
+  variant: CategoryVariant | string
+): string {
+  const variantMap: Record<string, string> = {
+    [CategoryVariant.COFFEE]: "coffee",
+    [CategoryVariant.SKYBLUE]: "skyblue",
+    [CategoryVariant.ORANGE]: "orange",
+    [CategoryVariant.RED]: "red",
+    [CategoryVariant.PINK]: "pink",
+    [CategoryVariant.DEFAULT]: "default",
+  };
+
+  return variantMap[variant as CategoryVariant] || "default";
+}
+
+/**
+ * Gets the English display name for a CategoryVariant
+ * @param variant The CategoryVariant enum value
+ * @returns The English display name
+ */
+export function getCategoryVariantDisplayName(
+  variant: CategoryVariant | string
+): string {
+  const displayNames: Record<string, string> = {
+    [CategoryVariant.COFFEE]: "Coffee",
+    [CategoryVariant.SKYBLUE]: "Sky Blue",
+    [CategoryVariant.ORANGE]: "Orange",
+    [CategoryVariant.RED]: "Red",
+    [CategoryVariant.PINK]: "Pink",
+    [CategoryVariant.DEFAULT]: "Default",
+  };
+
+  return displayNames[variant as CategoryVariant] || "Default";
+}
+
+/**
+ * Gets the badge CSS classes for a CategoryVariant using our consistent color system
+ * @param variant The CategoryVariant enum value
+ * @returns CSS classes for the badge
+ */
+export function getCategoryVariantBadgeClass(
+  variant: CategoryVariant | string
+): string {
+  // Use our consistent color system from variantConfig
+  return getVariantBadgeClass(variant);
+}
+
+/**
+ * Get role badge class for consistent styling
+ */
+export function getRoleBadgeClass(): string {
+  // All roles use primary color for consistency
+  return "bg-primary text-primary-foreground";
+}
+
+/**
+ * Get role display name in English
+ */
+export function getRoleDisplayName(role: string): string {
+  const roleNames: Record<string, string> = {
+    ADMIN: "Administrator",
+    MANAGER: "Manager",
+    CHEF: "Chef",
+    SERVER: "Server",
+    CASHIER: "Cashier",
+  };
+  return roleNames[role] || role;
+}
+
+/**
+ * Get status badge class for consistent styling
+ */
+export function getStatusBadgeClass(isActive?: boolean): string {
+  return isActive === true
+    ? "bg-primary text-primary-foreground"
+    : "bg-secondary text-secondary-foreground";
+}
+
+/**
+ * Get status display text in English
+ */
+export function getStatusDisplayText(isActive?: boolean): string {
+  return isActive === true ? "Active" : "Inactive";
+}
+
+/**
+ * Get promotion status badge class
+ */
+export function getPromotionStatusBadgeClass(status: string): string {
+  switch (status) {
+    case "active":
+      return "bg-primary text-primary-foreground";
+    case "inactive":
+      return "bg-secondary text-secondary-foreground";
+    case "expired":
+      return "bg-destructive text-destructive-foreground";
+    case "upcoming":
+      return "bg-muted text-muted-foreground border";
+    default:
+      return "bg-secondary text-secondary-foreground";
+  }
+}
+
+/**
+ * Get promotion status display text in English
+ */
+export function getPromotionStatusDisplayText(status: string): string {
+  const statusLabels: Record<string, string> = {
+    active: "Active",
+    inactive: "Inactive",
+    expired: "Expired",
+    upcoming: "Upcoming",
+  };
+  return statusLabels[status] || status;
+}
+
+/**
+ * Get promotion type display text in English
+ */
+export function getPromotionTypeDisplayText(type: string): string {
+  const typeLabels: Record<string, string> = {
+    [PromotionType.DISCOUNT]: "Descuento",
+    [PromotionType.BOGO]: "Compra 1 Lleva 1",
+    [PromotionType.BUNDLE]: "Paquete",
+    [PromotionType.FREE_SHIPPING]: "Envío Gratis",
+    [PromotionType.GIFT_WITH_PURCHASE]: "Regalo con Compra",
+    [PromotionType.SEASONAL]: "Estacional",
+  };
+  return typeLabels[type] || type;
+}
+
+/**
+ * Get toggle status action text in English
+ */
+export function getToggleStatusActionText(
+  isActive?: boolean,
+  entityType: "user" | "product" | "promotion" = "user"
+): string {
+  if (isActive === true) {
+    return `Deactivate ${entityType}`;
+  } else {
+    return `Activate ${entityType}`;
+  }
+}
+
+/**
  * Configuración centralizada de variantes de color para componentes
+ * Uses CSS variables that match CategoryVariant enum values
+ * Colors are consistent across light and dark modes
  */
 export const variantConfig = {
-  // Colores principales por variante (respeta tema claro/oscuro)
+  // Colores principales por variante (consistentes en ambos modos)
   iconColors: {
-    cafe: "text-[var(--color-cafe)] dark:text-[var(--color-rosa)]",
-    celeste: "text-[var(--color-celeste)]",
-    naranja: "text-[var(--color-naranja)]",
-    rojo: "text-[var(--color-rojo)]",
-    rosa: "text-[var(--color-rosa)]",
-    default: "text-muted-foreground",
+    [CategoryVariant.COFFEE]: "text-[var(--color-coffee)]",
+    [CategoryVariant.SKYBLUE]: "text-[var(--color-skyblue)]",
+    [CategoryVariant.ORANGE]: "text-[var(--color-orange)]",
+    [CategoryVariant.RED]: "text-[var(--color-red)]",
+    [CategoryVariant.PINK]: "text-[var(--color-pink)]",
+    [CategoryVariant.DEFAULT]: "text-muted-foreground",
   },
 
-  // Estilos de borde para tarjetas por variante
+  // Estilos de borde para tarjetas por variante (consistentes en ambos modos)
   borderStyles: {
-    cafe: "border-[#40041A]/20 hover:border-[#40041A]/50 dark:border-[#F2D0D0]/20 dark:hover:border-[#F2D0D0]/50",
-    celeste: "border-[#B0D9D5]/20 hover:border-[#B0D9D5]/50",
-    naranja: "border-[#F2B988]/20 hover:border-[#F2B988]/50",
-    rojo: "border-[#F29991]/20 hover:border-[#F29991]/50",
-    rosa: "border-[#F2D0D0]/20 hover:border-[#F2D0D0]/50",
-    default:
+    [CategoryVariant.COFFEE]:
+      "border-[var(--color-coffee)]/20 hover:border-[var(--color-coffee)]/50",
+    [CategoryVariant.SKYBLUE]:
+      "border-[var(--color-skyblue)]/20 hover:border-[var(--color-skyblue)]/50",
+    [CategoryVariant.ORANGE]:
+      "border-[var(--color-orange)]/20 hover:border-[var(--color-orange)]/50",
+    [CategoryVariant.RED]:
+      "border-[var(--color-red)]/20 hover:border-[var(--color-red)]/50",
+    [CategoryVariant.PINK]:
+      "border-[var(--color-pink)]/20 hover:border-[var(--color-pink)]/50",
+    [CategoryVariant.DEFAULT]:
       "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600",
   },
 
-  // Variantes para badges/etiquetas
+  // Variantes para badges/etiquetas (consistentes en ambos modos)
   badgeVariants: {
-    cafe: "bg-[var(--color-cafe)] text-white dark:bg-[var(--color-rosa)] dark:text-black",
-    celeste: "bg-[var(--color-celeste)] text-black",
-    naranja: "bg-[var(--color-naranja)] text-black",
-    rojo: "bg-[var(--color-rojo)] text-white",
-    rosa: "bg-[var(--color-rosa)] text-black",
-    default: "bg-secondary text-secondary-foreground",
+    [CategoryVariant.COFFEE]: "bg-[var(--color-coffee)] text-white",
+    [CategoryVariant.SKYBLUE]: "bg-[var(--color-skyblue)] text-black",
+    [CategoryVariant.ORANGE]: "bg-[var(--color-orange)] text-black",
+    [CategoryVariant.RED]: "bg-[var(--color-red)] text-white",
+    [CategoryVariant.PINK]: "bg-[var(--color-pink)] text-black",
+    [CategoryVariant.DEFAULT]: "bg-secondary text-secondary-foreground",
   },
 };
 
@@ -62,7 +219,7 @@ export function getVariantIconClass(
 
   const variantColor =
     variantConfig.iconColors[variant as CategoryVariant] ||
-    variantConfig.iconColors.default;
+    variantConfig.iconColors[CategoryVariant.DEFAULT];
 
   return `${sizeClasses[size]} ${variantColor}`;
 }
@@ -77,7 +234,7 @@ export function getVariantBorderStyle(
 ): string {
   return (
     variantConfig.borderStyles[variant as CategoryVariant] ||
-    variantConfig.borderStyles.default
+    variantConfig.borderStyles[CategoryVariant.DEFAULT]
   );
 }
 
@@ -91,7 +248,7 @@ export function getVariantBadgeClass(
 ): string {
   return (
     variantConfig.badgeVariants[variant as CategoryVariant] ||
-    variantConfig.badgeVariants.default
+    variantConfig.badgeVariants[CategoryVariant.DEFAULT]
   );
 }
 
@@ -123,7 +280,7 @@ export function getCategoryFromProduct(categoryId: string | string[]): {
   if (!category) {
     return {
       id: "default",
-      variant: "default" as CategoryVariant,
+      variant: CategoryVariant.DEFAULT,
       name: typeof catId === "string" ? catId : "Producto",
       icon: null,
     };

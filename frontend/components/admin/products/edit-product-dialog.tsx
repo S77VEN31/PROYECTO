@@ -27,25 +27,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Product } from "colori-platform-shared";
+import {
+  Product,
+  ProductUpdate,
+  ProductUpdateSchema,
+  UpdateProductRequestBody,
+} from "colori-platform-shared";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-
-// Form data type for editing
-interface EditProductFormData {
-  name: string;
-  description: string;
-  price: number;
-  longDescription?: string;
-  tags: string[];
-  preparationTime?: number;
-  calories?: number;
-  protein?: number;
-  carbs?: number;
-  fat?: number;
-  allergens: string[];
-  active: boolean;
-}
 
 /**
  * Edit product dialog props
@@ -70,7 +59,7 @@ export function EditProductDialog({
 }: EditProductDialogProps): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<EditProductFormData>({
+  const form = useForm<ProductUpdate>({
     defaultValues: {
       name: product.name,
       description: product.description,
@@ -78,11 +67,13 @@ export function EditProductDialog({
       longDescription: product.longDescription || "",
       tags: product.tags || [],
       preparationTime: product.preparationTime || undefined,
-      calories: product.nutritionalInfo?.calories || undefined,
-      protein: product.nutritionalInfo?.protein || undefined,
-      carbs: product.nutritionalInfo?.carbs || undefined,
-      fat: product.nutritionalInfo?.fat || undefined,
-      allergens: product.nutritionalInfo?.allergens || [],
+      nutritionalInfo: {
+        calories: product.nutritionalInfo?.calories || undefined,
+        protein: product.nutritionalInfo?.protein || undefined,
+        carbs: product.nutritionalInfo?.carbs || undefined,
+        fat: product.nutritionalInfo?.fat || undefined,
+        allergens: product.nutritionalInfo?.allergens || [],
+      },
       active: product.active,
     },
   });
@@ -96,11 +87,13 @@ export function EditProductDialog({
       longDescription: product.longDescription || "",
       tags: product.tags || [],
       preparationTime: product.preparationTime || undefined,
-      calories: product.nutritionalInfo?.calories || undefined,
-      protein: product.nutritionalInfo?.protein || undefined,
-      carbs: product.nutritionalInfo?.carbs || undefined,
-      fat: product.nutritionalInfo?.fat || undefined,
-      allergens: product.nutritionalInfo?.allergens || [],
+      nutritionalInfo: {
+        calories: product.nutritionalInfo?.calories || undefined,
+        protein: product.nutritionalInfo?.protein || undefined,
+        carbs: product.nutritionalInfo?.carbs || undefined,
+        fat: product.nutritionalInfo?.fat || undefined,
+        allergens: product.nutritionalInfo?.allergens || [],
+      },
       active: product.active,
     });
   }, [product, form]);
@@ -108,42 +101,37 @@ export function EditProductDialog({
   /**
    * Handle form submission
    */
-  const onSubmit = async (data: EditProductFormData) => {
-    console.log("Form submitted with data:", data);
+  const onSubmit = async (data: ProductUpdate) => {
+    console.log("=== FRONTEND UPDATE DEBUG ===");
+    console.log("Form data:", JSON.stringify(data, null, 2));
+    console.log("Product object:", JSON.stringify(product, null, 2));
+    console.log("Product ID:", product.id);
+    console.log("Product ID type:", typeof product.id);
+
     setIsLoading(true);
     try {
+      const requestParams = { id: product.id as string };
+
+      // Validate the update data using the schema
+      const validatedData = ProductUpdateSchema.parse(data);
+
+      console.log("Request params:", JSON.stringify(requestParams, null, 2));
+      console.log("Update data:", JSON.stringify(validatedData, null, 2));
+      console.log("Update data keys:", Object.keys(validatedData));
+      console.log("Update data has id?", "id" in validatedData);
+      console.log("Update data has product?", "product" in validatedData);
+
       const updatedProduct = await ProductApiService.updateProduct(
-        { id: product.id as string },
-        {
-          id: product.id as string,
-          product: {
-            name: data.name,
-            description: data.description,
-            price: data.price,
-            longDescription: data.longDescription || undefined,
-            tags: data.tags.length > 0 ? data.tags : undefined,
-            preparationTime: data.preparationTime || undefined,
-            nutritionalInfo:
-              data.calories ||
-              data.protein ||
-              data.carbs ||
-              data.fat ||
-              data.allergens.length > 0
-                ? {
-                    calories: data.calories || undefined,
-                    protein: data.protein || undefined,
-                    carbs: data.carbs || undefined,
-                    fat: data.fat || undefined,
-                    allergens:
-                      data.allergens.length > 0 ? data.allergens : undefined,
-                  }
-                : undefined,
-            active: data.active,
-          },
-        }
+        requestParams,
+        validatedData as UpdateProductRequestBody
       );
 
-      console.log("Product updated successfully:", updatedProduct);
+      console.log(
+        "Product updated successfully:",
+        JSON.stringify(updatedProduct, null, 2)
+      );
+      console.log("=== END FRONTEND UPDATE DEBUG ===");
+
       onProductUpdated(updatedProduct);
       onOpenChange(false);
     } catch (error) {
@@ -283,7 +271,7 @@ export function EditProductDialog({
                       <TagInput
                         label="Etiquetas"
                         placeholder="Escribe una etiqueta y presiona Enter..."
-                        value={field.value}
+                        value={field.value || []}
                         onChange={field.onChange}
                         description="Ej: vegetariano, sin gluten, picante, etc."
                         maxTags={10}
@@ -304,7 +292,7 @@ export function EditProductDialog({
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="calories"
+                  name="nutritionalInfo.calories"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Calorías</FormLabel>
@@ -313,7 +301,7 @@ export function EditProductDialog({
                           type="number"
                           min="0"
                           placeholder="250"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(
                               parseInt(e.target.value) || undefined
@@ -328,7 +316,7 @@ export function EditProductDialog({
 
                 <FormField
                   control={form.control}
-                  name="protein"
+                  name="nutritionalInfo.protein"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Proteínas (g)</FormLabel>
@@ -338,7 +326,7 @@ export function EditProductDialog({
                           step="0.1"
                           min="0"
                           placeholder="15.5"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(
                               parseFloat(e.target.value) || undefined
@@ -353,7 +341,7 @@ export function EditProductDialog({
 
                 <FormField
                   control={form.control}
-                  name="carbs"
+                  name="nutritionalInfo.carbs"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Carbohidratos (g)</FormLabel>
@@ -363,7 +351,7 @@ export function EditProductDialog({
                           step="0.1"
                           min="0"
                           placeholder="30.2"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(
                               parseFloat(e.target.value) || undefined
@@ -378,7 +366,7 @@ export function EditProductDialog({
 
                 <FormField
                   control={form.control}
-                  name="fat"
+                  name="nutritionalInfo.fat"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Grasas (g)</FormLabel>
@@ -388,7 +376,7 @@ export function EditProductDialog({
                           step="0.1"
                           min="0"
                           placeholder="8.7"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(
                               parseFloat(e.target.value) || undefined
@@ -404,14 +392,14 @@ export function EditProductDialog({
 
               <FormField
                 control={form.control}
-                name="allergens"
+                name="nutritionalInfo.allergens"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <TagInput
                         label="Alérgenos"
                         placeholder="Escribe un alérgeno y presiona Enter..."
-                        value={field.value}
+                        value={field.value || []}
                         onChange={field.onChange}
                         description="Ej: gluten, lácteos, frutos secos, etc."
                         maxTags={15}

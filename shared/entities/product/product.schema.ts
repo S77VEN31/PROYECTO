@@ -80,9 +80,10 @@ export const ProductUpdateSchema = z.object({
   tags: z.array(z.string()).optional(),
   nutritionalInfo: NutritionalInfoSchema.optional(),
   preparationTime: z.number().nonnegative().optional(),
-  slug: z.string().optional(),
-  backgroundImages: z.array(ImageSchema).optional(),
   active: z.boolean().optional(),
+  slug: z.string().optional(),
+  searchTerm: z.string().optional(),
+  backgroundImages: z.array(ImageSchema).optional(),
 }) satisfies z.ZodType<ProductUpdate>;
 
 /**

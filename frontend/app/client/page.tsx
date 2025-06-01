@@ -1,11 +1,10 @@
 "use client";
 
 import { CategoryCard } from "@/components/category/category-card";
-import { useCategories } from "@/hooks/useCategories";
-import { Category } from "@/types/category";
-import { ShoppingBag, Tag } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCategories } from "@/hooks/useCategories";
 import { cn } from "@/lib/utils";
+import { Category, CategoryVariant } from "colori-platform-shared";
 
 export default function ClientHomePage() {
   const { categories, isLoading, error } = useCategories();
@@ -17,10 +16,12 @@ export default function ClientHomePage() {
     description: "Ofertas especiales y combos",
     active: true,
     displayOrder: 5,
-    icon: Tag,
-    variant: "rojo",
+    icon: "tag",
+    variant: CategoryVariant.RED,
     slug: "promotions",
     searchTerm: "promotions",
+    products: [],
+    backgroundImages: [],
   };
 
   const cartCategory: Category = {
@@ -29,9 +30,11 @@ export default function ClientHomePage() {
     description: "Revisa y confirma tu pedido",
     active: true,
     displayOrder: 6,
-    icon: ShoppingBag,
-    variant: "cafe",
+    icon: "shopping-bag",
+    variant: CategoryVariant.COFFEE,
     slug: "cart",
+    products: [],
+    backgroundImages: [],
   };
 
   // Función para renderizar el contenido de categorías
@@ -40,9 +43,18 @@ export default function ClientHomePage() {
       // Mostrar esqueletos de carga mientras se cargan las categorías
       return Array.from({ length: 4 }).map((_, index) => (
         <div key={`skeleton-${index}`} className="flex flex-col space-y-3">
-          <Skeleton className={cn("h-48 w-full rounded-xl", "bg-gray-200 dark:bg-gray-800")} />
-          <Skeleton className={cn("h-6 w-3/4", "bg-gray-200 dark:bg-gray-800")} />
-          <Skeleton className={cn("h-4 w-full", "bg-gray-200 dark:bg-gray-800")} />
+          <Skeleton
+            className={cn(
+              "h-48 w-full rounded-xl",
+              "bg-gray-200 dark:bg-gray-800"
+            )}
+          />
+          <Skeleton
+            className={cn("h-6 w-3/4", "bg-gray-200 dark:bg-gray-800")}
+          />
+          <Skeleton
+            className={cn("h-4 w-full", "bg-gray-200 dark:bg-gray-800")}
+          />
         </div>
       ));
     }

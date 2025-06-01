@@ -1,6 +1,6 @@
 import { ApiError } from "@/middlewares";
-import { ProductModel } from "@models";
 import CategoryModel from "@/models/entities/category.model";
+import { ProductModel } from "@models";
 import {
   GetProductsRequestParams,
   PaginatedResponse,
@@ -67,7 +67,11 @@ export class ProductService {
       try {
         // Find the category and get its product IDs
         const categoryDoc = await CategoryModel.findById(category).lean();
-        if (categoryDoc && categoryDoc.products && categoryDoc.products.length > 0) {
+        if (
+          categoryDoc &&
+          categoryDoc.products &&
+          categoryDoc.products.length > 0
+        ) {
           // Filter products by IDs that are in the category's product list
           query._id = { $in: categoryDoc.products };
         } else {
@@ -177,8 +181,35 @@ export class ProductService {
         throw new ApiError(404, "Product not found");
       }
 
-      // Update product fields
-      Object.assign(product, data);
+      // Handle nutritionalInfo separately to ensure proper merging
+      if (data.nutritionalInfo) {
+        // Always update nutritionalInfo, even if some fields are undefined
+        product.nutritionalInfo = {
+          calories:
+            data.nutritionalInfo.calories ??
+            (product.nutritionalInfo?.calories || undefined),
+          protein:
+            data.nutritionalInfo.protein ??
+            (product.nutritionalInfo?.protein || undefined),
+          carbs:
+            data.nutritionalInfo.carbs ??
+            (product.nutritionalInfo?.carbs || undefined),
+          fat:
+            data.nutritionalInfo.fat ??
+            (product.nutritionalInfo?.fat || undefined),
+          allergens:
+            data.nutritionalInfo.allergens ??
+            (product.nutritionalInfo?.allergens || undefined),
+        };
+
+        // Remove nutritionalInfo from data to avoid double assignment
+        const { nutritionalInfo, ...restData } = data;
+        Object.assign(product, restData);
+      } else {
+        // Update product fields normally if no nutritionalInfo
+        Object.assign(product, data);
+      }
+
       await product.save();
 
       const productObj = product.toObject();
@@ -211,76 +242,5 @@ export class ProductService {
       }
       throw new ApiError(500, `Failed to delete product: ${error.message}`);
     }
-  }
-
-  /**
-   * Get a product by ID
-   */
-  async getProductById(productId: string): Promise<Product> {
-    const product = await ProductModel.findById(productId);
-
-    if (!product) {
-      throw new ApiError(404, "Product not found");
-    }
-
-    return product.toJSON() as unknown as Product;
-  }
-
-  /**
-   * Get all products with optional filters
-   */
-  async getProducts(filters: Partial<Product> = {}): Promise<Product[]> {
-    const products = await ProductModel.find(filters);
-    return products.map((product) => product.toJSON() as unknown as Product);
-  }
-
-  /**
-   * Update a product
-   */
-  async updateProduct(
-    productId: string,
-    updateData: ProductUpdate
-  ): Promise<Product> {
-    const product = await ProductModel.findById(productId);
-
-    if (!product) {
-      throw new ApiError(404, "Product not found");
-    }
-
-    // Update product fields
-    Object.assign(product, updateData);
-    await product.save();
-
-    return product.toJSON() as unknown as Product;
-  }
-
-  /**
-   * Delete a product
-   */
-  async deleteProduct(productId: string): Promise<void> {
-    const product = await ProductModel.findById(productId);
-
-    if (!product) {
-      throw new ApiError(404, "Product not found");
-    }
-
-    await ProductModel.deleteOne({ _id: productId });
-  }
-
-  /**
-   * Create a new product
-   */
-  async createProduct(productData: ProductCreate): Promise<Product> {
-    // Check if product with name already exists
-    const existingProduct = await ProductModel.findOne({
-      name: productData.name,
-    });
-    if (existingProduct) {
-      throw new ApiError(400, "Product with this name already exists");
-    }
-
-    // Create product in database
-    const product = await ProductModel.create(productData);
-    return product.toJSON() as unknown as Product;
   }
 }

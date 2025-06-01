@@ -138,9 +138,9 @@ export interface CreateResponse<T = any> extends ApiResponse<T> {
 /**
  * Generic response for update operations
  * @interface UpdateResponse
- * @template T - The type of the updated entity
+ * @template T - The type of the updated entity (complete entity data without ID)
  * @property {boolean} updated - Whether the update was successful
- * @property {T} data - The updated entity data
+ * @property {Omit<T, 'id'>} data - The complete updated entity data (without ID)
  */
 export interface UpdateResponse<T = any> extends ApiResponse<T> {
   updated: boolean;

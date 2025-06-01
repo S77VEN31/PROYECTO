@@ -71,8 +71,8 @@ export function DeleteProductDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
-              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+              <AlertTriangle className="h-5 w-5 text-primary" />
             </div>
             <div>
               <DialogTitle>Eliminar Producto</DialogTitle>
@@ -86,12 +86,10 @@ export function DeleteProductDialog({
         <div className="py-4">
           <p className="text-sm text-muted-foreground">
             ¿Estás seguro de que quieres eliminar el producto{" "}
-            <span className="font-medium text-foreground">
-              {product.name}
-            </span>?
+            <span className="font-medium text-foreground">{product.name}</span>?
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Se perderán todos los datos asociados a este producto, incluyendo 
+            Se perderán todos los datos asociados a este producto, incluyendo
             información nutricional y etiquetas.
           </p>
         </div>

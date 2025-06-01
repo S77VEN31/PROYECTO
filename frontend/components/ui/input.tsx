@@ -4,19 +4,21 @@ import { cn } from "@/lib/utils";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
-  variant?: "default" | "cafe" | "celeste" | "naranja" | "rosa";
+  variant?: "default" | "coffee" | "skyblue" | "orange" | "pink";
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, variant = "default", ...props }, ref) => {
     const variantStyles = {
-      default: "border-input focus-visible:ring-ring",
-      cafe: "border-[#40041A] focus-visible:ring-[#40041A]/30 focus-visible:border-[#40041A] dark:border-[#F2D0D0] dark:focus-visible:ring-[#F2D0D0]/30 dark:focus-visible:border-[#F2D0D0]",
-      celeste:
-        "border-[#85C5BF] focus-visible:ring-[#85C5BF]/30 focus-visible:border-[#85C5BF] dark:border-[#7ECBC5] dark:focus-visible:ring-[#7ECBC5]/30 dark:focus-visible:border-[#7ECBC5]",
-      naranja:
-        "border-[#F2B988] focus-visible:ring-[#F2B988]/30 focus-visible:border-[#F2B988] dark:border-[#FFB97C] dark:focus-visible:ring-[#FFB97C]/30 dark:focus-visible:border-[#FFB97C]",
-      rosa: "border-[#F2D0D0] focus-visible:ring-[#F2D0D0]/30 focus-visible:border-[#F2D0D0]",
+      default:
+        "border-input focus-visible:ring-primary/30 focus-visible:border-primary",
+      coffee:
+        "border-[var(--color-coffee)] focus-visible:ring-[var(--color-coffee)]/30 focus-visible:border-[var(--color-coffee)]",
+      skyblue:
+        "border-[var(--color-skyblue)] focus-visible:ring-[var(--color-skyblue)]/30 focus-visible:border-[var(--color-skyblue)]",
+      orange:
+        "border-[var(--color-orange)] focus-visible:ring-[var(--color-orange)]/30 focus-visible:border-[var(--color-orange)]",
+      pink: "border-[var(--color-pink)] focus-visible:ring-[var(--color-pink)]/30 focus-visible:border-[var(--color-pink)]",
     };
 
     return (
@@ -36,3 +38,4 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = "Input";
 
 export { Input };
+

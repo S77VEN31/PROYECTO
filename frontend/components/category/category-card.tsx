@@ -8,15 +8,35 @@ import {
   CardFooter,
   CardTitle,
 } from "@/components/ui/card";
-import { getVariantBorderStyle, getVariantIconClass } from "@/lib/utils";
-import { Category, CategoryVariant } from "@/types/category";
-import { Coffee } from "lucide-react";
+import {
+  getButtonVariantFromCategory,
+  getVariantBorderStyle,
+  getVariantIconClass,
+} from "@/lib/utils";
+import { Category } from "colori-platform-shared";
+import {
+  Coffee,
+  LucideIcon,
+  ShoppingBag,
+  Tag,
+  UtensilsCrossed,
+} from "lucide-react";
 import Link from "next/link";
 
 interface CategoryCardProps {
   category: Category;
   href?: string;
 }
+
+// Mapeo de iconos de string a componentes Lucide
+const iconMap: Record<string, LucideIcon> = {
+  "entradas.png": UtensilsCrossed,
+  "image.png": Coffee,
+  tag: Tag,
+  "shopping-bag": ShoppingBag,
+  coffee: Coffee,
+  utensils: UtensilsCrossed,
+};
 
 export function CategoryCard({ category, href }: CategoryCardProps) {
   // Si category es undefined, mostrar un mensaje o usar valores predeterminados
@@ -38,31 +58,41 @@ export function CategoryCard({ category, href }: CategoryCardProps) {
     );
   }
 
-  const { name, description, slug, icon: Icon, variant } = category;
+  const { name, description, slug, icon, variant } = category;
   const categoryHref = href || `/client/category/${slug}`;
+  const buttonVariant = getButtonVariantFromCategory(variant);
 
-  // Convertir la variante al tipo CategoryVariant o usar 'default'
-  const cardVariant = (variant as CategoryVariant) || "default";
+  // Obtener el componente de icono
+  const IconComponent = iconMap[icon] || Coffee;
 
   return (
     <Card
       className={`transition-all duration-300 hover:shadow-md overflow-hidden ${getVariantBorderStyle(
-        cardVariant
+        variant
       )}`}
     >
       <CardContent className="pt-6 relative z-10">
-        {Icon && (
-          <div className="mb-4 flex items-center justify-center">
-            <Icon className={getVariantIconClass(cardVariant, "lg")} />
-          </div>
-        )}
+        <div className="mb-4 flex items-center justify-center">
+          <IconComponent className={getVariantIconClass(variant, "lg")} />
+        </div>
         <CardTitle className="text-xl font-bold text-center">{name}</CardTitle>
         <CardDescription className="text-center mt-2">
           {description}
         </CardDescription>
       </CardContent>
       <CardFooter className="flex justify-center pb-6 relative z-10">
-        <Button asChild variant={cardVariant}>
+        <Button
+          asChild
+          variant={
+            buttonVariant as
+              | "coffee"
+              | "skyblue"
+              | "orange"
+              | "red"
+              | "pink"
+              | "default"
+          }
+        >
           <Link href={categoryHref}>Ver más</Link>
         </Button>
       </CardFooter>

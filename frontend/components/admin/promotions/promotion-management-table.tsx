@@ -27,39 +27,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  getPromotionStatusBadgeClass,
+  getPromotionStatusDisplayText,
+  getPromotionTypeDisplayText,
+} from "@/lib/utils";
+import {
   GetPromotionsRequestParams,
   Promotion,
   PromotionCreate,
-  TimeStamps,
+  PromotionType,
 } from "colori-platform-shared";
 import {
   CalendarCheck,
   CalendarX,
-  Clock,
-  Code,
   Edit,
   Eye,
   EyeOff,
-  Hash,
   MoreHorizontal,
-  Package,
   Percent,
   RefreshCw,
   Search,
-  ShoppingCart,
-  Tag,
   Trash2,
-  Users,
 } from "lucide-react";
 import { useState } from "react";
 import { DeletePromotionDialog } from "./delete-promotion-dialog";
 import { EditPromotionDialog } from "./edit-promotion-dialog";
-
-/**
- * Extended Promotion interface with explicit TimeStamps properties
- * This ensures TypeScript recognizes the createdAt and updatedAt properties
- */
-interface PromotionWithTimestamps extends Promotion, TimeStamps {}
 
 /**
  * Promotion management table props
@@ -76,21 +68,6 @@ interface PromotionManagementTableProps {
 }
 
 /**
- * Get promotion type label
- */
-function getPromotionTypeLabel(type: string): string {
-  const typeLabels: Record<string, string> = {
-    discount: "Descuento",
-    bogo: "Compra 1 Lleva 2",
-    bundle: "Paquete",
-    "free-shipping": "Envío Gratis",
-    "gift-with-purchase": "Regalo con Compra",
-    seasonal: "Estacional",
-  };
-  return typeLabels[type] || type;
-}
-
-/**
  * Get promotion status
  */
 function getPromotionStatus(promotion: Promotion) {
@@ -103,22 +80,26 @@ function getPromotionStatus(promotion: Promotion) {
   if (!promotionData.active)
     return {
       status: "inactive",
-      label: "Inactiva",
-      variant: "secondary" as const,
+      label: getPromotionStatusDisplayText("inactive"),
+      badgeClass: getPromotionStatusBadgeClass("inactive"),
     };
   if (endDate < now)
     return {
       status: "expired",
-      label: "Expirada",
-      variant: "destructive" as const,
+      label: getPromotionStatusDisplayText("expired"),
+      badgeClass: getPromotionStatusBadgeClass("expired"),
     };
   if (startDate > now)
     return {
       status: "upcoming",
-      label: "Próxima",
-      variant: "outline" as const,
+      label: getPromotionStatusDisplayText("upcoming"),
+      badgeClass: getPromotionStatusBadgeClass("upcoming"),
     };
-  return { status: "active", label: "Activa", variant: "default" as const };
+  return {
+    status: "active",
+    label: getPromotionStatusDisplayText("active"),
+    badgeClass: getPromotionStatusBadgeClass("active"),
+  };
 }
 
 /**
@@ -223,23 +204,10 @@ export function PromotionManagementTable({
    * Format date for display
    */
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("es-ES", {
+    return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
-    });
-  };
-
-  /**
-   * Format date and time for display
-   */
-  const formatDateTime = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("es-ES", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
     });
   };
 
@@ -257,49 +225,11 @@ export function PromotionManagementTable({
     return "N/A";
   };
 
-  /**
-   * Format minimum purchase for display
-   */
-  const formatMinimumPurchase = (promotion: Promotion) => {
-    const promotionData = promotion as unknown as PromotionCreate;
-    if (promotionData.minimumPurchase) {
-      return `€${promotionData.minimumPurchase.toFixed(2)}`;
-    }
-    return "-";
-  };
-
-  /**
-   * Format usage limit for display
-   */
-  const formatUsageLimit = (promotion: Promotion) => {
-    const promotionData = promotion as unknown as PromotionCreate;
-    if (promotionData.usageLimit) {
-      return promotionData.usageLimit.toString();
-    }
-    return "Ilimitado";
-  };
-
-  /**
-   * Get applicable products count
-   */
-  const getApplicableProductsCount = (promotion: Promotion) => {
-    const promotionData = promotion as unknown as PromotionCreate;
-    return promotionData.applicableProducts?.length || 0;
-  };
-
-  /**
-   * Get applicable categories count
-   */
-  const getApplicableCategoriesCount = (promotion: Promotion) => {
-    const promotionData = promotion as unknown as PromotionCreate;
-    return promotionData.applicableCategories?.length || 0;
-  };
-
   if (error) {
     return (
       <AdminCard title="Error">
         <div className="text-center py-8">
-          <p className="text-red-600 mb-4">{error}</p>
+          <p className="text-destructive mb-4">{error}</p>
           <Button onClick={onRefresh} variant="outline">
             <RefreshCw className="h-4 w-4 mr-2" />
             Reintentar
@@ -317,7 +247,7 @@ export function PromotionManagementTable({
           {/* Search and Type Filter Row */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1 min-w-0">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 z-10" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary h-4 w-4 z-10" />
               <Input
                 placeholder="Buscar promociones..."
                 value={searchTerm}
@@ -335,38 +265,40 @@ export function PromotionManagementTable({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos los tipos</SelectItem>
-                  <SelectItem value="discount">Descuento</SelectItem>
-                  <SelectItem value="bogo">Compra 1 Lleva 2</SelectItem>
-                  <SelectItem value="bundle">Paquete</SelectItem>
-                  <SelectItem value="free-shipping">Envío Gratis</SelectItem>
-                  <SelectItem value="gift-with-purchase">
+                  <SelectItem value={PromotionType.DISCOUNT}>
+                    Descuento
+                  </SelectItem>
+                  <SelectItem value={PromotionType.BOGO}>
+                    Compra 1 Lleva 1
+                  </SelectItem>
+                  <SelectItem value={PromotionType.BUNDLE}>Paquete</SelectItem>
+                  <SelectItem value={PromotionType.FREE_SHIPPING}>
+                    Envío Gratis
+                  </SelectItem>
+                  <SelectItem value={PromotionType.GIFT_WITH_PURCHASE}>
                     Regalo con Compra
                   </SelectItem>
-                  <SelectItem value="seasonal">Estacional</SelectItem>
+                  <SelectItem value={PromotionType.SEASONAL}>
+                    Estacional
+                  </SelectItem>
                 </SelectContent>
               </Select>
               <Select
-                value={
-                  filters.active === true
-                    ? "active"
-                    : filters.active === false
-                    ? "inactive"
-                    : "all"
-                }
+                value={filters.active?.toString() || "all"}
                 onValueChange={handleActiveFilterChange}
               >
                 <SelectTrigger className="w-full sm:w-40 min-w-[140px]">
-                  <SelectValue placeholder="Estado" />
+                  <SelectValue placeholder="Filtrar por estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="active">Activas</SelectItem>
-                  <SelectItem value="inactive">Inactivas</SelectItem>
+                  <SelectItem value="all">Todos los estados</SelectItem>
+                  <SelectItem value="true">Activo</SelectItem>
+                  <SelectItem value="false">Inactivo</SelectItem>
                 </SelectContent>
               </Select>
               <Button
                 onClick={onRefresh}
-                variant="outline"
+                variant="default"
                 size="icon"
                 className="flex-shrink-0"
                 title="Actualizar lista"
@@ -382,41 +314,19 @@ export function PromotionManagementTable({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="min-w-[200px]">Promoción</TableHead>
-                <TableHead className="min-w-[120px]">Tipo</TableHead>
-                <TableHead className="min-w-[100px]">Descuento</TableHead>
+                <TableHead className="min-w-[200px]">Promotion</TableHead>
+                <TableHead className="min-w-[120px]">Type</TableHead>
                 <TableHead className="min-w-[100px] hidden md:table-cell">
-                  Estado
-                </TableHead>
-                <TableHead className="min-w-[100px] hidden lg:table-cell">
-                  Código
+                  Status
                 </TableHead>
                 <TableHead className="min-w-[120px] hidden lg:table-cell">
-                  Compra Mín.
+                  Discount
                 </TableHead>
-                <TableHead className="min-w-[100px] hidden xl:table-cell">
-                  Límite Uso
-                </TableHead>
-                <TableHead className="min-w-[100px] hidden xl:table-cell">
-                  Productos
-                </TableHead>
-                <TableHead className="min-w-[100px] hidden xl:table-cell">
-                  Categorías
-                </TableHead>
-                <TableHead className="min-w-[120px] hidden lg:table-cell">
-                  Fecha Inicio
-                </TableHead>
-                <TableHead className="min-w-[120px] hidden lg:table-cell">
-                  Fecha Fin
-                </TableHead>
-                <TableHead className="min-w-[120px] hidden 2xl:table-cell">
-                  Creado
-                </TableHead>
-                <TableHead className="min-w-[120px] hidden 2xl:table-cell">
-                  Actualizado
+                <TableHead className="min-w-[150px] hidden xl:table-cell">
+                  Valid Period
                 </TableHead>
                 <TableHead className="min-w-[80px] text-right">
-                  Acciones
+                  Actions
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -425,7 +335,7 @@ export function PromotionManagementTable({
                 <TableRow>
                   <TableCell colSpan={14} className="text-center py-8">
                     <div className="flex items-center justify-center gap-2">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      <RefreshCw className="h-4 w-4 animate-spin text-primary" />
                       <span>Cargando promociones...</span>
                     </div>
                   </TableCell>
@@ -449,11 +359,7 @@ export function PromotionManagementTable({
                 </TableRow>
               ) : (
                 promotions.map((promotion) => {
-                  const status = getPromotionStatus(promotion);
                   const promotionData = promotion as unknown as PromotionCreate;
-                  const productsCount = getApplicableProductsCount(promotion);
-                  const categoriesCount =
-                    getApplicableCategoriesCount(promotion);
 
                   return (
                     <TableRow key={promotion.id}>
@@ -469,112 +375,37 @@ export function PromotionManagementTable({
                       </TableCell>
                       <TableCell className="min-w-[120px]">
                         <Badge variant="outline" className="text-xs">
-                          {getPromotionTypeLabel(promotionData.type)}
+                          {getPromotionTypeDisplayText(promotionData.type)}
                         </Badge>
                       </TableCell>
-                      <TableCell className="min-w-[100px]">
-                        <div className="flex items-center gap-1">
+                      <TableCell className="hidden md:table-cell min-w-[100px]">
+                        {(() => {
+                          const status = getPromotionStatus(promotion);
+                          return (
+                            <Badge className={`text-xs ${status.badgeClass}`}>
+                              {status.label}
+                            </Badge>
+                          );
+                        })()}
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell min-w-[120px]">
+                        <div className="flex items-center gap-1 text-sm">
                           <Percent className="h-3 w-3 text-muted-foreground" />
                           <span className="font-medium">
                             {formatDiscountValue(promotion)}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="hidden md:table-cell min-w-[100px]">
-                        <Badge variant={status.variant} className="text-xs">
-                          {status.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell min-w-[100px]">
-                        {promotionData.code ? (
-                          <div className="flex items-center gap-1 text-sm">
-                            <Code className="h-3 w-3 text-muted-foreground" />
-                            <span className="font-mono text-xs bg-muted px-2 py-1 rounded">
-                              {promotionData.code}
-                            </span>
+                      <TableCell className="hidden xl:table-cell min-w-[150px]">
+                        <div className="flex flex-col gap-1 text-sm">
+                          <div className="flex items-center gap-1">
+                            <CalendarCheck className="h-3 w-3 text-muted-foreground" />
+                            <span>{formatDate(promotionData.startDate)}</span>
                           </div>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">
-                            -
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell min-w-[120px]">
-                        <div className="flex items-center gap-1 text-sm">
-                          <ShoppingCart className="h-3 w-3 text-muted-foreground" />
-                          <span>{formatMinimumPurchase(promotion)}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-cell min-w-[100px]">
-                        <div className="flex items-center gap-1 text-sm">
-                          <Users className="h-3 w-3 text-muted-foreground" />
-                          <span>{formatUsageLimit(promotion)}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-cell min-w-[100px]">
-                        <div className="flex items-center gap-1 text-sm">
-                          <Package className="h-3 w-3 text-muted-foreground" />
-                          <span
-                            className={
-                              productsCount > 0
-                                ? "font-medium"
-                                : "text-muted-foreground"
-                            }
-                          >
-                            {productsCount > 0 ? productsCount : "Todos"}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-cell min-w-[100px]">
-                        <div className="flex items-center gap-1 text-sm">
-                          <Tag className="h-3 w-3 text-muted-foreground" />
-                          <span
-                            className={
-                              categoriesCount > 0
-                                ? "font-medium"
-                                : "text-muted-foreground"
-                            }
-                          >
-                            {categoriesCount > 0 ? categoriesCount : "Todas"}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell min-w-[120px]">
-                        <div className="flex items-center gap-1 text-sm">
-                          <CalendarCheck className="h-3 w-3 text-muted-foreground" />
-                          <span>{formatDate(promotionData.startDate)}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell min-w-[120px]">
-                        <div className="flex items-center gap-1 text-sm">
-                          <CalendarX className="h-3 w-3 text-muted-foreground" />
-                          <span>{formatDate(promotionData.endDate)}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden 2xl:table-cell min-w-[120px]">
-                        <div className="flex items-center gap-1 text-sm">
-                          <Clock className="h-3 w-3 text-muted-foreground" />
-                          <span>
-                            {(promotion as PromotionWithTimestamps).createdAt
-                              ? formatDateTime(
-                                  (promotion as PromotionWithTimestamps)
-                                    .createdAt
-                                )
-                              : "-"}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden 2xl:table-cell min-w-[120px]">
-                        <div className="flex items-center gap-1 text-sm">
-                          <Hash className="h-3 w-3 text-muted-foreground" />
-                          <span>
-                            {(promotion as PromotionWithTimestamps).updatedAt
-                              ? formatDateTime(
-                                  (promotion as PromotionWithTimestamps)
-                                    .updatedAt
-                                )
-                              : "-"}
-                          </span>
+                          <div className="flex items-center gap-1">
+                            <CalendarX className="h-3 w-3 text-muted-foreground" />
+                            <span>{formatDate(promotionData.endDate)}</span>
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell className="text-right min-w-[80px]">
@@ -595,6 +426,7 @@ export function PromotionManagementTable({
                                 setSelectedPromotion(promotion);
                                 setIsEditDialogOpen(true);
                               }}
+                              className="text-primary"
                             >
                               <Edit className="mr-2 h-4 w-4" />
                               Editar
@@ -604,16 +436,17 @@ export function PromotionManagementTable({
                                 handleTogglePromotionStatus(promotion)
                               }
                               disabled={updatingPromotion?.id === promotion.id}
+                              className="text-primary"
                             >
                               {promotionData.active ? (
                                 <>
                                   <EyeOff className="mr-2 h-4 w-4" />
-                                  Desactivar
+                                  Desactivar promoción
                                 </>
                               ) : (
                                 <>
                                   <Eye className="mr-2 h-4 w-4" />
-                                  Activar
+                                  Activar promoción
                                 </>
                               )}
                             </DropdownMenuItem>
@@ -623,7 +456,7 @@ export function PromotionManagementTable({
                                 setSelectedPromotion(promotion);
                                 setIsDeleteDialogOpen(true);
                               }}
-                              className="text-red-600"
+                              className="text-red-600 dark:text-red-400"
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
                               Eliminar

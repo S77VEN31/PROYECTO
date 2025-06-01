@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Product } from "colori-platform-shared";
+import { getVariantBadgeClass } from "@/lib/utils";
+import { CategoryVariant, Product } from "colori-platform-shared";
 import {
   ArrowLeft,
   Clock,
@@ -22,6 +23,8 @@ interface ProductDetailProps {
   onBack?: () => void;
   onFavorite?: (id: string) => void;
   isFavorite?: boolean;
+  currentCategory?: string;
+  categoryVariant?: CategoryVariant;
 }
 
 export function ProductDetail({
@@ -30,6 +33,8 @@ export function ProductDetail({
   onBack,
   onFavorite,
   isFavorite = false,
+  currentCategory,
+  categoryVariant = CategoryVariant.DEFAULT,
 }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1);
 
@@ -111,11 +116,13 @@ export function ProductDetail({
           <div className="mb-4">
             <div className="flex justify-between items-start">
               <div>
-                <Badge variant="outline" className="mb-2">
-                  {product.tags && product.tags.length > 0
-                    ? product.tags.join(", ")
-                    : "Sin categoría"}
-                </Badge>
+                <div
+                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium mb-2 ${getVariantBadgeClass(
+                    categoryVariant
+                  )}`}
+                >
+                  {currentCategory || "Sin categoría"}
+                </div>
                 <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
               </div>
               <div className="text-xl font-bold text-primary">
@@ -203,20 +210,6 @@ export function ProductDetail({
             </div>
           )}
 
-          {/* Tags */}
-          {product.tags && product.tags.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-medium mb-2">Etiquetas</h3>
-              <div className="flex flex-wrap gap-2">
-                {product.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
           <Separator className="mb-6" />
 
           {/* Acciones de compra */}
@@ -250,7 +243,7 @@ export function ProductDetail({
                 Total: ${(product.price * quantity).toFixed(2)}
               </div>
               <Button
-                variant="cafe"
+                variant="coffee"
                 size="lg"
                 className="w-1/2"
                 onClick={handleAddToCart}
