@@ -14,7 +14,6 @@ import {
   DeletePromotionRequestParams,
   EntityMetadataSchema,
   GetPromotionRequestParams,
-  GetPromotionsRequestParams,
   Promotion,
   PromotionBase,
   PromotionCreate,
@@ -128,9 +127,9 @@ export const PromotionUpdateSchema = z
 export const GetPromotionsRequestParamsSchema = SearchableParamsSchema.merge(
   PaginationParamsSchema
 ).extend({
-  active: z.boolean().optional(),
+  active: z.coerce.boolean().optional(),
   type: z.string().optional(),
-}) satisfies z.ZodType<GetPromotionsRequestParams>;
+});
 
 // GET /promotions/:id - validate params
 export const GetPromotionRequestParamsSchema =
