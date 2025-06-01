@@ -2,10 +2,17 @@
 
 import { CategoryApiService } from "@/api/entities/category.api";
 import { ProductApiService } from "@/api/entities/product.api";
-import { Button } from "@/components/ui/button";
-import { Category, Product } from "colori-platform-shared";
-import { ChevronLeft, Coffee } from "lucide-react";
-import Link from "next/link";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  cn,
+  getCategoryFromProduct,
+  getVariantBackgroundClass,
+  getVariantBorderStyle,
+  getVariantIconClass,
+} from "@/lib/utils";
+import { Category, CategoryVariant, Product } from "colori-platform-shared";
+import { AlertCircle, Coffee, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 
@@ -17,15 +24,17 @@ interface ExtendedProduct extends Product {
   categories?: string[];
 }
 
-// Definir un componente ProductsGrid compatible
+// Definir un componente ProductsGrid compatible con estilos consistentes
 function ProductsGrid({
   products,
   onSelectProduct,
   showInactive = true,
+  categoryVariant = CategoryVariant.DEFAULT,
 }: {
   products: Product[];
   onSelectProduct?: (product: Product) => void;
   showInactive?: boolean;
+  categoryVariant?: CategoryVariant;
 }) {
   // Filtrar productos inactivos si showInactive es false
   const filteredProducts = showInactive
@@ -34,13 +43,32 @@ function ProductsGrid({
 
   if (filteredProducts.length === 0) {
     return (
-      <div className="p-6 bg-destructive/10 border border-destructive/20 rounded-md">
-        <p className="text-center font-medium">No hay productos disponibles</p>
-        <p className="text-center text-sm text-muted-foreground mt-2">
-          No se encontraron productos en esta categoría. Por favor, intenta con
-          otra categoría.
-        </p>
-      </div>
+      <Card
+        className={cn(
+          "border-2 border-dashed transition-colors",
+          getVariantBorderStyle(categoryVariant)
+        )}
+      >
+        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+          <div
+            className={cn(
+              "flex h-16 w-16 items-center justify-center rounded-full mb-4",
+              "bg-muted"
+            )}
+          >
+            <Package
+              className={cn(getVariantIconClass(categoryVariant, "lg"))}
+            />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground mb-2">
+            No hay productos disponibles
+          </h3>
+          <p className="text-sm text-muted-foreground max-w-md">
+            No se encontraron productos en esta categoría. Por favor, intenta
+            con otra categoría o vuelve más tarde.
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -51,8 +79,105 @@ function ProductsGrid({
           key={product.id}
           product={product}
           onSelect={onSelectProduct}
+          categoryVariant={categoryVariant}
         />
       ))}
+    </div>
+  );
+}
+
+// Componente de header de sección consistente con admin
+function CategoryHeader({
+  category,
+  productCount,
+}: {
+  category: Category;
+  productCount: number;
+}) {
+  const categoryData = getCategoryFromProduct(category.id);
+  const IconComponent = categoryData.icon || Coffee;
+
+  return (
+    <div className="text-center space-y-4">
+      {/* Ícono de categoría con estilo consistente */}
+      <div className="flex justify-center">
+        <div
+          className={cn(
+            "flex h-16 w-16 items-center justify-center rounded-full border-2",
+            getVariantBackgroundClass(
+              category.variant as CategoryVariant,
+              "light"
+            ),
+            getVariantBorderStyle(category.variant as CategoryVariant)
+          )}
+        >
+          <IconComponent
+            className={cn(
+              getVariantIconClass(category.variant as CategoryVariant, "lg")
+            )}
+          />
+        </div>
+      </div>
+
+      {/* Título y descripción */}
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          {category.name}
+        </h1>
+        {category.description && (
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            {category.description}
+          </p>
+        )}
+
+        {/* Contador de productos */}
+        {productCount > 0 && (
+          <p className="text-sm text-muted-foreground mt-3">
+            {productCount} productos disponibles
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Componente de estado de carga consistente
+function LoadingState() {
+  return (
+    <div className="container mx-auto py-8 px-4 max-w-7xl">
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Cargando categoría...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Componente de estado de error consistente
+function ErrorState({
+  error,
+  categorySlug,
+}: {
+  error: string | null;
+  categorySlug: string;
+}) {
+  return (
+    <div className="container mx-auto py-8 px-4 max-w-7xl">
+      <Card className="max-w-md mx-auto">
+        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 mb-4">
+            <AlertCircle className="h-8 w-8 text-destructive" />
+          </div>
+          <h1 className="text-xl font-semibold text-foreground mb-2">
+            {error || "Categoría no encontrada"}
+          </h1>
+          <p className="text-sm text-muted-foreground mb-6 max-w-sm">
+            {error || `No se pudo encontrar la categoría "${categorySlug}".`}
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -131,73 +256,50 @@ export default function CategoryPage({
     router.push(`/client/category/${categorySlug}/product/${product.slug}`);
   };
 
+  // Estados de carga y error con componentes consistentes
   if (loading) {
-    return (
-      <div className="container mx-auto py-8 px-4 max-w-7xl">
-        <div className="flex justify-center items-center min-h-[400px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rojo mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Cargando categoría...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (error || !currentCategory) {
-    return (
-      <div className="container mx-auto py-8 px-4 max-w-7xl">
-        <h1 className="text-3xl font-bold mb-8 text-center">
-          {error || "Categoría no encontrada"}
-        </h1>
-        <p className="text-center mb-4 text-muted-foreground">
-          {error || `No se pudo encontrar la categoría "${categorySlug}".`}
-        </p>
-        <div className="text-center">
-          <Button onClick={() => router.push("/client")}>
-            Volver al menú principal
-          </Button>
-        </div>
-      </div>
-    );
+    return <ErrorState error={error} categorySlug={categorySlug} />;
   }
 
-  return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
-      {/* Header personalizado */}
-      <div className="mb-8 space-y-4">
-        <div className="flex justify-between">
-          <Button asChild variant="ghost" size="sm" className="text-foreground">
-            <Link href="/client">
-              <ChevronLeft className="mr-2 h-4 w-4" />
-              Regresar
-            </Link>
-          </Button>
-        </div>
-        <div className="text-center">
-          <div className="flex justify-center mb-4">
-            <Coffee className="h-12 w-12 text-rojo" />
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {currentCategory.name}
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            {currentCategory.description}
-          </p>
-          {categoryProducts.length > 0 && (
-            <p className="text-sm text-muted-foreground mt-1">
-              {categoryProducts.length} productos disponibles
-            </p>
-          )}
-        </div>
-      </div>
+  // Preparar items del breadcrumb
+  const breadcrumbItems = [
+    {
+      label: "Inicio",
+      href: "/client",
+    },
+    {
+      label: currentCategory.name,
+      isActive: true,
+    },
+  ];
 
-      {/* Grid de productos */}
-      <ProductsGrid
-        products={categoryProducts}
-        onSelectProduct={handleSelectProduct}
-        showInactive={false}
+  return (
+    <div className="container mx-auto py-8 px-4 max-w-7xl space-y-8">
+      {/* Breadcrumb con estilo de categoría */}
+      <Breadcrumb
+        items={breadcrumbItems}
+        categoryVariant={currentCategory.variant as CategoryVariant}
       />
+
+      {/* Header de categoría con estilo consistente */}
+      <CategoryHeader
+        category={currentCategory}
+        productCount={categoryProducts.length}
+      />
+
+      {/* Grid de productos con estilo consistente */}
+      <div className="space-y-6">
+        <ProductsGrid
+          products={categoryProducts}
+          onSelectProduct={handleSelectProduct}
+          showInactive={false}
+          categoryVariant={currentCategory.variant as CategoryVariant}
+        />
+      </div>
     </div>
   );
 }

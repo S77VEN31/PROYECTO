@@ -3,9 +3,10 @@
 import { CategoryApiService } from "@/api/entities/category.api";
 import { ProductApiService } from "@/api/entities/product.api";
 import { ProductDetail } from "@/components/product/product-detail";
-import { Button } from "@/components/ui/button";
-import { Category, Product } from "colori-platform-shared";
-import { ChevronLeft } from "lucide-react";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { Card, CardContent } from "@/components/ui/card";
+import { Category, CategoryVariant, Product } from "colori-platform-shared";
+import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 
@@ -22,6 +23,41 @@ interface ProductPageProps {
     category: string;
     product: string;
   }>;
+}
+
+// Componente de estado de carga consistente
+function LoadingState() {
+  return (
+    <div className="container mx-auto py-8 px-4 max-w-7xl">
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Cargando producto...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Componente de estado de error consistente
+function ErrorState({ title, message }: { title: string; message: string }) {
+  return (
+    <div className="container mx-auto py-8 px-4 max-w-7xl">
+      <Card className="max-w-md mx-auto">
+        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 mb-4">
+            <AlertCircle className="h-8 w-8 text-destructive" />
+          </div>
+          <h1 className="text-xl font-semibold text-foreground mb-2">
+            {title}
+          </h1>
+          <p className="text-sm text-muted-foreground mb-6 max-w-sm">
+            {message}
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 export default function CategoryProductPage({ params }: ProductPageProps) {
@@ -100,75 +136,52 @@ export default function CategoryProductPage({ params }: ProductPageProps) {
     router.push(`/client/category/${categorySlug}`);
   };
 
-  // Loading state
+  // Estados de carga y error con componentes consistentes
   if (loading) {
-    return (
-      <div className="container flex flex-col items-center justify-center py-20 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rojo mb-4"></div>
-        <p className="text-muted-foreground">Cargando producto...</p>
-      </div>
-    );
+    return <LoadingState />;
   }
 
-  // Error state
   if (error) {
-    return (
-      <div className="container flex flex-col items-center justify-center py-20 text-center">
-        <h1 className="mb-6 text-2xl font-bold">Error al cargar el producto</h1>
-        <p className="mb-8 text-muted-foreground">{error}</p>
-        <Button onClick={handleBack} variant="outline">
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Volver a la categoría
-        </Button>
-      </div>
-    );
+    return <ErrorState title="Error al cargar el producto" message={error} />;
   }
 
   // Si no se encuentra el producto, mostrar mensaje de error
   if (!product) {
     return (
-      <div className="container flex flex-col items-center justify-center py-20 text-center">
-        <h1 className="mb-6 text-2xl font-bold">Producto no encontrado</h1>
-        <p className="mb-8 text-muted-foreground">
-          Lo sentimos, no pudimos encontrar el producto que buscas.
-        </p>
-        <Button onClick={handleBack} variant="outline">
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Volver a la categoría
-        </Button>
-      </div>
+      <ErrorState
+        title="Producto no encontrado"
+        message="Lo sentimos, no pudimos encontrar el producto que buscas."
+      />
     );
   }
 
+  // Preparar items del breadcrumb
+  const breadcrumbItems = [
+    {
+      label: "Inicio",
+      href: "/client",
+    },
+    {
+      label: category?.name || categorySlug,
+      onClick: handleBack,
+    },
+    {
+      label: product.name,
+      isActive: true,
+    },
+  ];
+
   return (
-    <div className="container py-6 md:py-10">
-      {/* Breadcrumb */}
-      <div className="mb-6">
-        <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <Button
-            variant="link"
-            className="p-0 h-auto text-muted-foreground hover:text-foreground"
-            onClick={() => router.push("/client")}
-          >
-            Inicio
-          </Button>
-          <span>/</span>
-          <Button
-            variant="link"
-            className="p-0 h-auto text-muted-foreground hover:text-foreground"
-            onClick={handleBack}
-          >
-            {category?.name || categorySlug}
-          </Button>
-          <span>/</span>
-          <span className="text-foreground">{product.name}</span>
-        </nav>
-      </div>
+    <div className="container mx-auto py-6 md:py-10 px-4 max-w-7xl space-y-6">
+      {/* Breadcrumb con estilo de categoría */}
+      <Breadcrumb
+        items={breadcrumbItems}
+        categoryVariant={category?.variant as CategoryVariant}
+      />
 
       <ProductDetail
         product={product}
         onAddToCart={handleAddToCart}
-        onBack={handleBack}
         currentCategory={category?.name}
         categoryVariant={category?.variant}
       />

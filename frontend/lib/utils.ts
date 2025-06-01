@@ -226,6 +226,110 @@ export function getVariantBadgeClass(
 }
 
 /**
+ * Obtiene clases de color para íconos pequeños basadas en la variante
+ * Solo devuelve las clases de color, sin tamaño
+ * @param variant La variante de color a usar
+ * @returns Clase CSS solo para el color del ícono
+ */
+export function getVariantIconColorClass(
+  variant: CategoryVariant | string
+): string {
+  return (
+    variantConfig.iconColors[variant as CategoryVariant] ||
+    variantConfig.iconColors[CategoryVariant.DEFAULT]
+  );
+}
+
+/**
+ * Obtiene clases de fondo con opacidad para elementos de información nutricional
+ * @param variant La variante de color a usar
+ * @param opacity Nivel de opacidad (por defecto 'light')
+ * @returns Clase CSS para el fondo con color de variante
+ */
+export function getVariantBackgroundClass(
+  variant: CategoryVariant | string,
+  opacity: "light" | "medium" | "strong" = "light"
+): string {
+  const opacityMap = {
+    light: "/10",
+    medium: "/20", 
+    strong: "/30"
+  };
+
+  const opacityLevel = opacityMap[opacity];
+
+  const backgroundClasses: Record<string, string> = {
+    [CategoryVariant.COFFEE]: `bg-[var(--color-coffee)]${opacityLevel}`,
+    [CategoryVariant.SKYBLUE]: `bg-[var(--color-skyblue)]${opacityLevel}`,
+    [CategoryVariant.ORANGE]: `bg-[var(--color-orange)]${opacityLevel}`,
+    [CategoryVariant.RED]: `bg-[var(--color-red)]${opacityLevel}`,
+    [CategoryVariant.PINK]: `bg-[var(--color-pink)]${opacityLevel}`,
+    [CategoryVariant.DEFAULT]: `bg-muted${opacityLevel === "/10" ? "/50" : opacityLevel === "/20" ? "/70" : ""}`,
+  };
+
+  return (
+    backgroundClasses[variant as CategoryVariant] ||
+    backgroundClasses[CategoryVariant.DEFAULT]
+  );
+}
+
+/**
+ * Obtiene clases de borde con color de variante para elementos destacados
+ * @param variant La variante de color a usar
+ * @param style Estilo del borde ('subtle' | 'normal' | 'strong')
+ * @returns Clase CSS para el borde con color de variante
+ */
+export function getVariantBorderClass(
+  variant: CategoryVariant | string,
+  style: "subtle" | "normal" | "strong" = "normal"
+): string {
+  const styleMap = {
+    subtle: "/10",
+    normal: "/20",
+    strong: "/40"
+  };
+
+  const opacity = styleMap[style];
+
+  const borderClasses: Record<string, string> = {
+    [CategoryVariant.COFFEE]: `border-[var(--color-coffee)]${opacity}`,
+    [CategoryVariant.SKYBLUE]: `border-[var(--color-skyblue)]${opacity}`,
+    [CategoryVariant.ORANGE]: `border-[var(--color-orange)]${opacity}`,
+    [CategoryVariant.RED]: `border-[var(--color-red)]${opacity}`,
+    [CategoryVariant.PINK]: `border-[var(--color-pink)]${opacity}`,
+    [CategoryVariant.DEFAULT]: "border-muted-foreground/20",
+  };
+
+  return (
+    borderClasses[variant as CategoryVariant] ||
+    borderClasses[CategoryVariant.DEFAULT]
+  );
+}
+
+/**
+ * Obtiene clases para íconos de advertencia (alérgenos)
+ * @returns Clase CSS para íconos de advertencia
+ */
+export function getWarningIconClass(): string {
+  return "text-[var(--color-cancellation)]";
+}
+
+/**
+ * Obtiene clases para elementos de información nutricional con mejor contraste
+ * @param variant La variante de color a usar
+ * @returns Clase CSS para contenedores de información nutricional
+ */
+export function getNutritionalInfoContainerClass(
+  variant: CategoryVariant | string
+): string {
+  return cn(
+    "flex items-center gap-1 p-1.5 rounded-md border transition-colors",
+    getVariantBackgroundClass(variant, "light"),
+    getVariantBorderClass(variant, "subtle")
+  );
+}
+
+/**
  * Obtiene la categoría principal de un producto
  * @param categoryId El ID o nombre de categoría del producto
  * @returns La categoría asociada o un valor predeterminado si no se encuentra
@@ -576,4 +680,98 @@ export function getCancellationButtonClass(withHover: boolean = true): string {
   return withHover 
     ? `${cancellationStyles.button} ${cancellationStyles.buttonHover}`
     : cancellationStyles.button;
+}
+
+/**
+ * Obtiene clases para badges de alérgenos con colores de advertencia consistentes
+ * @returns Clase CSS para badges de alérgenos
+ */
+export function getAllergenBadgeClass(): string {
+  return "border-[var(--color-cancellation)]/30 text-[var(--color-cancellation)] bg-[var(--color-cancellation)]/10 dark:border-[var(--color-cancellation)]/40 dark:text-[var(--color-cancellation)] dark:bg-[var(--color-cancellation)]/20";
+}
+
+/**
+ * Obtiene clases para tags y elementos informativos con estilos optimizados para modo claro/oscuro
+ * Modo claro: fondo translúcido sin borde
+ * Modo oscuro: fondo translúcido con texto del color de categoría
+ * @param variant La variante de color a usar
+ * @returns Clase CSS para tags con estilos adaptativos
+ */
+export function getVariantTagClass(
+  variant: CategoryVariant | string
+): string {
+  const tagClasses: Record<string, string> = {
+    [CategoryVariant.COFFEE]: 
+      "bg-[var(--color-coffee)]/40 text-black " +
+      "dark:bg-[var(--color-coffee)]/20 dark:text-[var(--color-coffee)] dark:border-[var(--color-coffee)]/30 " +
+      "hover:bg-[var(--color-coffee)]/50 dark:hover:bg-[var(--color-coffee)]/30 transition-colors",
+    [CategoryVariant.SKYBLUE]: 
+      "bg-[var(--color-skyblue)]/40 text-black " +
+      "dark:bg-[var(--color-skyblue)]/20 dark:text-[var(--color-skyblue)] dark:border-[var(--color-skyblue)]/30 " +
+      "hover:bg-[var(--color-skyblue)]/50 dark:hover:bg-[var(--color-skyblue)]/30 transition-colors",
+    [CategoryVariant.ORANGE]: 
+      "bg-[var(--color-orange)]/40 text-black " +
+      "dark:bg-[var(--color-orange)]/20 dark:text-[var(--color-orange)] dark:border-[var(--color-orange)]/30 " +
+      "hover:bg-[var(--color-orange)]/50 dark:hover:bg-[var(--color-orange)]/30 transition-colors",
+    [CategoryVariant.RED]: 
+      "bg-[var(--color-red)]/40 text-black " +
+      "dark:bg-[var(--color-red)]/20 dark:text-[var(--color-red)] dark:border-[var(--color-red)]/30 " +
+      "hover:bg-[var(--color-red)]/50 dark:hover:bg-[var(--color-red)]/30 transition-colors",
+    [CategoryVariant.PINK]: 
+      "bg-[var(--color-pink)]/40 text-black " +
+      "dark:bg-[var(--color-pink)]/20 dark:text-[var(--color-pink)] dark:border-[var(--color-pink)]/30 " +
+      "hover:bg-[var(--color-pink)]/50 dark:hover:bg-[var(--color-pink)]/35 transition-all duration-200 " +
+      "hover:shadow-sm hover:scale-[1.02]",
+    [CategoryVariant.DEFAULT]: 
+      "bg-muted/50 text-muted-foreground dark:border-muted-foreground/20 " +
+      "hover:bg-muted/70 transition-colors",
+  };
+
+  return (
+    tagClasses[variant as CategoryVariant] ||
+    tagClasses[CategoryVariant.DEFAULT]
+  );
+}
+
+/**
+ * Obtiene clases para contenedores de información nutricional con estilos optimizados
+ * Modo claro: fondo translúcido sin borde
+ * Modo oscuro: fondo translúcido con texto del color de categoría
+ * @param variant La variante de color a usar
+ * @returns Clase CSS para contenedores nutricionales con estilos adaptativos
+ */
+export function getVariantNutritionalClass(
+  variant: CategoryVariant | string
+): string {
+  const nutritionalClasses: Record<string, string> = {
+    [CategoryVariant.COFFEE]: 
+      "bg-[var(--color-coffee)]/30 text-black " +
+      "dark:bg-[var(--color-coffee)]/15 dark:text-[var(--color-coffee)] dark:border-[var(--color-coffee)]/25 " +
+      "hover:bg-[var(--color-coffee)]/40 dark:hover:bg-[var(--color-coffee)]/25 transition-colors",
+    [CategoryVariant.SKYBLUE]: 
+      "bg-[var(--color-skyblue)]/30 text-black " +
+      "dark:bg-[var(--color-skyblue)]/15 dark:text-[var(--color-skyblue)] dark:border-[var(--color-skyblue)]/25 " +
+      "hover:bg-[var(--color-skyblue)]/40 dark:hover:bg-[var(--color-skyblue)]/25 transition-colors",
+    [CategoryVariant.ORANGE]: 
+      "bg-[var(--color-orange)]/30 text-black " +
+      "dark:bg-[var(--color-orange)]/15 dark:text-[var(--color-orange)] dark:border-[var(--color-orange)]/25 " +
+      "hover:bg-[var(--color-orange)]/40 dark:hover:bg-[var(--color-orange)]/25 transition-colors",
+    [CategoryVariant.RED]: 
+      "bg-[var(--color-red)]/30 text-black " +
+      "dark:bg-[var(--color-red)]/15 dark:text-[var(--color-red)] dark:border-[var(--color-red)]/25 " +
+      "hover:bg-[var(--color-red)]/40 dark:hover:bg-[var(--color-red)]/25 transition-colors",
+    [CategoryVariant.PINK]: 
+      "bg-[var(--color-pink)]/30 text-black " +
+      "dark:bg-[var(--color-pink)]/15 dark:text-[var(--color-pink)] dark:border-[var(--color-pink)]/25 " +
+      "hover:bg-[var(--color-pink)]/40 dark:hover:bg-[var(--color-pink)]/30 transition-all duration-200 " +
+      "hover:shadow-md hover:scale-[1.02]",
+    [CategoryVariant.DEFAULT]: 
+      "bg-muted/30 text-muted-foreground dark:border-muted-foreground/20 " +
+      "hover:bg-muted/50 transition-colors",
+  };
+
+  return (
+    nutritionalClasses[variant as CategoryVariant] ||
+    nutritionalClasses[CategoryVariant.DEFAULT]
+  );
 }

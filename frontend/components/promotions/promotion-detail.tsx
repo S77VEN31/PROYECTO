@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { mockProducts } from "@/data/mock/products";
 import { Promotion, PromotionCreate } from "colori-platform-shared";
 import {
-  ArrowLeft,
   CalendarRange,
   Clock,
   Copy,
@@ -15,7 +14,6 @@ import {
   Ticket,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import { ProductCard } from "../product/product-card";
 
@@ -304,22 +302,6 @@ export function PromotionDetail({
           </div>
         </div>
       )}
-
-      {/* Botones de acción */}
-      <div className="flex flex-col sm:flex-row gap-4 mt-6">
-        <Button variant="outline" size="lg" asChild className="sm:flex-1">
-          <Link href="/client/category/promotions">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a promociones
-          </Link>
-        </Button>
-        {isActive() && (
-          <Button variant="rojo" size="lg" className="sm:flex-1">
-            <ShoppingBag className="mr-2 h-4 w-4" />
-            Aprovechar promoción
-          </Button>
-        )}
-      </div>
     </div>
   );
 }
