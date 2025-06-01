@@ -140,6 +140,25 @@ export class ProductService {
   }
 
   /**
+   * Find a product by slug
+   * @param slug - Product slug
+   * @returns Product or null if not found
+   */
+  static async findBySlug(slug: string): Promise<Product | null> {
+    try {
+      const product = await ProductModel.findOne({ slug }).lean();
+
+      if (!product) {
+        return null;
+      }
+
+      return transformToProduct(product);
+    } catch (error: any) {
+      throw new Error(`Failed to fetch product by slug: ${error.message}`);
+    }
+  }
+
+  /**
    * Create a new product
    */
   static async create(

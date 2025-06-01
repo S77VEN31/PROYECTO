@@ -77,6 +77,8 @@ export function EditProductDialog({
         allergens: product.nutritionalInfo?.allergens || [],
       },
       active: product.active,
+      slug: product.slug || "",
+      searchTerm: product.searchTerm || "",
     },
   });
 
@@ -97,6 +99,8 @@ export function EditProductDialog({
         allergens: product.nutritionalInfo?.allergens || [],
       },
       active: product.active,
+      slug: product.slug || "",
+      searchTerm: product.searchTerm || "",
     });
   }, [product, form]);
 
@@ -219,6 +223,55 @@ export function EditProductDialog({
             {/* Configuration */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Configuración</h3>
+
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URL Amigable (Slug)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="URL amigable para el producto"
+                        {...field}
+                        className="font-mono text-sm"
+                      />
+                    </FormControl>
+                    <div className="text-xs text-muted-foreground">
+                      Se usa para crear URLs amigables. Puedes editarlo
+                      manualmente.
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="searchTerm"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <TagInput
+                        label="Términos de Búsqueda Adicionales"
+                        placeholder="Escribe un término y presiona Enter..."
+                        value={
+                          field.value
+                            ? field.value
+                                .split(",")
+                                .map((term) => term.trim())
+                                .filter(Boolean)
+                            : []
+                        }
+                        onChange={(tags) => field.onChange(tags.join(", "))}
+                        description="Ej: vegetariano, sin gluten, picante, etc."
+                        maxTags={15}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <div className="grid grid-cols-2 gap-4">
                 <FormField

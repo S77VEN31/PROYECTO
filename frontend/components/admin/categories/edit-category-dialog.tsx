@@ -7,6 +7,7 @@
 
 import { CategoryApiService } from "@/api/entities/category.api";
 import { ProductApiService } from "@/api/entities/product.api";
+import { TagInput } from "@/components/common/tag-input";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -97,6 +98,8 @@ export function EditCategoryDialog({
       displayOrder: 0,
       active: true,
       products: [],
+      slug: "",
+      searchTerm: "",
     },
   });
 
@@ -130,6 +133,8 @@ export function EditCategoryDialog({
         displayOrder: category.displayOrder || 0,
         active: category.active !== undefined ? category.active : true,
         products: category.products || [],
+        slug: category.slug || "",
+        searchTerm: category.searchTerm || "",
       });
     }
   }, [category, form]);
@@ -288,6 +293,57 @@ export function EditCategoryDialog({
             {/* Configuration */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Configuración</h3>
+
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URL Amigable (Slug)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="URL amigable para la categoría"
+                        {...field}
+                        className="font-mono text-sm"
+                      />
+                    </FormControl>
+                    <div className="text-xs text-muted-foreground">
+                      Se usa para crear URLs amigables. Puedes editarlo
+                      manualmente.
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="searchTerm"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <TagInput
+                        label="Términos de Búsqueda Adicionales"
+                        placeholder="Escribe un término y presiona Enter..."
+                        value={
+                          field.value
+                            ? field.value
+                                .split(",")
+                                .map((term) => term.trim())
+                                .filter(Boolean)
+                            : []
+                        }
+                        onChange={(tags: string[]) =>
+                          field.onChange(tags.join(", "))
+                        }
+                        description="Ej: comida, bebida, postre, etc."
+                        maxTags={15}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}

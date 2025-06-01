@@ -127,6 +127,25 @@ export class PromotionService {
   }
 
   /**
+   * Find a promotion by slug
+   * @param slug - Promotion slug
+   * @returns Promotion or null if not found
+   */
+  static async findBySlug(slug: string): Promise<Promotion | null> {
+    try {
+      const promotion = await PromotionModel.findOne({ slug }).lean();
+
+      if (!promotion) {
+        return null;
+      }
+
+      return transformToPromotion(promotion);
+    } catch (error: any) {
+      throw new Error(`Failed to fetch promotion by slug: ${error.message}`);
+    }
+  }
+
+  /**
    * Create a new promotion
    */
   static async create(data: PromotionCreate): Promise<Promotion> {
@@ -182,38 +201,5 @@ export class PromotionService {
     } catch (error: any) {
       throw new Error(`Failed to delete promotion: ${error.message}`);
     }
-  }
-
-  // Métodos legacy para compatibilidad (deprecados)
-  static async getPromotions(filters: GetPromotionsRequestParams = {}) {
-    return this.findAll(filters);
-  }
-
-  static async getPromotionById(id: string) {
-    return this.findById(id);
-  }
-
-  static async createPromotion(data: PromotionCreate) {
-    return this.create(data);
-  }
-
-  static async updatePromotion(id: string, data: PromotionUpdate) {
-    return this.update(id, data);
-  }
-
-  static async deletePromotion(id: string) {
-    return this.delete(id);
-  }
-
-  /**
-   * Generate slug from name
-   * @param name - Promotion name
-   * @returns Generated slug
-   */
-  private static generateSlug(name: string): string {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
   }
 }

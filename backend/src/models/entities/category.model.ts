@@ -38,6 +38,15 @@ const categorySchema = new Schema<CategoryDocument>(
 );
 
 /**
+ * Indexes for better query performance
+ */
+categorySchema.index({ name: 1 });
+categorySchema.index({ active: 1 });
+categorySchema.index({ variant: 1 });
+categorySchema.index({ displayOrder: 1 });
+categorySchema.index({ slug: 1 }, { unique: true });
+
+/**
  * Add middleware for automatic slug generation
  */
 addSlugGenerationMiddleware(categorySchema as any);
@@ -53,3 +62,4 @@ const CategoryModel = mongoose.model<CategoryDocument>(
 
 export default CategoryModel;
 export type { CategoryDocument };
+

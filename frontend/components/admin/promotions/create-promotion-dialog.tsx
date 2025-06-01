@@ -8,6 +8,7 @@
 import { CategoryApiService } from "@/api/entities/category.api";
 import { ProductApiService } from "@/api/entities/product.api";
 import { PromotionApiService } from "@/api/entities/promotion.api";
+import { TagInput } from "@/components/common/tag-input";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -344,19 +345,25 @@ export function CreatePromotionDialog({
                 name="searchTerm"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Términos de Búsqueda Adicionales (Opcional)
-                    </FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Ej: oferta, rebaja, especial"
-                        {...field}
+                      <TagInput
+                        label="Términos de Búsqueda Adicionales"
+                        placeholder="Escribe un término y presiona Enter..."
+                        value={
+                          field.value
+                            ? field.value
+                                .split(",")
+                                .map((term) => term.trim())
+                                .filter(Boolean)
+                            : []
+                        }
+                        onChange={(tags: string[]) =>
+                          field.onChange(tags.join(", "))
+                        }
+                        description="Ej: oferta, rebaja, especial, etc."
+                        maxTags={15}
                       />
                     </FormControl>
-                    <div className="text-xs text-muted-foreground">
-                      Palabras clave adicionales para mejorar la búsqueda de
-                      esta promoción.
-                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

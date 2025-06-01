@@ -150,6 +150,8 @@ export class CategoryService {
       const newCategory = new CategoryModel({
         name: data.name,
         description: data.description,
+        slug: data.slug,
+        searchTerm: data.searchTerm,
         icon: data.icon || "default-icon",
         displayOrder: data.displayOrder || 0,
         products: data.products || [],
@@ -184,6 +186,9 @@ export class CategoryService {
       if (data.name !== undefined) updateData.name = data.name;
       if (data.description !== undefined)
         updateData.description = data.description;
+      if (data.slug !== undefined) updateData.slug = data.slug;
+      if (data.searchTerm !== undefined)
+        updateData.searchTerm = data.searchTerm;
       if (data.icon !== undefined) updateData.icon = data.icon;
       if (data.displayOrder !== undefined)
         updateData.displayOrder = data.displayOrder;

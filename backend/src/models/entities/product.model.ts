@@ -41,6 +41,14 @@ const productSchema = new Schema<ProductDocument>(
 );
 
 /**
+ * Indexes for better query performance
+ */
+productSchema.index({ name: 1 });
+productSchema.index({ active: 1 });
+productSchema.index({ price: 1 });
+productSchema.index({ slug: 1 }, { unique: true });
+
+/**
  * Add middleware for automatic slug generation
  */
 addSlugGenerationMiddleware(productSchema as any);
@@ -55,3 +63,4 @@ export const ProductModel = mongoose.model<ProductDocument>(
 );
 
 export type { ProductDocument };
+

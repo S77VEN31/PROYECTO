@@ -1,7 +1,6 @@
 import {
   addPasswordCompareMethod,
   addPasswordHashMiddleware,
-  addSlugGenerationMiddleware,
 } from "@middlewares";
 import {
   IBaseDocument,
@@ -46,10 +45,18 @@ const userSchema = new Schema<UserDocument>(
 );
 
 /**
+ * Indexes for better query performance
+ */
+userSchema.index({ name: 1 });
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ active: 1 });
+userSchema.index({ role: 1 });
+userSchema.index({ slug: 1 }, { unique: true });
+
+/**
  * Add middleware for password hashing, slug generation, and password comparison
  */
 addPasswordHashMiddleware(userSchema as any);
-addSlugGenerationMiddleware(userSchema as any);
 addPasswordCompareMethod(userSchema as any);
 
 /**
@@ -60,3 +67,4 @@ const UserModel = mongoose.model<UserDocument>("User", userSchema);
 
 export default UserModel;
 export type { UserDocument };
+
