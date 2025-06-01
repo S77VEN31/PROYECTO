@@ -7,16 +7,12 @@
 
 import { CategoryApiService } from "@/api/entities/category.api";
 import { ProductApiService } from "@/api/entities/product.api";
+import {
+  PaginatedSelector,
+  SelectorItem,
+} from "@/components/common/paginated-selector";
 import { TagInput } from "@/components/common/tag-input";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import {
   Dialog,
   DialogContent,
@@ -35,11 +31,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -57,7 +48,7 @@ import {
   CategoryVariant,
   Product,
 } from "colori-platform-shared";
-import { Check, ChevronsUpDown, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -70,6 +61,9 @@ interface CreateCategoryDialogProps {
   onCategoryCreated: (category: Category) => void;
 }
 
+// Extend Product to match SelectorItem interface
+interface ProductSelectorItem extends Product, SelectorItem {}
+
 /**
  * Create category dialog component
  * @param props - Component props
@@ -81,9 +75,6 @@ export function CreateCategoryDialog({
   onCategoryCreated,
 }: CreateCategoryDialogProps): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loadingProducts, setLoadingProducts] = useState(false);
-  const [productSelectorOpen, setProductSelectorOpen] = useState(false);
 
   const form = useForm<CategoryCreate>({
     resolver: zodResolver(CategoryCreateSchema),
@@ -114,24 +105,17 @@ export function CreateCategoryDialog({
     }
   }, [watchedName, form]);
 
-  // Load products when dialog opens
-  useEffect(() => {
-    if (open) {
-      const loadProducts = async () => {
-        try {
-          setLoadingProducts(true);
-          const response = await ProductApiService.getProducts({});
-          setProducts(response?.data || []);
-        } catch (error) {
-          console.error("Error loading products:", error);
-        } finally {
-          setLoadingProducts(false);
-        }
-      };
-
-      loadProducts();
-    }
-  }, [open]);
+  /**
+   * Fetch products for the paginated selector
+   */
+  const fetchProducts = async (params: {
+    page: number;
+    limit: number;
+    search?: string;
+  }) => {
+    const response = await ProductApiService.getProducts(params);
+    return response || { data: [], total: 0, page: 1, limit: 10, pages: 0 };
+  };
 
   /**
    * Handle form submission
@@ -387,101 +371,43 @@ export function CreateCategoryDialog({
                 control={form.control}
                 name="products"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem>
                     <FormLabel>Productos</FormLabel>
-                    <Popover
-                      open={productSelectorOpen}
-                      onOpenChange={setProductSelectorOpen}
-                    >
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className="justify-between"
-                            disabled={loadingProducts}
-                          >
-                            {(field.value || []).length > 0
-                              ? `${
-                                  (field.value || []).length
-                                } producto(s) seleccionado(s)`
-                              : "Seleccionar productos"}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-0">
-                        <Command>
-                          <CommandInput placeholder="Buscar productos..." />
-                          <CommandList>
-                            <CommandEmpty>
-                              No se encontraron productos.
-                            </CommandEmpty>
-                            <CommandGroup>
-                              {products.map((product) => (
-                                <CommandItem
-                                  key={product.id}
-                                  onSelect={() => {
-                                    const currentProducts = field.value || [];
-                                    const isSelected = currentProducts.includes(
-                                      product.id
-                                    );
-                                    const newProducts = isSelected
-                                      ? currentProducts.filter(
-                                          (id) => id !== product.id
-                                        )
-                                      : [...currentProducts, product.id];
-                                    field.onChange(newProducts);
-                                  }}
-                                >
-                                  <Check
-                                    className={`mr-2 h-4 w-4 ${
-                                      field.value?.includes(product.id)
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    }`}
-                                  />
-                                  {product.name}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-
-                    {/* Selected Products Display */}
-                    {field.value && field.value.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {field.value.map((productId) => {
-                          const product = products.find(
-                            (p) => p.id === productId
-                          );
-                          return (
-                            <div
-                              key={productId}
-                              className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm"
-                            >
-                              <span>{product?.name || productId}</span>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="h-4 w-4 p-0 hover:bg-primary-foreground/20 text-primary-foreground hover:text-primary-foreground"
-                                onClick={() => {
-                                  const newProducts = (
-                                    field.value || []
-                                  ).filter((id) => id !== productId);
-                                  field.onChange(newProducts);
-                                }}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
+                    <FormControl>
+                      <PaginatedSelector<ProductSelectorItem>
+                        value={field.value || []}
+                        onChange={field.onChange}
+                        fetchItems={fetchProducts}
+                        placeholder="Seleccionar productos"
+                        searchPlaceholder="Buscar productos..."
+                        emptyText="No se encontraron productos."
+                        loadingText="Cargando productos..."
+                        renderItem={(product) => (
+                          <div className="flex-1">
+                            <div className="font-medium">{product.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              €{product.price.toFixed(2)}
                             </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                          </div>
+                        )}
+                        renderSelectedItem={(product, onRemove) => (
+                          <div className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm">
+                            <span>{product.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-4 w-4 p-0 hover:bg-primary-foreground/20 text-primary-foreground hover:text-primary-foreground"
+                              onClick={onRemove}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        )}
+                        pageSize={10}
+                        multiple={true}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
