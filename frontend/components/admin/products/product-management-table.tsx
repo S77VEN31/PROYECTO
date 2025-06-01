@@ -5,6 +5,7 @@
 
 "use client";
 
+import { CategoryApiService } from "@/api/entities/category.api";
 import { ProductApiService } from "@/api/entities/product.api";
 import { AdminCard } from "@/components/admin/admin-card";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +39,7 @@ import {
   getToggleStatusActionText,
 } from "@/lib/utils";
 import {
+  Category,
   GetProductsRequestParams,
   Product,
   UpdateProductRequestBody,
@@ -52,7 +54,7 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DeleteProductDialog } from "./delete-product-dialog";
 import { EditProductDialog } from "./edit-product-dialog";
 
@@ -96,6 +98,37 @@ export function ProductManagementTable({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [updatingProduct, setUpdatingProduct] = useState<Product | null>(null);
+
+  // State for categories
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+
+  /**
+   * Load categories from API
+   */
+  const loadCategories = async () => {
+    try {
+      setCategoriesLoading(true);
+      const response = await CategoryApiService.getCategories({
+        limit: 100, // Get all categories
+      });
+      if (response && response.data) {
+        setCategories(response.data);
+      } else {
+        setCategories([]);
+      }
+    } catch (error) {
+      console.error("Error loading categories:", error);
+      setCategories([]);
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
+
+  // Load categories on component mount
+  useEffect(() => {
+    loadCategories();
+  }, []);
 
   /**
    * Handle product status toggle
@@ -187,16 +220,24 @@ export function ProductManagementTable({
               <Select
                 value={filters.category || "all"}
                 onValueChange={handleCategoryFilterChange}
+                disabled={categoriesLoading}
               >
                 <SelectTrigger className="w-full sm:w-48 min-w-[180px]">
-                  <SelectValue placeholder="Filter by category" />
+                  <SelectValue
+                    placeholder={
+                      categoriesLoading
+                        ? "Cargando..."
+                        : "Filtrar por categoría"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="appetizers">Appetizers</SelectItem>
-                  <SelectItem value="main-courses">Main Courses</SelectItem>
-                  <SelectItem value="desserts">Desserts</SelectItem>
-                  <SelectItem value="beverages">Beverages</SelectItem>
+                  <SelectItem value="all">Todas las categorías</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <Button
