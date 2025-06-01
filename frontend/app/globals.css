@@ -86,9 +86,9 @@
   --muted: #F8F8F8;
   --muted-foreground: #6F6F6F;
   
-  /* Accent = Orange */
-  --accent: var(--color-orange);
-  --accent-foreground: #1A1A1A;
+  /* Accent = Primary (Coffee) for complete consistency */
+  --accent: var(--color-coffee);
+  --accent-foreground: #FFFFFF;
   
   /* Destructive = Red */
   --destructive: var(--color-red);
@@ -111,8 +111,8 @@
   --sidebar-foreground: #1A1A1A;
   --sidebar-primary: var(--color-coffee);
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: var(--color-orange);
-  --sidebar-accent-foreground: #1A1A1A;
+  --sidebar-accent: var(--color-coffee);
+  --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: #E0E0E0;
   --sidebar-ring: var(--primary);
   
@@ -153,9 +153,9 @@
   --muted: #2A2A2A;
   --muted-foreground: #A0A0A0;
   
-  /* Accent = Orange (same as light mode) */
-  --accent: var(--color-orange);
-  --accent-foreground: #121212;
+  /* Accent = Primary (Coffee) for complete consistency */
+  --accent: var(--color-coffee);
+  --accent-foreground: #FFFFFF;
   
   /* Destructive = Red (same as light mode) */
   --destructive: var(--color-red);
@@ -178,8 +178,8 @@
   --sidebar-foreground: #FAFAFA;
   --sidebar-primary: var(--color-coffee);
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: var(--color-orange);
-  --sidebar-accent-foreground: #121212;
+  --sidebar-accent: var(--color-coffee);
+  --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: #2A2A2A;
   --sidebar-ring: var(--primary);
   

@@ -42,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { getPromotionTypeDisplayText } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -105,6 +106,7 @@ export function EditPromotionDialog({
       applicableCategories: [],
       slug: "",
       searchTerm: "",
+      active: true,
     },
   });
 
@@ -166,6 +168,7 @@ export function EditPromotionDialog({
         applicableCategories: promotionData.applicableCategories || [],
         slug: promotionData.slug || "",
         searchTerm: promotionData.searchTerm || "",
+        active: promotionData.active !== undefined ? promotionData.active : true,
       });
     }
   }, [promotion, form]);
@@ -321,6 +324,11 @@ export function EditPromotionDialog({
                   </FormItem>
                 )}
               />
+            </div>
+
+            {/* Configuration */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Configuración</h3>
 
               <FormField
                 control={form.control}
@@ -366,12 +374,8 @@ export function EditPromotionDialog({
                   </FormItem>
                 )}
               />
-            </div>
 
-            {/* Date Range */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Período de Validez</h3>
-
+              {/* Date Range */}
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -490,66 +494,68 @@ export function EditPromotionDialog({
                     )}
                   />
                 </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="minimumPurchase"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Compra Mínima (€)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="0.00"
+                            value={field.value || ""}
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value
+                                  ? parseFloat(e.target.value)
+                                  : undefined
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="usageLimit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Límite de Uso</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min="1"
+                            placeholder="Sin límite"
+                            value={field.value || ""}
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value
+                                  ? parseInt(e.target.value)
+                                  : undefined
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
             )}
 
-            {/* Additional Settings */}
+            {/* Associations */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Configuración Adicional</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="minimumPurchase"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Compra Mínima (€)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          placeholder="0.00"
-                          value={field.value || ""}
-                          onChange={(e) =>
-                            field.onChange(
-                              e.target.value
-                                ? parseFloat(e.target.value)
-                                : undefined
-                            )
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <h3 className="text-lg font-medium">Aplicabilidad</h3>
 
-                <FormField
-                  control={form.control}
-                  name="usageLimit"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Límite de Uso</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min="1"
-                          placeholder="Sin límite"
-                          value={field.value || ""}
-                          onChange={(e) =>
-                            field.onChange(
-                              e.target.value
-                                ? parseInt(e.target.value)
-                                : undefined
-                            )
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
               {/* Productos Aplicables */}
               <FormField
                 control={form.control}
@@ -562,121 +568,120 @@ export function EditPromotionDialog({
                       promoción. Si no seleccionas ninguno, se aplicará a todos
                       los productos.
                     </div>
-                    <FormControl>
-                      <Popover
-                        open={productSelectorOpen}
-                        onOpenChange={setProductSelectorOpen}
-                      >
-                        <PopoverTrigger asChild>
+                    <Popover
+                      open={productSelectorOpen}
+                      onOpenChange={setProductSelectorOpen}
+                    >
+                      <PopoverTrigger asChild>
+                        <FormControl>
                           <Button
                             variant="outline"
                             role="combobox"
-                            aria-expanded={productSelectorOpen}
-                            className="w-full justify-between h-auto min-h-[40px] p-2"
+                            className="justify-between"
+                            disabled={loadingProducts}
                           >
-                            <div className="flex flex-wrap gap-1 flex-1">
-                              {field.value && field.value.length > 0 ? (
-                                field.value.map((productId) => {
-                                  const product = products.find(
-                                    (p) => p.id === productId
-                                  );
-                                  const productWithProps =
-                                    product as Product & {
-                                      name: string;
-                                      price: number;
-                                    };
-                                  return productWithProps ? (
-                                    <div
-                                      key={productId}
-                                      className="bg-primary text-primary-foreground px-2 py-1 rounded-md text-xs flex items-center gap-1"
-                                    >
-                                      {productWithProps.name}
-                                      <X
-                                        className="h-3 w-3 cursor-pointer hover:opacity-70"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          field.onChange(
-                                            field.value?.filter(
-                                              (id) => id !== productId
-                                            ) || []
-                                          );
-                                        }}
-                                      />
-                                    </div>
-                                  ) : null;
-                                })
-                              ) : (
-                                <span className="text-muted-foreground">
-                                  Seleccionar productos...
-                                </span>
-                              )}
-                            </div>
+                            {field.value && field.value.length > 0
+                              ? `${field.value.length} producto(s) seleccionado(s)`
+                              : "Seleccionar productos"}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0" align="start">
-                          <Command>
-                            <CommandInput placeholder="Buscar productos..." />
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput placeholder="Buscar productos..." />
+                          <CommandList>
                             <CommandEmpty>
                               {loadingProducts
                                 ? "Cargando productos..."
                                 : "No se encontraron productos."}
                             </CommandEmpty>
-                            <CommandList>
-                              <CommandGroup className="max-h-64 overflow-auto">
-                                {products.map((product) => {
-                                  const productWithProps =
-                                    product as Product & {
-                                      name: string;
-                                      price: number;
-                                    };
-                                  const isSelected =
-                                    field.value?.includes(product.id) || false;
-                                  return (
-                                    <CommandItem
-                                      key={product.id}
-                                      value={`${productWithProps.name} ${productWithProps.price}`}
-                                      onSelect={() => {
-                                        const currentProducts =
-                                          field.value || [];
-                                        if (isSelected) {
-                                          field.onChange(
-                                            currentProducts.filter(
-                                              (id) => id !== product.id
-                                            )
-                                          );
-                                        } else {
-                                          field.onChange([
-                                            ...currentProducts,
-                                            product.id,
-                                          ]);
-                                        }
-                                      }}
-                                    >
-                                      <Check
-                                        className={`mr-2 h-4 w-4 ${
-                                          isSelected
-                                            ? "opacity-100"
-                                            : "opacity-0"
-                                        }`}
-                                      />
-                                      <div className="flex-1">
-                                        <div className="font-medium">
-                                          {productWithProps.name}
-                                        </div>
-                                        <div className="text-sm text-muted-foreground">
-                                          €{productWithProps.price.toFixed(2)}
-                                        </div>
+                            <CommandGroup>
+                              {products.map((product) => {
+                                const productWithProps = product as Product & {
+                                  name: string;
+                                  price: number;
+                                };
+                                const isSelected =
+                                  field.value?.includes(product.id) || false;
+                                return (
+                                  <CommandItem
+                                    key={product.id}
+                                    onSelect={() => {
+                                      const currentProducts = field.value || [];
+                                      if (isSelected) {
+                                        field.onChange(
+                                          currentProducts.filter(
+                                            (id) => id !== product.id
+                                          )
+                                        );
+                                      } else {
+                                        field.onChange([
+                                          ...currentProducts,
+                                          product.id,
+                                        ]);
+                                      }
+                                    }}
+                                  >
+                                    <Check
+                                      className={`mr-2 h-4 w-4 ${
+                                        isSelected ? "opacity-100" : "opacity-0"
+                                      }`}
+                                    />
+                                    <div className="flex-1">
+                                      <div className="font-medium">
+                                        {productWithProps.name}
                                       </div>
-                                    </CommandItem>
-                                  );
-                                })}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </FormControl>
+                                      <div className="text-sm text-muted-foreground">
+                                        €{productWithProps.price.toFixed(2)}
+                                      </div>
+                                    </div>
+                                  </CommandItem>
+                                );
+                              })}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+
+                    {/* Selected Products Display */}
+                    {field.value && field.value.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {field.value.map((productId) => {
+                          const product = products.find(
+                            (p) => p.id === productId
+                          );
+                          const productWithProps = product as Product & {
+                            name: string;
+                            price: number;
+                          };
+                          return (
+                            <div
+                              key={productId}
+                              className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm"
+                            >
+                              <span>{productWithProps?.name || productId}</span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-4 w-4 p-0 hover:bg-primary-foreground/20 text-primary-foreground hover:text-primary-foreground"
+                                onClick={() => {
+                                  const newProducts =
+                                    field.value?.filter(
+                                      (id) => id !== productId
+                                    ) || [];
+                                  field.onChange(newProducts);
+                                }}
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -694,129 +699,155 @@ export function EditPromotionDialog({
                       promoción. Si no seleccionas ninguna, se aplicará a todas
                       las categorías.
                     </div>
-                    <FormControl>
-                      <Popover
-                        open={categorySelectorOpen}
-                        onOpenChange={setCategorySelectorOpen}
-                      >
-                        <PopoverTrigger asChild>
+                    <Popover
+                      open={categorySelectorOpen}
+                      onOpenChange={setCategorySelectorOpen}
+                    >
+                      <PopoverTrigger asChild>
+                        <FormControl>
                           <Button
                             variant="outline"
                             role="combobox"
-                            aria-expanded={categorySelectorOpen}
-                            className="w-full justify-between h-auto min-h-[40px] p-2"
+                            className="justify-between"
+                            disabled={loadingCategories}
                           >
-                            <div className="flex flex-wrap gap-1 flex-1">
-                              {field.value && field.value.length > 0 ? (
-                                field.value.map((categoryId) => {
-                                  const category = categories.find(
-                                    (c) => c.id === categoryId
-                                  );
-                                  const categoryWithProps =
-                                    category as Category & {
-                                      name: string;
-                                      icon: string;
-                                    };
-                                  return categoryWithProps ? (
-                                    <div
-                                      key={categoryId}
-                                      className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs flex items-center gap-1"
-                                    >
-                                      {categoryWithProps.name}
-                                      <X
-                                        className="h-3 w-3 cursor-pointer hover:opacity-70"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          field.onChange(
-                                            field.value?.filter(
-                                              (id) => id !== categoryId
-                                            ) || []
-                                          );
-                                        }}
-                                      />
-                                    </div>
-                                  ) : null;
-                                })
-                              ) : (
-                                <span className="text-muted-foreground">
-                                  Seleccionar categorías...
-                                </span>
-                              )}
-                            </div>
+                            {field.value && field.value.length > 0
+                              ? `${field.value.length} categoría(s) seleccionada(s)`
+                              : "Seleccionar categorías"}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0" align="start">
-                          <Command>
-                            <CommandInput placeholder="Buscar categorías..." />
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput placeholder="Buscar categorías..." />
+                          <CommandList>
                             <CommandEmpty>
                               {loadingCategories
                                 ? "Cargando categorías..."
                                 : "No se encontraron categorías."}
                             </CommandEmpty>
-                            <CommandList>
-                              <CommandGroup className="max-h-64 overflow-auto">
-                                {categories.map((category) => {
-                                  const categoryWithProps =
-                                    category as Category & {
-                                      name: string;
-                                      icon: string;
-                                      displayOrder: number;
-                                    };
-                                  const isSelected =
-                                    field.value?.includes(category.id) || false;
-                                  return (
-                                    <CommandItem
-                                      key={category.id}
-                                      value={`${categoryWithProps.name} ${categoryWithProps.icon}`}
-                                      onSelect={() => {
-                                        const currentCategories =
-                                          field.value || [];
-                                        if (isSelected) {
-                                          field.onChange(
-                                            currentCategories.filter(
-                                              (id) => id !== category.id
-                                            )
-                                          );
-                                        } else {
-                                          field.onChange([
-                                            ...currentCategories,
-                                            category.id,
-                                          ]);
-                                        }
-                                      }}
-                                    >
-                                      <Check
-                                        className={`mr-2 h-4 w-4 ${
-                                          isSelected
-                                            ? "opacity-100"
-                                            : "opacity-0"
-                                        }`}
-                                      />
-                                      <div className="flex-1">
-                                        <div className="font-medium flex items-center gap-2">
-                                          <span>{categoryWithProps.icon}</span>
-                                          {categoryWithProps.name}
-                                        </div>
-                                        <div className="text-sm text-muted-foreground">
-                                          Orden:{" "}
-                                          {categoryWithProps.displayOrder}
-                                        </div>
+                            <CommandGroup>
+                              {categories.map((category) => {
+                                const categoryWithProps =
+                                  category as Category & {
+                                    name: string;
+                                    icon: string;
+                                    displayOrder: number;
+                                  };
+                                const isSelected =
+                                  field.value?.includes(category.id) || false;
+                                return (
+                                  <CommandItem
+                                    key={category.id}
+                                    onSelect={() => {
+                                      const currentCategories =
+                                        field.value || [];
+                                      if (isSelected) {
+                                        field.onChange(
+                                          currentCategories.filter(
+                                            (id) => id !== category.id
+                                          )
+                                        );
+                                      } else {
+                                        field.onChange([
+                                          ...currentCategories,
+                                          category.id,
+                                        ]);
+                                      }
+                                    }}
+                                  >
+                                    <Check
+                                      className={`mr-2 h-4 w-4 ${
+                                        isSelected ? "opacity-100" : "opacity-0"
+                                      }`}
+                                    />
+                                    <div className="flex-1">
+                                      <div className="font-medium flex items-center gap-2">
+                                        <span>{categoryWithProps.icon}</span>
+                                        {categoryWithProps.name}
                                       </div>
-                                    </CommandItem>
-                                  );
-                                })}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </FormControl>
+                                      <div className="text-sm text-muted-foreground">
+                                        Orden: {categoryWithProps.displayOrder}
+                                      </div>
+                                    </div>
+                                  </CommandItem>
+                                );
+                              })}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+
+                    {/* Selected Categories Display */}
+                    {field.value && field.value.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {field.value.map((categoryId) => {
+                          const category = categories.find(
+                            (c) => c.id === categoryId
+                          );
+                          const categoryWithProps = category as Category & {
+                            name: string;
+                            icon: string;
+                          };
+                          return (
+                            <div
+                              key={categoryId}
+                              className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm"
+                            >
+                              <span>
+                                {categoryWithProps?.name || categoryId}
+                              </span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-4 w-4 p-0 hover:bg-primary-foreground/20 text-primary-foreground hover:text-primary-foreground"
+                                onClick={() => {
+                                  const newCategories =
+                                    field.value?.filter(
+                                      (id) => id !== categoryId
+                                    ) || [];
+                                  field.onChange(newCategories);
+                                }}
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
+
+            {/* Status */}
+            <FormField
+              control={form.control}
+              name="active"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">
+                      Promoción Activa
+                    </FormLabel>
+                    <div className="text-sm text-muted-foreground">
+                      La promoción estará disponible para los clientes
+                    </div>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
             <DialogFooter>
               <Button

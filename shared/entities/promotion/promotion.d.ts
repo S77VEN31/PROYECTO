@@ -135,6 +135,7 @@ export declare type PromotionUpdate = Partial<{
   applicableCategories: string[];
   slug: string;
   searchTerm: string;
+  active: boolean;
 }>;
 
 /**

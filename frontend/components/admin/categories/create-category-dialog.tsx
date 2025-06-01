@@ -159,168 +159,289 @@ export function CreateCategoryDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Category</DialogTitle>
+          <DialogTitle>Crear Nueva Categoría</DialogTitle>
           <DialogDescription>
-            Add a new category to organize your products.
+            Agregar una nueva categoría para organizar tus productos.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Name Field */}
-            <FormField
-              control={form.control}
-              name="name"
-              rules={{
-                required: "Name is required",
-                minLength: {
-                  value: 2,
-                  message: "Name must be at least 2 characters",
-                },
-              }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Category name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Basic Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Información Básica</h3>
 
-            {/* Description Field */}
-            <FormField
-              control={form.control}
-              name="description"
-              rules={{
-                required: "Description is required",
-                minLength: {
-                  value: 10,
-                  message: "Description must be at least 10 characters",
-                },
-              }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Category description"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Icon Field */}
-            <FormField
-              control={form.control}
-              name="icon"
-              rules={{
-                required: "Icon is required",
-              }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Icon</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Icon name (e.g., coffee, utensils)"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Variant Field */}
-            <FormField
-              control={form.control}
-              name="variant"
-              rules={{
-                required: "Variant is required",
-              }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Color Variant</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    value={field.value}
-                  >
+              <FormField
+                control={form.control}
+                name="name"
+                rules={{
+                  required: "Nombre es requerido",
+                  minLength: {
+                    value: 2,
+                    message: "El nombre debe tener al menos 2 caracteres",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a color variant" />
-                      </SelectTrigger>
+                      <Input placeholder="Nombre de la categoría" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value={CategoryVariant.DEFAULT}>
-                        {getCategoryVariantDisplayName(CategoryVariant.DEFAULT)}
-                      </SelectItem>
-                      <SelectItem value={CategoryVariant.COFFEE}>
-                        {getCategoryVariantDisplayName(CategoryVariant.COFFEE)}
-                      </SelectItem>
-                      <SelectItem value={CategoryVariant.ORANGE}>
-                        {getCategoryVariantDisplayName(CategoryVariant.ORANGE)}
-                      </SelectItem>
-                      <SelectItem value={CategoryVariant.PINK}>
-                        {getCategoryVariantDisplayName(CategoryVariant.PINK)}
-                      </SelectItem>
-                      <SelectItem value={CategoryVariant.SKYBLUE}>
-                        {getCategoryVariantDisplayName(CategoryVariant.SKYBLUE)}
-                      </SelectItem>
-                      <SelectItem value={CategoryVariant.RED}>
-                        {getCategoryVariantDisplayName(CategoryVariant.RED)}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Display Order Field */}
-            <FormField
-              control={form.control}
-              name="displayOrder"
-              rules={{
-                required: "Display order is required",
-                min: {
-                  value: 0,
-                  message: "Display order must be 0 or greater",
-                },
-              }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Display Order</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(parseInt(e.target.value) || 0)
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="description"
+                rules={{
+                  required: "Descripción es requerida",
+                  minLength: {
+                    value: 10,
+                    message: "La descripción debe tener al menos 10 caracteres",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descripción</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Descripción de la categoría"
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Active Field */}
+              <FormField
+                control={form.control}
+                name="variant"
+                rules={{
+                  required: "Variante es requerida",
+                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Variante de Color</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar una variante de color" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={CategoryVariant.DEFAULT}>
+                          {getCategoryVariantDisplayName(
+                            CategoryVariant.DEFAULT
+                          )}
+                        </SelectItem>
+                        <SelectItem value={CategoryVariant.COFFEE}>
+                          {getCategoryVariantDisplayName(
+                            CategoryVariant.COFFEE
+                          )}
+                        </SelectItem>
+                        <SelectItem value={CategoryVariant.ORANGE}>
+                          {getCategoryVariantDisplayName(
+                            CategoryVariant.ORANGE
+                          )}
+                        </SelectItem>
+                        <SelectItem value={CategoryVariant.PINK}>
+                          {getCategoryVariantDisplayName(CategoryVariant.PINK)}
+                        </SelectItem>
+                        <SelectItem value={CategoryVariant.SKYBLUE}>
+                          {getCategoryVariantDisplayName(
+                            CategoryVariant.SKYBLUE
+                          )}
+                        </SelectItem>
+                        <SelectItem value={CategoryVariant.RED}>
+                          {getCategoryVariantDisplayName(CategoryVariant.RED)}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Configuration */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Configuración</h3>
+
+              <FormField
+                control={form.control}
+                name="icon"
+                rules={{
+                  required: "Icono es requerido",
+                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Icono</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Nombre del icono (por ejemplo, café, utensilios)"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="displayOrder"
+                rules={{
+                  required: "Orden de visualización es requerido",
+                  min: {
+                    value: 0,
+                    message: "El orden de visualización debe ser 0 o mayor",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Orden de Visualización</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value) || 0)
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Associations */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Productos Asociados</h3>
+
+              <FormField
+                control={form.control}
+                name="products"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Productos</FormLabel>
+                    <Popover
+                      open={productSelectorOpen}
+                      onOpenChange={setProductSelectorOpen}
+                    >
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="justify-between"
+                            disabled={loadingProducts}
+                          >
+                            {field.value.length > 0
+                              ? `${field.value.length} producto(s) seleccionado(s)`
+                              : "Seleccionar productos"}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput placeholder="Buscar productos..." />
+                          <CommandList>
+                            <CommandEmpty>
+                              No se encontraron productos.
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {products.map((product) => (
+                                <CommandItem
+                                  key={product.id}
+                                  onSelect={() => {
+                                    const currentProducts = field.value || [];
+                                    const isSelected = currentProducts.includes(
+                                      product.id
+                                    );
+                                    const newProducts = isSelected
+                                      ? currentProducts.filter(
+                                          (id) => id !== product.id
+                                        )
+                                      : [...currentProducts, product.id];
+                                    field.onChange(newProducts);
+                                  }}
+                                >
+                                  <Check
+                                    className={`mr-2 h-4 w-4 ${
+                                      field.value?.includes(product.id)
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    }`}
+                                  />
+                                  {product.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+
+                    {/* Selected Products Display */}
+                    {field.value && field.value.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {field.value.map((productId) => {
+                          const product = products.find(
+                            (p) => p.id === productId
+                          );
+                          return (
+                            <div
+                              key={productId}
+                              className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm"
+                            >
+                              <span>{product?.name || productId}</span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-4 w-4 p-0 hover:bg-primary-foreground/20 text-primary-foreground hover:text-primary-foreground"
+                                onClick={() => {
+                                  const newProducts = field.value.filter(
+                                    (id) => id !== productId
+                                  );
+                                  field.onChange(newProducts);
+                                }}
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Status */}
             <FormField
               control={form.control}
               name="active"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Active</FormLabel>
+                    <FormLabel className="text-base">Activo</FormLabel>
                     <div className="text-sm text-muted-foreground">
-                      Enable this category to make it visible to users
+                      Habilitar esta categoría para hacerla visible a los
+                      usuarios
                     </div>
                   </div>
                   <FormControl>
@@ -333,107 +454,6 @@ export function CreateCategoryDialog({
               )}
             />
 
-            {/* Products Field */}
-            <FormField
-              control={form.control}
-              name="products"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Associated Products</FormLabel>
-                  <Popover
-                    open={productSelectorOpen}
-                    onOpenChange={setProductSelectorOpen}
-                  >
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className="justify-between"
-                          disabled={loadingProducts}
-                        >
-                          {field.value.length > 0
-                            ? `${field.value.length} product(s) selected`
-                            : "Select products"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandInput placeholder="Search products..." />
-                        <CommandList>
-                          <CommandEmpty>No products found.</CommandEmpty>
-                          <CommandGroup>
-                            {products.map((product) => (
-                              <CommandItem
-                                key={product.id}
-                                onSelect={() => {
-                                  const currentProducts = field.value || [];
-                                  const isSelected = currentProducts.includes(
-                                    product.id
-                                  );
-                                  const newProducts = isSelected
-                                    ? currentProducts.filter(
-                                        (id) => id !== product.id
-                                      )
-                                    : [...currentProducts, product.id];
-                                  field.onChange(newProducts);
-                                }}
-                              >
-                                <Check
-                                  className={`mr-2 h-4 w-4 ${
-                                    field.value?.includes(product.id)
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  }`}
-                                />
-                                {product.name}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-
-                  {/* Selected Products Display */}
-                  {field.value && field.value.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {field.value.map((productId) => {
-                        const product = products.find(
-                          (p) => p.id === productId
-                        );
-                        return (
-                          <div
-                            key={productId}
-                            className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm"
-                          >
-                            <span>{product?.name || productId}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="h-4 w-4 p-0 hover:bg-primary-foreground/20 text-primary-foreground hover:text-primary-foreground"
-                              onClick={() => {
-                                const newProducts = field.value.filter(
-                                  (id) => id !== productId
-                                );
-                                field.onChange(newProducts);
-                              }}
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <DialogFooter>
               <Button
                 type="button"
@@ -441,10 +461,10 @@ export function CreateCategoryDialog({
                 onClick={handleClose}
                 disabled={isLoading}
               >
-                Cancel
+                Cancelar
               </Button>
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Creating..." : "Create Category"}
+                {isLoading ? "Creando..." : "Crear Categoría"}
               </Button>
             </DialogFooter>
           </form>
