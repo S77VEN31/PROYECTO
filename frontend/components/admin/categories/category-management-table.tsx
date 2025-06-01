@@ -49,8 +49,6 @@ import {
   Edit,
   Eye,
   EyeOff,
-  FolderCheck,
-  FolderX,
   MoreHorizontal,
   Package,
   RefreshCw,
@@ -191,22 +189,20 @@ export function CategoryManagementTable({
                 onValueChange={handleVariantFilterChange}
               >
                 <SelectTrigger className="w-full sm:w-48 min-w-[180px]">
-                  <SelectValue placeholder="Filtrar por variante" />
+                  <SelectValue placeholder="Filter by variant" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todas las variantes</SelectItem>
+                  <SelectItem value="all">All Variants</SelectItem>
                   <SelectItem value={CategoryVariant.DEFAULT}>
-                    Por Defecto
+                    Default
                   </SelectItem>
-                  <SelectItem value={CategoryVariant.COFFEE}>Café</SelectItem>
-                  <SelectItem value={CategoryVariant.ORANGE}>
-                    Naranja
-                  </SelectItem>
-                  <SelectItem value={CategoryVariant.PINK}>Rosa</SelectItem>
+                  <SelectItem value={CategoryVariant.COFFEE}>Coffee</SelectItem>
+                  <SelectItem value={CategoryVariant.ORANGE}>Orange</SelectItem>
+                  <SelectItem value={CategoryVariant.PINK}>Pink</SelectItem>
                   <SelectItem value={CategoryVariant.SKYBLUE}>
-                    Azul Cielo
+                    Sky Blue
                   </SelectItem>
-                  <SelectItem value={CategoryVariant.RED}>Rojo</SelectItem>
+                  <SelectItem value={CategoryVariant.RED}>Red</SelectItem>
                 </SelectContent>
               </Select>
               <Button
@@ -317,25 +313,19 @@ export function CategoryManagementTable({
                             variant={isActive ? "default" : "secondary"}
                             className={getStatusBadgeClass(isActive)}
                           >
-                            {isActive ? (
-                              <>
-                                <FolderCheck className="h-3 w-3 mr-1" />
-                                {getStatusDisplayText(true)}
-                              </>
-                            ) : (
-                              <>
-                                <FolderX className="h-3 w-3 mr-1" />
-                                {getStatusDisplayText(false)}
-                              </>
-                            )}
+                            {getStatusDisplayText(isActive)}
                           </Badge>
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="hover:text-primary"
+                            >
+                              <MoreHorizontal className="h-4 w-4 text-primary" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">

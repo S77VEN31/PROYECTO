@@ -27,9 +27,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  getPromotionStatusBadgeClass,
-  getPromotionStatusDisplayText,
+  getPromotionTypeBadgeClass,
   getPromotionTypeDisplayText,
+  getStatusBadgeClass,
+  getStatusDisplayText,
 } from "@/lib/utils";
 import {
   GetPromotionsRequestParams,
@@ -44,7 +45,6 @@ import {
   Eye,
   EyeOff,
   MoreHorizontal,
-  Percent,
   RefreshCw,
   Search,
   Trash2,
@@ -80,25 +80,25 @@ function getPromotionStatus(promotion: Promotion) {
   if (!promotionData.active)
     return {
       status: "inactive",
-      label: getPromotionStatusDisplayText("inactive"),
-      badgeClass: getPromotionStatusBadgeClass("inactive"),
+      label: getStatusDisplayText("inactive"),
+      badgeClass: getStatusBadgeClass("inactive"),
     };
   if (endDate < now)
     return {
       status: "expired",
-      label: getPromotionStatusDisplayText("expired"),
-      badgeClass: getPromotionStatusBadgeClass("expired"),
+      label: getStatusDisplayText("expired"),
+      badgeClass: getStatusBadgeClass("expired"),
     };
   if (startDate > now)
     return {
       status: "upcoming",
-      label: getPromotionStatusDisplayText("upcoming"),
-      badgeClass: getPromotionStatusBadgeClass("upcoming"),
+      label: getStatusDisplayText("upcoming"),
+      badgeClass: getStatusBadgeClass("upcoming"),
     };
   return {
     status: "active",
-    label: getPromotionStatusDisplayText("active"),
-    badgeClass: getPromotionStatusBadgeClass("active"),
+    label: getStatusDisplayText("active"),
+    badgeClass: getStatusBadgeClass("active"),
   };
 }
 
@@ -261,25 +261,25 @@ export function PromotionManagementTable({
                 onValueChange={handleTypeFilterChange}
               >
                 <SelectTrigger className="w-full sm:w-48 min-w-[180px]">
-                  <SelectValue placeholder="Filtrar por tipo" />
+                  <SelectValue placeholder="Filter by type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos los tipos</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value={PromotionType.DISCOUNT}>
-                    Descuento
+                    Discount
                   </SelectItem>
                   <SelectItem value={PromotionType.BOGO}>
-                    Compra 1 Lleva 1
+                    Buy One Get One
                   </SelectItem>
-                  <SelectItem value={PromotionType.BUNDLE}>Paquete</SelectItem>
+                  <SelectItem value={PromotionType.BUNDLE}>Bundle</SelectItem>
                   <SelectItem value={PromotionType.FREE_SHIPPING}>
-                    Envío Gratis
+                    Free Shipping
                   </SelectItem>
                   <SelectItem value={PromotionType.GIFT_WITH_PURCHASE}>
-                    Regalo con Compra
+                    Gift with Purchase
                   </SelectItem>
                   <SelectItem value={PromotionType.SEASONAL}>
-                    Estacional
+                    Seasonal
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -288,12 +288,12 @@ export function PromotionManagementTable({
                 onValueChange={handleActiveFilterChange}
               >
                 <SelectTrigger className="w-full sm:w-40 min-w-[140px]">
-                  <SelectValue placeholder="Filtrar por estado" />
+                  <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos los estados</SelectItem>
-                  <SelectItem value="true">Activo</SelectItem>
-                  <SelectItem value="false">Inactivo</SelectItem>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="true">Active</SelectItem>
+                  <SelectItem value="false">Inactive</SelectItem>
                 </SelectContent>
               </Select>
               <Button
@@ -374,7 +374,12 @@ export function PromotionManagementTable({
                         </div>
                       </TableCell>
                       <TableCell className="min-w-[120px]">
-                        <Badge variant="outline" className="text-xs">
+                        <Badge
+                          variant="secondary"
+                          className={getPromotionTypeBadgeClass(
+                            promotionData.type
+                          )}
+                        >
                           {getPromotionTypeDisplayText(promotionData.type)}
                         </Badge>
                       </TableCell>
@@ -382,28 +387,32 @@ export function PromotionManagementTable({
                         {(() => {
                           const status = getPromotionStatus(promotion);
                           return (
-                            <Badge className={`text-xs ${status.badgeClass}`}>
+                            <Badge
+                              variant={
+                                status.status === "active"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                              className={status.badgeClass}
+                            >
                               {status.label}
                             </Badge>
                           );
                         })()}
                       </TableCell>
                       <TableCell className="hidden lg:table-cell min-w-[120px]">
-                        <div className="flex items-center gap-1 text-sm">
-                          <Percent className="h-3 w-3 text-muted-foreground" />
-                          <span className="font-medium">
-                            {formatDiscountValue(promotion)}
-                          </span>
-                        </div>
+                        <span className="font-medium text-sm">
+                          {formatDiscountValue(promotion)}
+                        </span>
                       </TableCell>
                       <TableCell className="hidden xl:table-cell min-w-[150px]">
                         <div className="flex flex-col gap-1 text-sm">
                           <div className="flex items-center gap-1">
-                            <CalendarCheck className="h-3 w-3 text-muted-foreground" />
+                            <CalendarCheck className="h-3 w-3 text-primary" />
                             <span>{formatDate(promotionData.startDate)}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <CalendarX className="h-3 w-3 text-muted-foreground" />
+                            <CalendarX className="h-3 w-3 text-primary" />
                             <span>{formatDate(promotionData.endDate)}</span>
                           </div>
                         </div>
@@ -414,9 +423,9 @@ export function PromotionManagementTable({
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 flex-shrink-0"
+                              className="h-8 w-8 flex-shrink-0 hover:text-primary"
                             >
-                              <MoreHorizontal className="h-4 w-4" />
+                              <MoreHorizontal className="h-4 w-4 text-primary" />
                               <span className="sr-only">Abrir menú</span>
                             </Button>
                           </DropdownMenuTrigger>

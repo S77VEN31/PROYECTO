@@ -45,7 +45,6 @@ import {
 import {
   Clock,
   Edit,
-  Euro,
   Eye,
   EyeOff,
   MoreHorizontal,
@@ -190,16 +189,14 @@ export function ProductManagementTable({
                 onValueChange={handleCategoryFilterChange}
               >
                 <SelectTrigger className="w-full sm:w-48 min-w-[180px]">
-                  <SelectValue placeholder="Filtrar por categoría" />
+                  <SelectValue placeholder="Filter by category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todas las categorías</SelectItem>
-                  <SelectItem value="appetizers">Aperitivos</SelectItem>
-                  <SelectItem value="main-courses">
-                    Platos principales
-                  </SelectItem>
-                  <SelectItem value="desserts">Postres</SelectItem>
-                  <SelectItem value="beverages">Bebidas</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="appetizers">Appetizers</SelectItem>
+                  <SelectItem value="main-courses">Main Courses</SelectItem>
+                  <SelectItem value="desserts">Desserts</SelectItem>
+                  <SelectItem value="beverages">Beverages</SelectItem>
                 </SelectContent>
               </Select>
               <Button
@@ -228,9 +225,6 @@ export function ProductManagementTable({
                 <TableHead className="min-w-[120px] hidden lg:table-cell">
                   Prep. Time
                 </TableHead>
-                <TableHead className="min-w-[150px] hidden xl:table-cell">
-                  Tags
-                </TableHead>
                 <TableHead className="min-w-[80px] text-right">
                   Actions
                 </TableHead>
@@ -239,7 +233,7 @@ export function ProductManagementTable({
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={5} className="text-center py-8">
                     <div className="flex items-center justify-center gap-2">
                       <RefreshCw className="h-4 w-4 animate-spin text-primary" />
                       <span>Cargando productos...</span>
@@ -248,7 +242,7 @@ export function ProductManagementTable({
                 </TableRow>
               ) : products.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={5} className="text-center py-8">
                     <div className="text-muted-foreground">
                       <p className="text-lg font-medium mb-2">
                         No se encontraron productos
@@ -279,24 +273,28 @@ export function ProductManagementTable({
                       </div>
                     </TableCell>
                     <TableCell className="min-w-[120px]">
-                      <div className="flex items-center gap-1">
-                        <Euro className="h-3 w-3 text-muted-foreground" />
-                        <span className="font-medium">
-                          {formatPrice(
-                            product[
-                              "price" as keyof typeof product
-                            ] as unknown as number
-                          )}
-                        </span>
-                      </div>
+                      <span className="font-medium">
+                        {formatPrice(
+                          product[
+                            "price" as keyof typeof product
+                          ] as unknown as number
+                        )}
+                      </span>
                     </TableCell>
                     <TableCell className="hidden md:table-cell min-w-[100px]">
                       <Badge
-                        className={`text-xs ${getStatusBadgeClass(
+                        variant={
+                          (product[
+                            "active" as keyof typeof product
+                          ] as unknown as boolean)
+                            ? "default"
+                            : "secondary"
+                        }
+                        className={getStatusBadgeClass(
                           product[
                             "active" as keyof typeof product
                           ] as unknown as boolean
-                        )}`}
+                        )}
                       >
                         {getStatusDisplayText(
                           product[
@@ -310,7 +308,7 @@ export function ProductManagementTable({
                         "preparationTime" as keyof typeof product
                       ] as unknown as number) ? (
                         <div className="flex items-center gap-1 text-sm">
-                          <Clock className="h-3 w-3 text-muted-foreground" />
+                          <Clock className="h-3 w-3 text-primary" />
                           <span>
                             {
                               product[
@@ -324,60 +322,16 @@ export function ProductManagementTable({
                         <span className="text-muted-foreground text-sm">-</span>
                       )}
                     </TableCell>
-                    <TableCell className="hidden xl:table-cell min-w-[150px]">
-                      {(product[
-                        "tags" as keyof typeof product
-                      ] as unknown as string[]) &&
-                      (
-                        product[
-                          "tags" as keyof typeof product
-                        ] as unknown as string[]
-                      ).length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {(
-                            product[
-                              "tags" as keyof typeof product
-                            ] as unknown as string[]
-                          )
-                            .slice(0, 2)
-                            .map((tag: string, index: number) => (
-                              <Badge
-                                key={index}
-                                variant="outline"
-                                className="text-xs"
-                              >
-                                {tag}
-                              </Badge>
-                            ))}
-                          {(
-                            product[
-                              "tags" as keyof typeof product
-                            ] as unknown as string[]
-                          ).length > 2 && (
-                            <Badge variant="outline" className="text-xs">
-                              +
-                              {(
-                                product[
-                                  "tags" as keyof typeof product
-                                ] as unknown as string[]
-                              ).length - 2}
-                            </Badge>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">-</span>
-                      )}
-                    </TableCell>
                     <TableCell className="text-right min-w-[80px]">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 flex-shrink-0"
+                            className="h-8 w-8 flex-shrink-0 hover:text-primary"
                             disabled={updatingProduct?.id === product.id}
                           >
-                            <MoreHorizontal className="h-4 w-4" />
+                            <MoreHorizontal className="h-4 w-4 text-primary" />
                             <span className="sr-only">Abrir menú</span>
                           </Button>
                         </DropdownMenuTrigger>

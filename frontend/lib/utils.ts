@@ -1,6 +1,10 @@
 import { mockCategories } from "@/data/mock";
 import { clsx, type ClassValue } from "clsx";
-import { CategoryVariant, PromotionType } from "colori-platform-shared";
+import {
+  CategoryVariant,
+  PromotionType,
+  UserRole,
+} from "colori-platform-shared";
 import { LucideIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -61,87 +65,46 @@ export function getCategoryVariantBadgeClass(
 }
 
 /**
- * Get role badge class for consistent styling
- */
-export function getRoleBadgeClass(): string {
-  // All roles use primary color for consistency
-  return "bg-primary text-primary-foreground";
-}
-
-/**
- * Get role display name in English
- */
-export function getRoleDisplayName(role: string): string {
-  const roleNames: Record<string, string> = {
-    ADMIN: "Administrator",
-    MANAGER: "Manager",
-    CHEF: "Chef",
-    SERVER: "Server",
-    CASHIER: "Cashier",
-  };
-  return roleNames[role] || role;
-}
-
-/**
- * Get status badge class for consistent styling
- */
-export function getStatusBadgeClass(isActive?: boolean): string {
-  return isActive === true
-    ? "bg-primary text-primary-foreground"
-    : "bg-secondary text-secondary-foreground";
-}
-
-/**
  * Get status display text in English
+ * @param status The status value (boolean for active/inactive or string for promotion statuses)
+ * @returns The English display name
  */
-export function getStatusDisplayText(isActive?: boolean): string {
-  return isActive === true ? "Active" : "Inactive";
-}
-
-/**
- * Get promotion status badge class
- */
-export function getPromotionStatusBadgeClass(status: string): string {
-  switch (status) {
-    case "active":
-      return "bg-primary text-primary-foreground";
-    case "inactive":
-      return "bg-secondary text-secondary-foreground";
-    case "expired":
-      return "bg-destructive text-destructive-foreground";
-    case "upcoming":
-      return "bg-muted text-muted-foreground border";
-    default:
-      return "bg-secondary text-secondary-foreground";
+export function getStatusDisplayText(status?: boolean | string): string {
+  if (typeof status === "boolean") {
+    return status === true ? "Active" : "Inactive";
   }
-}
 
-/**
- * Get promotion status display text in English
- */
-export function getPromotionStatusDisplayText(status: string): string {
   const statusLabels: Record<string, string> = {
     active: "Active",
     inactive: "Inactive",
     expired: "Expired",
     upcoming: "Upcoming",
   };
-  return statusLabels[status] || status;
+  return statusLabels[status as string] || status || "Unknown";
 }
 
 /**
- * Get promotion type display text in English
+ * Get status badge class for consistent styling
+ * @param status The status value (boolean for active/inactive or string for promotion statuses)
+ * @returns CSS classes for the badge
  */
-export function getPromotionTypeDisplayText(type: string): string {
-  const typeLabels: Record<string, string> = {
-    [PromotionType.DISCOUNT]: "Descuento",
-    [PromotionType.BOGO]: "Compra 1 Lleva 1",
-    [PromotionType.BUNDLE]: "Paquete",
-    [PromotionType.FREE_SHIPPING]: "Envío Gratis",
-    [PromotionType.GIFT_WITH_PURCHASE]: "Regalo con Compra",
-    [PromotionType.SEASONAL]: "Estacional",
+export function getStatusBadgeClass(status?: boolean | string): string {
+  if (typeof status === "boolean") {
+    return status === true
+      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+      : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
+  }
+
+  const badgeClasses: Record<string, string> = {
+    active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+    inactive: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
+    expired: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+    upcoming: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
   };
-  return typeLabels[type] || type;
+  return (
+    badgeClasses[status as string] ||
+    "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300"
+  );
 }
 
 /**
@@ -293,4 +256,160 @@ export function getCategoryFromProduct(categoryId: string | string[]): {
     name: category.name,
     icon: category.icon,
   };
+}
+
+/**
+ * Get promotion type display text in English
+ * @param type The PromotionType enum value
+ * @returns The English display name
+ */
+export function getPromotionTypeDisplayText(
+  type: PromotionType | string
+): string {
+  const typeLabels: Record<string, string> = {
+    [PromotionType.DISCOUNT]: "Discount",
+    [PromotionType.BOGO]: "Buy One Get One",
+    [PromotionType.BUNDLE]: "Bundle",
+    [PromotionType.FREE_SHIPPING]: "Free Shipping",
+    [PromotionType.GIFT_WITH_PURCHASE]: "Gift with Purchase",
+    [PromotionType.SEASONAL]: "Seasonal",
+  };
+  return typeLabels[type as PromotionType] || type;
+}
+
+/**
+ * Get promotion type badge class for consistent styling
+ * @param type The PromotionType enum value
+ * @returns CSS classes for the badge
+ */
+export function getPromotionTypeBadgeClass(
+  type: PromotionType | string
+): string {
+  const badgeClasses: Record<string, string> = {
+    [PromotionType.DISCOUNT]:
+      "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+    [PromotionType.BOGO]:
+      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+    [PromotionType.BUNDLE]:
+      "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+    [PromotionType.FREE_SHIPPING]:
+      "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
+    [PromotionType.GIFT_WITH_PURCHASE]:
+      "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300",
+    [PromotionType.SEASONAL]:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+  };
+  return (
+    badgeClasses[type as PromotionType] ||
+    "bg-secondary text-secondary-foreground"
+  );
+}
+
+/**
+ * Get role display name in English
+ * @param role The UserRole enum value
+ * @returns The English display name
+ */
+export function getRoleDisplayName(role: UserRole | string): string {
+  const roleNames: Record<string, string> = {
+    [UserRole.ADMIN]: "Administrator",
+    [UserRole.MANAGER]: "Manager",
+    [UserRole.CHEF]: "Chef",
+    [UserRole.SERVER]: "Server",
+    [UserRole.CASHIER]: "Cashier",
+  };
+  return roleNames[role as UserRole] || role;
+}
+
+/**
+ * Get role badge class for consistent styling
+ * @param role The UserRole enum value
+ * @returns CSS classes for the badge
+ */
+export function getRoleBadgeClass(role: UserRole | string): string {
+  const badgeClasses: Record<string, string> = {
+    [UserRole.ADMIN]:
+      "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+    [UserRole.MANAGER]:
+      "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+    [UserRole.CHEF]:
+      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+    [UserRole.SERVER]:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+    [UserRole.CASHIER]:
+      "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+  };
+  return (
+    badgeClasses[role as UserRole] || "bg-secondary text-secondary-foreground"
+  );
+}
+
+/**
+ * Centralized color configuration for statistics components
+ * Provides consistent styling across all stat cards
+ * Colors are mapped to match existing badge and status color systems
+ */
+export const statsColorConfig = {
+  // Primary colors for different stat types
+  primary: "text-primary bg-primary/10",
+
+  // Status-based colors (matching getStatusBadgeClass)
+  active: "text-green-600 bg-green-50 dark:bg-green-950 dark:text-green-400",
+  inactive: "text-gray-600 bg-gray-50 dark:bg-gray-950 dark:text-gray-400",
+
+  // Role-based colors (matching getRoleBadgeClass color scheme)
+  admin: "text-red-600 bg-red-50 dark:bg-red-950 dark:text-red-400",
+  manager: "text-blue-600 bg-blue-50 dark:bg-blue-950 dark:text-blue-400",
+  chef: "text-green-600 bg-green-50 dark:bg-green-950 dark:text-green-400",
+  server:
+    "text-yellow-600 bg-yellow-50 dark:bg-yellow-950 dark:text-yellow-400",
+  cashier:
+    "text-purple-600 bg-purple-50 dark:bg-purple-950 dark:text-purple-400",
+
+  // Functional colors for different data types
+  total: "text-primary bg-primary/10",
+  products: "text-blue-600 bg-blue-50 dark:bg-blue-950 dark:text-blue-400",
+  price: "text-orange-600 bg-orange-50 dark:bg-orange-950 dark:text-orange-400",
+  nutrition:
+    "text-purple-600 bg-purple-50 dark:bg-purple-950 dark:text-purple-400",
+  average:
+    "text-purple-600 bg-purple-50 dark:bg-purple-950 dark:text-purple-400",
+
+  // Promotion-specific colors (matching getStatusBadgeClass for promotion statuses)
+  expired: "text-red-600 bg-red-50 dark:bg-red-950 dark:text-red-400",
+  upcoming: "text-blue-600 bg-blue-50 dark:bg-blue-950 dark:text-blue-400",
+};
+
+/**
+ * Get consistent stat card color styling
+ * @param variant The color variant to use
+ * @returns CSS classes for the stat card icon background
+ */
+export function getStatCardColorClass(
+  variant: keyof typeof statsColorConfig | UserRole | string
+): string {
+  // Handle UserRole enum values by mapping them to string keys
+  let variantKey: string;
+
+  if (
+    typeof variant === "string" &&
+    Object.values(UserRole).includes(variant as UserRole)
+  ) {
+    // Map UserRole enum values to lowercase string keys
+    const roleMap: Record<UserRole, string> = {
+      [UserRole.ADMIN]: "admin",
+      [UserRole.MANAGER]: "manager",
+      [UserRole.CHEF]: "chef",
+      [UserRole.SERVER]: "server",
+      [UserRole.CASHIER]: "cashier",
+    };
+    variantKey = roleMap[variant as UserRole];
+  } else {
+    variantKey = variant as string;
+  }
+
+  return (
+    statsColorConfig[variantKey as keyof typeof statsColorConfig] ||
+    statsColorConfig.primary
+  );
 }

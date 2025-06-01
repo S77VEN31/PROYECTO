@@ -6,6 +6,7 @@
 "use client";
 
 import { AdminCard } from "@/components/admin/admin-card";
+import { getStatCardColorClass } from "@/lib/utils";
 import {
   BarChart3,
   FolderCheck,
@@ -39,7 +40,13 @@ interface StatCardProps {
   title: string;
   value: string | number;
   icon: React.ReactNode;
-  variant?: "default" | "active" | "inactive" | "products" | "average";
+  variant?:
+    | "primary"
+    | "total"
+    | "active"
+    | "inactive"
+    | "products"
+    | "average";
   description?: string;
 }
 
@@ -50,24 +57,9 @@ function StatCard({
   title,
   value,
   icon,
-  variant = "default",
+  variant = "primary",
   description,
 }: StatCardProps) {
-  const getVariantStyles = () => {
-    switch (variant) {
-      case "active":
-        return "text-emerald-600 bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-400";
-      case "inactive":
-        return "text-red-600 bg-red-50 dark:bg-red-950 dark:text-red-400";
-      case "products":
-        return "text-blue-600 bg-blue-50 dark:bg-blue-950 dark:text-blue-400";
-      case "average":
-        return "text-purple-600 bg-purple-50 dark:bg-purple-950 dark:text-purple-400";
-      default:
-        return "text-primary bg-primary/10";
-    }
-  };
-
   return (
     <AdminCard
       flat
@@ -86,7 +78,9 @@ function StatCard({
             )}
           </div>
           <div
-            className={`p-2.5 rounded-full flex-shrink-0 ${getVariantStyles()}`}
+            className={`p-2.5 rounded-full flex-shrink-0 ${getStatCardColorClass(
+              variant
+            )}`}
           >
             {icon}
           </div>
@@ -113,7 +107,7 @@ export function CategoryStats({
       title: "Total de Categorías",
       value: stats.total,
       icon: <FolderOpen className="h-5 w-5" />,
-      variant: "default" as const,
+      variant: "total" as const,
       description: "Categorías registradas",
     },
     {

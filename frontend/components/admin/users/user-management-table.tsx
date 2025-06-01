@@ -41,6 +41,7 @@ import {
 } from "@/lib/utils";
 import { GetUsersRequestParams, User, UserRole } from "colori-platform-shared";
 import {
+  Calendar,
   Edit,
   MoreHorizontal,
   RefreshCw,
@@ -179,15 +180,15 @@ export function UserManagementTable({
                 onValueChange={handleRoleFilterChange}
               >
                 <SelectTrigger className="w-full sm:w-48 min-w-[180px]">
-                  <SelectValue placeholder="Filtrar por rol" />
+                  <SelectValue placeholder="Filter by role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos los roles</SelectItem>
-                  <SelectItem value={UserRole.ADMIN}>Administrador</SelectItem>
-                  <SelectItem value={UserRole.MANAGER}>Gerente</SelectItem>
+                  <SelectItem value="all">All Roles</SelectItem>
+                  <SelectItem value={UserRole.ADMIN}>Administrator</SelectItem>
+                  <SelectItem value={UserRole.MANAGER}>Manager</SelectItem>
                   <SelectItem value={UserRole.CHEF}>Chef</SelectItem>
-                  <SelectItem value={UserRole.SERVER}>Mesero</SelectItem>
-                  <SelectItem value={UserRole.CASHIER}>Cajero</SelectItem>
+                  <SelectItem value={UserRole.SERVER}>Server</SelectItem>
+                  <SelectItem value={UserRole.CASHIER}>Cashier</SelectItem>
                 </SelectContent>
               </Select>
               <Button
@@ -263,15 +264,17 @@ export function UserManagementTable({
                       <span className="text-sm">{user.email}</span>
                     </TableCell>
                     <TableCell className="min-w-[120px]">
-                      <Badge className={`text-xs ${getRoleBadgeClass()}`}>
+                      <Badge
+                        variant="secondary"
+                        className={getRoleBadgeClass(user.role)}
+                      >
                         {getRoleDisplayName(user.role)}
                       </Badge>
                       {/* Show status on mobile when status column is hidden */}
                       <div className="md:hidden mt-1">
                         <Badge
-                          className={`text-xs ${getStatusBadgeClass(
-                            user.active
-                          )}`}
+                          variant={user.active ? "default" : "secondary"}
+                          className={getStatusBadgeClass(user.active)}
                         >
                           {getStatusDisplayText(user.active)}
                         </Badge>
@@ -279,19 +282,28 @@ export function UserManagementTable({
                     </TableCell>
                     <TableCell className="hidden md:table-cell min-w-[100px]">
                       <Badge
-                        className={`text-xs ${getStatusBadgeClass(
-                          user.active
-                        )}`}
+                        variant={user.active ? "default" : "secondary"}
+                        className={getStatusBadgeClass(user.active)}
                       >
                         {getStatusDisplayText(user.active)}
                       </Badge>
                     </TableCell>
                     <TableCell className="hidden lg:table-cell min-w-[130px]">
-                      <span className="text-sm">
-                        {user.lastLogin
-                          ? new Date(user.lastLogin).toLocaleDateString("en-US")
-                          : "Never"}
-                      </span>
+                      {user.lastLogin ? (
+                        <div className="flex items-center gap-1 text-sm">
+                          <Calendar className="h-3 w-3 text-primary" />
+                          <span>
+                            {new Date(user.lastLogin).toLocaleDateString(
+                              "en-US"
+                            )}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-sm">
+                          <Calendar className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-muted-foreground">Never</span>
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell className="text-right min-w-[80px]">
                       <DropdownMenu>
@@ -299,9 +311,9 @@ export function UserManagementTable({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 flex-shrink-0"
+                            className="h-8 w-8 flex-shrink-0 hover:text-primary"
                           >
-                            <MoreHorizontal className="h-4 w-4" />
+                            <MoreHorizontal className="h-4 w-4 text-primary" />
                             <span className="sr-only">Open menu</span>
                           </Button>
                         </DropdownMenuTrigger>
