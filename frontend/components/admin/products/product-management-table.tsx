@@ -32,23 +32,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { GetProductsRequest, Product } from "colori-platform-shared";
 import {
+  GetProductsRequestParams,
+  Product,
+  UpdateProductRequestBody,
+} from "colori-platform-shared";
+import {
+  Clock,
   Edit,
+  Euro,
+  Eye,
+  EyeOff,
   MoreHorizontal,
   RefreshCw,
   Search,
   Trash2,
-  PackageCheck,
-  PackageX,
-  Euro,
-  Clock,
-  Eye,
-  EyeOff,
 } from "lucide-react";
 import { useState } from "react";
-import { EditProductDialog } from "./edit-product-dialog";
 import { DeleteProductDialog } from "./delete-product-dialog";
+import { EditProductDialog } from "./edit-product-dialog";
 
 /**
  * Product management table props
@@ -57,8 +59,8 @@ interface ProductManagementTableProps {
   products: Product[];
   isLoading: boolean;
   error: string | null;
-  filters: GetProductsRequest;
-  onFiltersChange: (filters: GetProductsRequest) => void;
+  filters: GetProductsRequestParams;
+  onFiltersChange: (filters: GetProductsRequestParams) => void;
   onProductUpdated: (product: Product) => void;
   onProductDeleted: (productId: string) => void;
   onRefresh: () => void;
@@ -97,14 +99,16 @@ export function ProductManagementTable({
   const handleToggleProductStatus = async (product: Product) => {
     try {
       setUpdatingProduct(product);
-      await ProductApiService.updateProduct(
+      const updateData = {
+        active: !(product[
+          "active" as keyof typeof product
+        ] as unknown as boolean),
+      };
+      const updatedProduct = await ProductApiService.updateProduct(
         { id: product.id as string },
-        { 
-          id: product.id as string,
-          product: { ...product, active: !product.active } 
-        }
+        updateData as UpdateProductRequestBody
       );
-      onProductUpdated({ ...product, active: !product.active });
+      onProductUpdated(updatedProduct);
     } catch (error) {
       console.error("Error toggling product status:", error);
     } finally {
@@ -139,9 +143,9 @@ export function ProductManagementTable({
    * Format price for display
    */
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'EUR',
+    return new Intl.NumberFormat("es-ES", {
+      style: "currency",
+      currency: "EUR",
     }).format(price);
   };
 
@@ -186,7 +190,9 @@ export function ProductManagementTable({
                 <SelectContent>
                   <SelectItem value="all">Todas las categorías</SelectItem>
                   <SelectItem value="appetizers">Entrantes</SelectItem>
-                  <SelectItem value="main-courses">Platos principales</SelectItem>
+                  <SelectItem value="main-courses">
+                    Platos principales
+                  </SelectItem>
                   <SelectItem value="desserts">Postres</SelectItem>
                   <SelectItem value="beverages">Bebidas</SelectItem>
                 </SelectContent>
@@ -256,10 +262,14 @@ export function ProductManagementTable({
                     <TableCell className="min-w-[200px]">
                       <div className="flex flex-col gap-1">
                         <div className="font-medium text-foreground">
-                          {product.name}
+                          {product["name" as keyof typeof product] as string}
                         </div>
                         <div className="text-sm text-muted-foreground line-clamp-2">
-                          {product.description}
+                          {
+                            product[
+                              "description" as keyof typeof product
+                            ] as string
+                          }
                         </div>
                       </div>
                     </TableCell>
@@ -267,39 +277,88 @@ export function ProductManagementTable({
                       <div className="flex items-center gap-1">
                         <Euro className="h-3 w-3 text-muted-foreground" />
                         <span className="font-medium">
-                          {formatPrice(product.price)}
+                          {formatPrice(
+                            product[
+                              "price" as keyof typeof product
+                            ] as unknown as number
+                          )}
                         </span>
                       </div>
                     </TableCell>
                     <TableCell className="hidden md:table-cell min-w-[100px]">
                       <Badge
-                        variant={product.active ? "default" : "secondary"}
+                        variant={
+                          (product[
+                            "active" as keyof typeof product
+                          ] as unknown as boolean)
+                            ? "default"
+                            : "secondary"
+                        }
                         className="text-xs"
                       >
-                        {product.active ? "Activo" : "Inactivo"}
+                        {(product[
+                          "active" as keyof typeof product
+                        ] as unknown as boolean)
+                          ? "Activo"
+                          : "Inactivo"}
                       </Badge>
                     </TableCell>
                     <TableCell className="hidden lg:table-cell min-w-[120px]">
-                      {product.preparationTime ? (
+                      {(product[
+                        "preparationTime" as keyof typeof product
+                      ] as unknown as number) ? (
                         <div className="flex items-center gap-1 text-sm">
                           <Clock className="h-3 w-3 text-muted-foreground" />
-                          <span>{product.preparationTime} min</span>
+                          <span>
+                            {
+                              product[
+                                "preparationTime" as keyof typeof product
+                              ] as unknown as number
+                            }{" "}
+                            min
+                          </span>
                         </div>
                       ) : (
                         <span className="text-muted-foreground text-sm">-</span>
                       )}
                     </TableCell>
                     <TableCell className="hidden xl:table-cell min-w-[150px]">
-                      {product.tags && product.tags.length > 0 ? (
+                      {(product[
+                        "tags" as keyof typeof product
+                      ] as unknown as string[]) &&
+                      (
+                        product[
+                          "tags" as keyof typeof product
+                        ] as unknown as string[]
+                      ).length > 0 ? (
                         <div className="flex flex-wrap gap-1">
-                          {product.tags.slice(0, 2).map((tag, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                          {product.tags.length > 2 && (
+                          {(
+                            product[
+                              "tags" as keyof typeof product
+                            ] as unknown as string[]
+                          )
+                            .slice(0, 2)
+                            .map((tag: string, index: number) => (
+                              <Badge
+                                key={index}
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                          {(
+                            product[
+                              "tags" as keyof typeof product
+                            ] as unknown as string[]
+                          ).length > 2 && (
                             <Badge variant="outline" className="text-xs">
-                              +{product.tags.length - 2}
+                              +
+                              {(
+                                product[
+                                  "tags" as keyof typeof product
+                                ] as unknown as string[]
+                              ).length - 2}
                             </Badge>
                           )}
                         </div>
@@ -314,6 +373,7 @@ export function ProductManagementTable({
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 flex-shrink-0"
+                            disabled={updatingProduct?.id === product.id}
                           >
                             <MoreHorizontal className="h-4 w-4" />
                             <span className="sr-only">Abrir menú</span>
@@ -331,8 +391,11 @@ export function ProductManagementTable({
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleToggleProductStatus(product)}
+                            disabled={updatingProduct?.id === product.id}
                           >
-                            {product.active ? (
+                            {(product[
+                              "active" as keyof typeof product
+                            ] as unknown as boolean) ? (
                               <>
                                 <EyeOff className="mr-2 h-4 w-4" />
                                 Desactivar

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import {
   BarChart3,
   ClipboardList,
+  FolderOpen,
   LogOut,
   Package,
   Percent,
@@ -83,6 +84,13 @@ export function AdminSidebar() {
               href="/admin/products"
               label="Productos"
               icon={<Package className="h-4 w-4" />}
+            />
+          </li>
+          <li>
+            <SidebarLink
+              href="/admin/categories"
+              label="Categorías"
+              icon={<FolderOpen className="h-4 w-4" />}
             />
           </li>
           <li>
