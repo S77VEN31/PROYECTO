@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { CategoryApiService } from "@/api/entities/category.api";
 import { ProductApiService } from "@/api/entities/product.api";
+import { Button } from "@/components/ui/button";
 import { Category, Product } from "colori-platform-shared";
 import { ChevronLeft, Coffee } from "lucide-react";
 import Link from "next/link";
@@ -18,13 +18,13 @@ interface ExtendedProduct extends Product {
 }
 
 // Definir un componente ProductsGrid compatible
-function ProductsGrid({ 
-  products, 
-  onSelectProduct, 
-  showInactive = true 
-}: { 
-  products: Product[]; 
-  onSelectProduct?: (product: Product) => void; 
+function ProductsGrid({
+  products,
+  onSelectProduct,
+  showInactive = true,
+}: {
+  products: Product[];
+  onSelectProduct?: (product: Product) => void;
   showInactive?: boolean;
 }) {
   // Filtrar productos inactivos si showInactive es false
@@ -37,7 +37,8 @@ function ProductsGrid({
       <div className="p-6 bg-destructive/10 border border-destructive/20 rounded-md">
         <p className="text-center font-medium">No hay productos disponibles</p>
         <p className="text-center text-sm text-muted-foreground mt-2">
-          No se encontraron productos en esta categoría. Por favor, intenta con otra categoría.
+          No se encontraron productos en esta categoría. Por favor, intenta con
+          otra categoría.
         </p>
       </div>
     );
@@ -66,7 +67,9 @@ export default function CategoryPage({
   const categorySlug = unwrappedParams.category;
 
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
-  const [categoryProducts, setCategoryProducts] = useState<ExtendedProduct[]>([]);
+  const [categoryProducts, setCategoryProducts] = useState<ExtendedProduct[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -89,7 +92,9 @@ export default function CategoryPage({
         }
 
         // Buscar la categoría por slug
-        const category = categoriesResponse.data.find((cat) => cat.slug === categorySlug);
+        const category = categoriesResponse.data.find(
+          (cat) => cat.slug === categorySlug
+        );
 
         if (!category) {
           throw new Error(`Categoría "${categorySlug}" no encontrada`);
@@ -97,42 +102,22 @@ export default function CategoryPage({
 
         setCurrentCategory(category);
 
-        // Productos asociados a esta categoría
-        const categoryProductIds = category.products || [];
-        
-        // Obtener todos los productos necesarios
+        // Usar getProducts con el parámetro category
         const productsResponse = await ProductApiService.getProducts({
+          category: category.id,
           page: 1,
-          limit: 100, // Aumentar el límite para obtener más productos
+          limit: 100,
         });
 
         if (productsResponse && productsResponse.data) {
-          // Filtrar productos que pertenecen a esta categoría (tanto por ID como por el campo products)
-          const filteredProducts = productsResponse.data.filter(product => {
-            const extendedProduct = product as ExtendedProduct;
-            return (
-              // Productos específicamente asignados a esta categoría
-              categoryProductIds.includes(product.id) || 
-              // Productos que tienen esta categoría asignada (compatibilidad con el sistema anterior)
-              (extendedProduct.categories && extendedProduct.categories.includes(category.id))
-            );
-          });
-          
-          // Eliminar duplicados (por si un producto aparece en ambas listas)
-          const uniqueProducts = filteredProducts.reduce((acc: ExtendedProduct[], current) => {
-            const duplicate = acc.find(item => item.id === current.id);
-            if (!duplicate) {
-              acc.push(current as ExtendedProduct);
-            }
-            return acc;
-          }, []);
-          
-          setCategoryProducts(uniqueProducts);
+          setCategoryProducts(productsResponse.data);
         } else {
           setCategoryProducts([]);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Error al cargar la categoría");
+        setError(
+          err instanceof Error ? err.message : "Error al cargar la categoría"
+        );
         console.error("Error fetching category and products:", err);
       } finally {
         setLoading(false);
@@ -143,14 +128,14 @@ export default function CategoryPage({
   }, [categorySlug]);
 
   const handleSelectProduct = (product: Product) => {
-    router.push(`/client/product/${product.id}`);
+    router.push(`/client/category/${categorySlug}/product/${product.id}`);
   };
 
   if (loading) {
     return (
       <div className="container mx-auto py-8 px-4 max-w-7xl">
         <div className="flex justify-center items-center min-h-[400px]">
-        <div className="text-center">
+          <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rojo mx-auto mb-4"></div>
             <p className="text-muted-foreground">Cargando categoría...</p>
           </div>
@@ -208,7 +193,7 @@ export default function CategoryPage({
       </div>
 
       {/* Grid de productos */}
-      <ProductsGrid 
+      <ProductsGrid
         products={categoryProducts}
         onSelectProduct={handleSelectProduct}
         showInactive={false}
