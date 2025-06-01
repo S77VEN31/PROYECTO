@@ -149,9 +149,9 @@
   --popover: #1E1E1E;
   --popover-foreground: #FAFAFA;
   
-  /* Primary = Coffee (same as light mode) */
-  --primary: var(--color-coffee);
-  --primary-foreground: #FFFFFF;
+  /* Primary = Pink (changed from coffee for dark mode) */
+  --primary: var(--color-pink);
+  --primary-foreground: #121212;
   
   /* Secondary = Skyblue (same as light mode) */
   --secondary: var(--color-skyblue);
@@ -161,9 +161,9 @@
   --muted: #2A2A2A;
   --muted-foreground: #A0A0A0;
   
-  /* Accent = Primary (Coffee) for complete consistency */
-  --accent: var(--color-coffee);
-  --accent-foreground: #FFFFFF;
+  /* Accent = Primary (Pink) for complete consistency */
+  --accent: var(--color-pink);
+  --accent-foreground: #121212;
   
   /* Destructive = Cancellation Color */
   --destructive: var(--color-cancellation);
@@ -175,20 +175,20 @@
   --input: #2A2A2A;
   --ring: var(--primary);
   
-  /* Charts - Keep category colors consistent */
-  --chart-1: var(--color-coffee);
+  /* Charts - Keep category colors consistent, but chart-1 follows primary */
+  --chart-1: var(--color-pink);
   --chart-2: var(--color-skyblue);
   --chart-3: var(--color-orange);
   --chart-4: var(--color-red);
-  --chart-5: var(--color-pink);
+  --chart-5: var(--color-coffee);
   
-  /* Sidebar - Keep category colors consistent */
+  /* Sidebar - Use pink as primary color */
   --sidebar: #1E1E1E;
   --sidebar-foreground: #FAFAFA;
-  --sidebar-primary: var(--color-coffee);
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: var(--color-coffee);
-  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-primary: var(--color-pink);
+  --sidebar-primary-foreground: #121212;
+  --sidebar-accent: var(--color-pink);
+  --sidebar-accent-foreground: #121212;
   --sidebar-border: #2A2A2A;
   --sidebar-ring: var(--primary);
   

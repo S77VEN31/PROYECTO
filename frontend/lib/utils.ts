@@ -91,19 +91,23 @@ export function getStatusDisplayText(status?: boolean | string): string {
 export function getStatusBadgeClass(status?: boolean | string): string {
   if (typeof status === "boolean") {
     return status === true
-      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-      : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
+      ? "bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800 transition-colors"
+      : "bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors";
   }
 
   const badgeClasses: Record<string, string> = {
-    active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-    inactive: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
-    expired: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-    upcoming: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+    active:
+      "bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800 transition-colors",
+    inactive:
+      "bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors",
+    expired:
+      "bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800 transition-colors",
+    upcoming:
+      "bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800 transition-colors",
   };
   return (
     badgeClasses[status as string] ||
-    "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300"
+    "bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
   );
 }
 
@@ -155,12 +159,18 @@ export const variantConfig = {
 
   // Variantes para badges/etiquetas (consistentes en ambos modos)
   badgeVariants: {
-    [CategoryVariant.COFFEE]: "bg-[var(--color-coffee)] text-white",
-    [CategoryVariant.SKYBLUE]: "bg-[var(--color-skyblue)] text-black",
-    [CategoryVariant.ORANGE]: "bg-[var(--color-orange)] text-black",
-    [CategoryVariant.RED]: "bg-[var(--color-red)] text-white",
-    [CategoryVariant.PINK]: "bg-[var(--color-pink)] text-black",
-    [CategoryVariant.DEFAULT]: "bg-secondary text-secondary-foreground",
+    [CategoryVariant.COFFEE]:
+      "bg-[var(--color-coffee)] text-white hover:bg-[var(--color-coffee)]/90 transition-colors",
+    [CategoryVariant.SKYBLUE]:
+      "bg-[var(--color-skyblue)] text-black hover:bg-[var(--color-skyblue)]/90 transition-colors",
+    [CategoryVariant.ORANGE]:
+      "bg-[var(--color-orange)] text-black hover:bg-[var(--color-orange)]/90 transition-colors",
+    [CategoryVariant.RED]:
+      "bg-[var(--color-red)] text-white hover:bg-[var(--color-red)]/90 transition-colors",
+    [CategoryVariant.PINK]:
+      "bg-[var(--color-pink)] text-black hover:bg-[var(--color-pink)]/90 transition-colors",
+    [CategoryVariant.DEFAULT]:
+      "bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors",
   },
 };
 
@@ -287,21 +297,21 @@ export function getPromotionTypeBadgeClass(
 ): string {
   const badgeClasses: Record<string, string> = {
     [PromotionType.DISCOUNT]:
-      "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+      "bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800 transition-colors",
     [PromotionType.BOGO]:
-      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+      "bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800 transition-colors",
     [PromotionType.BUNDLE]:
-      "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+      "bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900 dark:text-purple-300 dark:hover:bg-purple-800 transition-colors",
     [PromotionType.FREE_SHIPPING]:
-      "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
+      "bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900 dark:text-orange-300 dark:hover:bg-orange-800 transition-colors",
     [PromotionType.GIFT_WITH_PURCHASE]:
-      "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300",
+      "bg-pink-100 text-pink-800 hover:bg-pink-200 dark:bg-pink-900 dark:text-pink-300 dark:hover:bg-pink-800 transition-colors",
     [PromotionType.SEASONAL]:
-      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+      "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900 dark:text-yellow-300 dark:hover:bg-yellow-800 transition-colors",
   };
   return (
     badgeClasses[type as PromotionType] ||
-    "bg-secondary text-secondary-foreground"
+    "bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
   );
 }
 
@@ -329,18 +339,19 @@ export function getRoleDisplayName(role: UserRole | string): string {
 export function getRoleBadgeClass(role: UserRole | string): string {
   const badgeClasses: Record<string, string> = {
     [UserRole.ADMIN]:
-      "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+      "bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800 transition-colors",
     [UserRole.MANAGER]:
-      "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+      "bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800 transition-colors",
     [UserRole.CHEF]:
-      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+      "bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800 transition-colors",
     [UserRole.SERVER]:
-      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+      "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900 dark:text-yellow-300 dark:hover:bg-yellow-800 transition-colors",
     [UserRole.CASHIER]:
-      "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+      "bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900 dark:text-purple-300 dark:hover:bg-purple-800 transition-colors",
   };
   return (
-    badgeClasses[role as UserRole] || "bg-secondary text-secondary-foreground"
+    badgeClasses[role as UserRole] ||
+    "bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
   );
 }
 
