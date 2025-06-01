@@ -1,7 +1,7 @@
 "use client";
 
 import { AdminCard } from "@/components/admin/admin-card";
-import { cn } from "@/lib/utils";
+import { cn, getCancellationTextClass } from "@/lib/utils";
 
 export interface StatItem {
   label: string;
@@ -107,7 +107,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
               <p
                 className={cn(
                   "text-sm flex items-center",
-                  stat.positive ? "text-primary" : "text-destructive"
+                  stat.positive ? "text-primary" : getCancellationTextClass()
                 )}
               >
                 <span className="mr-1">{stat.positive ? "+" : "-"}</span>

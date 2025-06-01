@@ -15,6 +15,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  getDeleteDialogContentClass,
+  getDeleteDialogEntityNameClass,
+  getDeleteDialogIconClass,
+  getDeleteDialogIconContainerClass,
+  getDeleteDialogMainTextClass,
+  getDeleteDialogSecondaryTextClass,
+} from "@/lib/utils";
 import { Product } from "colori-platform-shared";
 import { AlertTriangle } from "lucide-react";
 import { useState } from "react";
@@ -76,8 +84,8 @@ export function DeleteProductDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
-              <AlertTriangle className="h-5 w-5 text-destructive" />
+            <div className={getDeleteDialogIconContainerClass()}>
+              <AlertTriangle className={getDeleteDialogIconClass()} />
             </div>
             <div>
               <DialogTitle>Eliminar Producto</DialogTitle>
@@ -88,14 +96,17 @@ export function DeleteProductDialog({
           </div>
         </DialogHeader>
 
-        <div className="py-4">
-          <p className="text-sm text-muted-foreground">
+        <div className={getDeleteDialogContentClass()}>
+          <p className={getDeleteDialogMainTextClass()}>
             ¿Estás seguro de que quieres eliminar el producto{" "}
-            <span className="font-medium text-foreground">{product.name}</span>?
+            <span className={getDeleteDialogEntityNameClass()}>
+              {product.name}
+            </span>
+            ?
           </p>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className={getDeleteDialogSecondaryTextClass()}>
             Se perderán todos los datos asociados a este producto, incluyendo
-            información nutricional y etiquetas.
+            imágenes, información nutricional y estadísticas de ventas.
           </p>
         </div>
 

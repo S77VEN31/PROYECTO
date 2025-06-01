@@ -35,6 +35,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  getCancellationTextClass,
   getStatusBadgeClass,
   getStatusDisplayText,
   getToggleStatusActionText,
@@ -214,7 +215,7 @@ export function ProductManagementTable({
     return (
       <AdminCard title="Error">
         <div className="text-center py-8">
-          <p className="text-destructive mb-4">{error}</p>
+          <p className={`${getCancellationTextClass()} mb-4`}>{error}</p>
           <Button onClick={onRefresh} variant="outline">
             <RefreshCw className="h-4 w-4 mr-2" />
             Reintentar
@@ -446,10 +447,10 @@ export function ProductManagementTable({
                               setSelectedProduct(product);
                               setIsDeleteDialogOpen(true);
                             }}
-                            className="text-red-600 dark:text-red-400"
+                            className={getCancellationTextClass()}
                           >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
+                            <Trash2 className="h-4 w-4 mr-2 flex-shrink-0" />
+                            <span>Delete</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

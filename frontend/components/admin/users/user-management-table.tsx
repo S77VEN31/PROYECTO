@@ -34,6 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  getCancellationTextClass,
   getRoleBadgeClass,
   getRoleDisplayName,
   getStatusBadgeClass,
@@ -176,7 +177,7 @@ export function UserManagementTable({
     return (
       <AdminCard title="Error">
         <div className="text-center py-8">
-          <p className="text-destructive mb-4">{error}</p>
+          <p className={`${getCancellationTextClass()} mb-4`}>{error}</p>
           <Button onClick={onRefresh} variant="outline">
             <RefreshCw className="h-4 w-4 mr-2" />
             Retry
@@ -389,7 +390,7 @@ export function UserManagementTable({
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             onClick={() => handleDeleteUser(user)}
-                            className="text-red-600 dark:text-red-400 cursor-pointer"
+                            className={`${getCancellationTextClass()} cursor-pointer`}
                           >
                             <Trash2 className="h-4 w-4 mr-2 flex-shrink-0" />
                             <span>Delete</span>
