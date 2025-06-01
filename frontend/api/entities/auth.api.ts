@@ -27,13 +27,13 @@ export class AuthApiService {
       const validatedCredentials = LoginRequestSchema.parse(credentials);
 
       const response = await apiClient.post<{
-        success: boolean;
         token: string;
         user: User;
         message?: string;
       }>("/auth/login", validatedCredentials);
 
-      if (response.data.success && response.data.token && response.data.user) {
+      // Check if we have both token and user in the response
+      if (response.data.token && response.data.user) {
         // Store token and user data in localStorage
         const { token, user } = response.data;
         this.setAuthData(token, user);
@@ -44,7 +44,6 @@ export class AuthApiService {
       throw new Error(response.data.message || "Login failed");
     } catch (error: unknown) {
       const axiosError = error as AxiosError<{
-        success: boolean;
         message?: string;
         error?: string;
       }>;
@@ -154,13 +153,13 @@ export class AuthApiService {
   static async refreshToken(): Promise<AuthResponse<User> | null> {
     try {
       const response = await apiClient.post<{
-        success: boolean;
         token: string;
         user: User;
         message?: string;
       }>("/auth/refresh");
 
-      if (response.data.success && response.data.token && response.data.user) {
+      // Check if we have both token and user in the response
+      if (response.data.token && response.data.user) {
         const { token, user } = response.data;
         this.setAuthData(token, user);
         return { token, user };

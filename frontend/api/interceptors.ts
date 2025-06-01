@@ -2,19 +2,27 @@
  * API interceptors for handling authentication and errors
  */
 
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { AuthApiService } from "./entities/auth.api";
 import apiClient from "./index";
+
+// Flag to track if interceptors are already set up
+let interceptorsSetup = false;
 
 /**
  * Setup API interceptors for authentication handling
  */
 export function setupApiInterceptors(): void {
+  // Prevent duplicate interceptor registration
+  if (interceptorsSetup) {
+    return;
+  }
+
   // Request interceptor to add auth token
   apiClient.interceptors.request.use(
-    (config) => {
+    (config: InternalAxiosRequestConfig) => {
       const token = AuthApiService.getAuthToken();
-      if (token) {
+      if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }
       return config;
@@ -32,8 +40,13 @@ export function setupApiInterceptors(): void {
     (error: AxiosError) => {
       // Handle authentication errors
       if (error.response?.status === 401) {
-        // Token expired or invalid - force logout
-        AuthApiService.forceLogout();
+        // Only force logout if we're not already on the login page
+        if (
+          typeof window !== "undefined" &&
+          !window.location.pathname.includes("/login")
+        ) {
+          AuthApiService.forceLogout();
+        }
       }
 
       // Handle forbidden access
@@ -49,6 +62,8 @@ export function setupApiInterceptors(): void {
       return Promise.reject(error);
     }
   );
+
+  interceptorsSetup = true;
 }
 
 /**
@@ -57,4 +72,5 @@ export function setupApiInterceptors(): void {
 export function removeApiInterceptors(): void {
   apiClient.interceptors.request.clear();
   apiClient.interceptors.response.clear();
+  interceptorsSetup = false;
 }
