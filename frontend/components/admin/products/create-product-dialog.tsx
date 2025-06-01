@@ -27,7 +27,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Product, ProductCreate } from "colori-platform-shared";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Product,
+  ProductCreate,
+  ProductCreateSchema,
+} from "colori-platform-shared";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -53,6 +58,7 @@ export function CreateProductDialog({
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<ProductCreate>({
+    resolver: zodResolver(ProductCreateSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -179,7 +185,7 @@ export function CreateProductDialog({
                           step="0.01"
                           min="0"
                           placeholder="0.00"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(parseFloat(e.target.value) || 0)
                           }
@@ -201,7 +207,7 @@ export function CreateProductDialog({
                           type="number"
                           min="0"
                           placeholder="15"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(
                               parseInt(e.target.value) || undefined

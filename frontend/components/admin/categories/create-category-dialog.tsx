@@ -48,21 +48,17 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { getCategoryVariantDisplayName } from "@/lib/utils";
-import { Category, CategoryVariant, Product } from "colori-platform-shared";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Category,
+  CategoryCreate,
+  CategoryCreateSchema,
+  CategoryVariant,
+  Product,
+} from "colori-platform-shared";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-
-// Simple form data type
-interface CreateCategoryFormData {
-  name: string;
-  description: string;
-  icon: string;
-  variant: CategoryVariant;
-  displayOrder: number;
-  active: boolean;
-  products: string[];
-}
 
 /**
  * Create category dialog props
@@ -88,7 +84,8 @@ export function CreateCategoryDialog({
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [productSelectorOpen, setProductSelectorOpen] = useState(false);
 
-  const form = useForm<CreateCategoryFormData>({
+  const form = useForm<CategoryCreate>({
+    resolver: zodResolver(CategoryCreateSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -122,20 +119,10 @@ export function CreateCategoryDialog({
   /**
    * Handle form submission
    */
-  const onSubmit = async (data: CreateCategoryFormData) => {
+  const onSubmit = async (data: CategoryCreate) => {
     setIsLoading(true);
     try {
-      const categoryData = {
-        name: data.name,
-        description: data.description,
-        icon: data.icon,
-        variant: data.variant,
-        displayOrder: data.displayOrder,
-        active: data.active,
-        products: data.products,
-      };
-
-      const newCategory = await CategoryApiService.createCategory(categoryData);
+      const newCategory = await CategoryApiService.createCategory(data);
       onCategoryCreated(newCategory);
       form.reset();
       onOpenChange(false);
@@ -312,7 +299,7 @@ export function CreateCategoryDialog({
                       <Input
                         type="number"
                         placeholder="0"
-                        {...field}
+                        value={field.value || ""}
                         onChange={(e) =>
                           field.onChange(parseInt(e.target.value) || 0)
                         }
@@ -346,8 +333,10 @@ export function CreateCategoryDialog({
                             className="justify-between"
                             disabled={loadingProducts}
                           >
-                            {field.value.length > 0
-                              ? `${field.value.length} producto(s) seleccionado(s)`
+                            {(field.value || []).length > 0
+                              ? `${
+                                  (field.value || []).length
+                                } producto(s) seleccionado(s)`
                               : "Seleccionar productos"}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
@@ -412,9 +401,9 @@ export function CreateCategoryDialog({
                                 size="sm"
                                 className="h-4 w-4 p-0 hover:bg-primary-foreground/20 text-primary-foreground hover:text-primary-foreground"
                                 onClick={() => {
-                                  const newProducts = field.value.filter(
-                                    (id) => id !== productId
-                                  );
+                                  const newProducts = (
+                                    field.value || []
+                                  ).filter((id) => id !== productId);
                                   field.onChange(newProducts);
                                 }}
                               >

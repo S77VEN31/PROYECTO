@@ -27,6 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Product,
   ProductUpdate,
@@ -60,6 +61,7 @@ export function EditProductDialog({
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<ProductUpdate>({
+    resolver: zodResolver(ProductUpdateSchema),
     defaultValues: {
       name: product.name,
       description: product.description,
@@ -231,7 +233,7 @@ export function EditProductDialog({
                           step="0.01"
                           min="0"
                           placeholder="0.00"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(parseFloat(e.target.value) || 0)
                           }
@@ -253,7 +255,7 @@ export function EditProductDialog({
                           type="number"
                           min="0"
                           placeholder="15"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(
                               parseInt(e.target.value) || undefined

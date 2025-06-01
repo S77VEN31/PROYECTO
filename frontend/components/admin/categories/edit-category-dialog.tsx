@@ -48,21 +48,18 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { getCategoryVariantDisplayName } from "@/lib/utils";
-import { Category, CategoryVariant, Product } from "colori-platform-shared";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Category,
+  CategoryUpdate,
+  CategoryUpdateSchema,
+  CategoryVariant,
+  Product,
+  UpdateCategoryRequestBody,
+} from "colori-platform-shared";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-
-// Simple form data type
-interface EditCategoryFormData {
-  name: string;
-  description: string;
-  icon: string;
-  variant: CategoryVariant;
-  displayOrder: number;
-  active: boolean;
-  products: string[];
-}
 
 /**
  * Edit category dialog props
@@ -90,7 +87,8 @@ export function EditCategoryDialog({
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [productSelectorOpen, setProductSelectorOpen] = useState(false);
 
-  const form = useForm<EditCategoryFormData>({
+  const form = useForm<CategoryUpdate>({
+    resolver: zodResolver(CategoryUpdateSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -125,27 +123,13 @@ export function EditCategoryDialog({
   useEffect(() => {
     if (category) {
       form.reset({
-        name: (category["name" as keyof typeof category] as string) || "",
-        description:
-          (category["description" as keyof typeof category] as string) || "",
-        icon: (category["icon" as keyof typeof category] as string) || "",
-        variant:
-          (category["variant" as keyof typeof category] as CategoryVariant) ||
-          CategoryVariant.DEFAULT,
-        displayOrder:
-          (category[
-            "displayOrder" as keyof typeof category
-          ] as unknown as number) || 0,
-        active:
-          (category[
-            "active" as keyof typeof category
-          ] as unknown as boolean) !== undefined
-            ? (category[
-                "active" as keyof typeof category
-              ] as unknown as boolean)
-            : true,
-        products:
-          (category["products" as keyof typeof category] as string[]) || [],
+        name: category.name || "",
+        description: category.description || "",
+        icon: category.icon || "",
+        variant: category.variant || CategoryVariant.DEFAULT,
+        displayOrder: category.displayOrder || 0,
+        active: category.active !== undefined ? category.active : true,
+        products: category.products || [],
       });
     }
   }, [category, form]);
@@ -153,24 +137,16 @@ export function EditCategoryDialog({
   /**
    * Handle form submission
    */
-  const onSubmit = async (data: EditCategoryFormData) => {
+  const onSubmit = async (data: CategoryUpdate) => {
     if (!category) return;
 
     setIsLoading(true);
     try {
-      const categoryData = {
-        name: data.name,
-        description: data.description,
-        icon: data.icon,
-        variant: data.variant,
-        displayOrder: data.displayOrder,
-        active: data.active,
-        products: data.products,
-      };
+      const updateData: UpdateCategoryRequestBody = data;
 
       const updatedCategory = await CategoryApiService.updateCategory(
         { id: category.id },
-        categoryData
+        updateData
       );
       onCategoryUpdated(updatedCategory);
       onOpenChange(false);
@@ -186,7 +162,6 @@ export function EditCategoryDialog({
    * Handle dialog close
    */
   const handleClose = () => {
-    form.reset();
     onOpenChange(false);
   };
 
@@ -351,7 +326,7 @@ export function EditCategoryDialog({
                       <Input
                         type="number"
                         placeholder="0"
-                        {...field}
+                        value={field.value || ""}
                         onChange={(e) =>
                           field.onChange(parseInt(e.target.value) || 0)
                         }
@@ -385,8 +360,10 @@ export function EditCategoryDialog({
                             className="justify-between"
                             disabled={loadingProducts}
                           >
-                            {field.value.length > 0
-                              ? `${field.value.length} producto(s) seleccionado(s)`
+                            {(field.value || []).length > 0
+                              ? `${
+                                  (field.value || []).length
+                                } producto(s) seleccionado(s)`
                               : "Seleccionar productos"}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
@@ -451,9 +428,9 @@ export function EditCategoryDialog({
                                 size="sm"
                                 className="h-4 w-4 p-0 hover:bg-primary-foreground/20 text-primary-foreground hover:text-primary-foreground"
                                 onClick={() => {
-                                  const newProducts = field.value.filter(
-                                    (id) => id !== productId
-                                  );
+                                  const newProducts = (
+                                    field.value || []
+                                  ).filter((id) => id !== productId);
                                   field.onChange(newProducts);
                                 }}
                               >

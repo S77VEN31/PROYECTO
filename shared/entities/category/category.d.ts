@@ -97,6 +97,9 @@ export declare type CategoryUpdate = Partial<{
   displayOrder: number;
   products: string[];
   variant: CategoryVariant;
+  active: boolean;
+  slug: string;
+  searchTerm: string;
 }>;
 
 /**
