@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -36,6 +37,7 @@ import {
 } from "@/lib/utils";
 import {
   GetPromotionsRequestParams,
+  PaginatedResponse,
   Promotion,
   PromotionCreate,
   PromotionType,
@@ -60,7 +62,7 @@ import { EditPromotionDialog } from "./edit-promotion-dialog";
  * Promotion management table props
  */
 interface PromotionManagementTableProps {
-  promotions: Promotion[];
+  promotionsData: PaginatedResponse<Promotion> | null;
   isLoading: boolean;
   error: string | null;
   filters: GetPromotionsRequestParams;
@@ -111,7 +113,7 @@ function getPromotionStatus(promotion: Promotion) {
  * @returns JSX element
  */
 export function PromotionManagementTable({
-  promotions,
+  promotionsData,
   isLoading,
   error,
   filters,
@@ -120,13 +122,22 @@ export function PromotionManagementTable({
   onPromotionDeleted,
   onRefresh,
 }: PromotionManagementTableProps): React.JSX.Element {
-  console.log("PromotionManagementTable - promotions:", promotions);
-  console.log(
-    "PromotionManagementTable - promotions.length:",
-    promotions.length
-  );
+  console.log("PromotionManagementTable - promotionsData:", promotionsData);
   console.log("PromotionManagementTable - isLoading:", isLoading);
   console.log("PromotionManagementTable - error:", error);
+
+  // Extract promotions and pagination info
+  const promotions = promotionsData?.data || [];
+  const totalItems = promotionsData?.total || 0;
+  const currentPage =
+    typeof promotionsData?.page === "string"
+      ? parseInt(promotionsData.page, 10)
+      : promotionsData?.page || 1;
+  const totalPages = promotionsData?.pages || 1;
+  const itemsPerPage =
+    typeof promotionsData?.limit === "string"
+      ? parseInt(promotionsData.limit, 10)
+      : promotionsData?.limit || 10;
 
   // State for dialogs and loading
   const [searchTerm, setSearchTerm] = useState(filters.search || "");
@@ -197,6 +208,16 @@ export function PromotionManagementTable({
       ...filters,
       active: activeValue,
       page: 1, // Reset to first page when filtering
+    });
+  };
+
+  /**
+   * Handle page change
+   */
+  const handlePageChange = (page: number) => {
+    onFiltersChange({
+      ...filters,
+      page,
     });
   };
 
@@ -486,6 +507,19 @@ export function PromotionManagementTable({
             </TableBody>
           </Table>
         </div>
+
+        {/* Pagination */}
+        {!isLoading && totalItems > 0 && (
+          <div className="border-t p-4">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
       </AdminCard>
 
       {/* Edit Promotion Dialog */}

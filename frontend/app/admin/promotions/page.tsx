@@ -4,7 +4,11 @@ import { PromotionApiService } from "@/api/entities/promotion.api";
 import { AdminPageLayout } from "@/components/admin/admin-page-layout";
 import { AdminSectionHeader } from "@/components/admin/admin-section-header";
 import { Button } from "@/components/ui/button";
-import { GetPromotionsRequestParams, Promotion } from "colori-platform-shared";
+import {
+  GetPromotionsRequestParams,
+  PaginatedResponse,
+  Promotion,
+} from "colori-platform-shared";
 import { Percent, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -14,7 +18,8 @@ import {
 } from "../../../components/admin/promotions";
 
 export default function PromotionsManagementPage() {
-  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [promotionsData, setPromotionsData] =
+    useState<PaginatedResponse<Promotion> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -40,8 +45,7 @@ export default function PromotionsManagementPage() {
 
       console.log("Promotions response:", response);
       if (response) {
-        console.log("Promotions data:", response.data);
-        setPromotions(response.data || []);
+        setPromotionsData(response);
       }
     } catch (err) {
       setError(
@@ -56,8 +60,9 @@ export default function PromotionsManagementPage() {
   /**
    * Handle promotion creation
    */
-  const handlePromotionCreated = (newPromotion: Promotion) => {
-    setPromotions((prev) => [newPromotion, ...prev]);
+  const handlePromotionCreated = () => {
+    // Refresh the data to get updated pagination
+    loadPromotions();
     setIsCreateDialogOpen(false);
   };
 
@@ -65,20 +70,23 @@ export default function PromotionsManagementPage() {
    * Handle promotion update
    */
   const handlePromotionUpdated = (updatedPromotion: Promotion) => {
-    setPromotions((prev) =>
-      prev.map((promotion) =>
-        promotion.id === updatedPromotion.id ? updatedPromotion : promotion
-      )
-    );
+    if (promotionsData) {
+      const updatedData = {
+        ...promotionsData,
+        data: promotionsData.data.map((promotion) =>
+          promotion.id === updatedPromotion.id ? updatedPromotion : promotion
+        ),
+      };
+      setPromotionsData(updatedData);
+    }
   };
 
   /**
    * Handle promotion deletion
    */
-  const handlePromotionDeleted = (promotionId: string) => {
-    setPromotions((prev) =>
-      prev.filter((promotion) => promotion.id !== promotionId)
-    );
+  const handlePromotionDeleted = () => {
+    // Refresh the data to get updated pagination
+    loadPromotions();
   };
 
   /**
@@ -93,9 +101,10 @@ export default function PromotionsManagementPage() {
     loadPromotions();
   }, [filters]);
 
-  // Calculate promotion statistics
+  // Calculate promotion statistics from current data
+  const promotions = promotionsData?.data || [];
   const promotionStats = {
-    total: promotions.length,
+    total: promotionsData?.total || 0,
     active: promotions.filter(
       (promotion) => "active" in promotion && promotion.active === true
     ).length,
@@ -155,7 +164,7 @@ export default function PromotionsManagementPage() {
         </div>
 
         <PromotionManagementTable
-          promotions={promotions}
+          promotionsData={promotionsData}
           isLoading={isLoading}
           error={error}
           filters={filters}

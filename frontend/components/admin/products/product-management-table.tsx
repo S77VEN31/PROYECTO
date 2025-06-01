@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -41,6 +42,7 @@ import {
 import {
   Category,
   GetProductsRequestParams,
+  PaginatedResponse,
   Product,
   UpdateProductRequestBody,
 } from "colori-platform-shared";
@@ -62,7 +64,7 @@ import { EditProductDialog } from "./edit-product-dialog";
  * Product management table props
  */
 interface ProductManagementTableProps {
-  products: Product[];
+  productsData: PaginatedResponse<Product> | null;
   isLoading: boolean;
   error: string | null;
   filters: GetProductsRequestParams;
@@ -78,7 +80,7 @@ interface ProductManagementTableProps {
  * @returns JSX element
  */
 export function ProductManagementTable({
-  products,
+  productsData,
   isLoading,
   error,
   filters,
@@ -87,10 +89,22 @@ export function ProductManagementTable({
   onProductDeleted,
   onRefresh,
 }: ProductManagementTableProps): React.JSX.Element {
-  console.log("ProductManagementTable - products:", products);
-  console.log("ProductManagementTable - products.length:", products.length);
+  console.log("ProductManagementTable - productsData:", productsData);
   console.log("ProductManagementTable - isLoading:", isLoading);
   console.log("ProductManagementTable - error:", error);
+
+  // Extract products and pagination info
+  const products = productsData?.data || [];
+  const totalItems = productsData?.total || 0;
+  const currentPage =
+    typeof productsData?.page === "string"
+      ? parseInt(productsData.page, 10)
+      : productsData?.page || 1;
+  const totalPages = productsData?.pages || 1;
+  const itemsPerPage =
+    typeof productsData?.limit === "string"
+      ? parseInt(productsData.limit, 10)
+      : productsData?.limit || 10;
 
   // State for dialogs and loading
   const [searchTerm, setSearchTerm] = useState(filters.search || "");
@@ -173,6 +187,16 @@ export function ProductManagementTable({
       ...filters,
       category: category === "all" ? undefined : category,
       page: 1, // Reset to first page when filtering
+    });
+  };
+
+  /**
+   * Handle page change
+   */
+  const handlePageChange = (page: number) => {
+    onFiltersChange({
+      ...filters,
+      page,
     });
   };
 
@@ -436,6 +460,19 @@ export function ProductManagementTable({
             </TableBody>
           </Table>
         </div>
+
+        {/* Pagination */}
+        {!isLoading && totalItems > 0 && (
+          <div className="border-t p-4">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
       </AdminCard>
 
       {/* Edit Product Dialog */}

@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -43,6 +44,7 @@ import {
   Category,
   CategoryVariant,
   GetCategoriesRequestParams,
+  PaginatedResponse,
   UpdateCategoryRequestBody,
 } from "colori-platform-shared";
 import {
@@ -63,7 +65,7 @@ import { EditCategoryDialog } from "./edit-category-dialog";
  * Category management table props
  */
 interface CategoryManagementTableProps {
-  categories: Category[];
+  categoriesData: PaginatedResponse<Category> | null;
   isLoading: boolean;
   error: string | null;
   filters: GetCategoriesRequestParams;
@@ -79,7 +81,7 @@ interface CategoryManagementTableProps {
  * @returns JSX element
  */
 export function CategoryManagementTable({
-  categories,
+  categoriesData,
   isLoading,
   error,
   filters,
@@ -88,13 +90,22 @@ export function CategoryManagementTable({
   onCategoryDeleted,
   onRefresh,
 }: CategoryManagementTableProps): React.JSX.Element {
-  console.log("CategoryManagementTable - categories:", categories);
-  console.log(
-    "CategoryManagementTable - categories.length:",
-    categories.length
-  );
+  console.log("CategoryManagementTable - categoriesData:", categoriesData);
   console.log("CategoryManagementTable - isLoading:", isLoading);
   console.log("CategoryManagementTable - error:", error);
+
+  // Extract categories and pagination info
+  const categories = categoriesData?.data || [];
+  const totalItems = categoriesData?.total || 0;
+  const currentPage =
+    typeof categoriesData?.page === "string"
+      ? parseInt(categoriesData.page, 10)
+      : categoriesData?.page || 1;
+  const totalPages = categoriesData?.pages || 1;
+  const itemsPerPage =
+    typeof categoriesData?.limit === "string"
+      ? parseInt(categoriesData.limit, 10)
+      : categoriesData?.limit || 10;
 
   // State for dialogs and loading
   const [searchTerm, setSearchTerm] = useState(filters.search || "");
@@ -150,6 +161,16 @@ export function CategoryManagementTable({
       ...filters,
       variant: variant === "all" ? undefined : variant,
       page: 1, // Reset to first page when filtering
+    });
+  };
+
+  /**
+   * Handle page change
+   */
+  const handlePageChange = (page: number) => {
+    onFiltersChange({
+      ...filters,
+      page,
     });
   };
 
@@ -386,6 +407,19 @@ export function CategoryManagementTable({
             </TableBody>
           </Table>
         </div>
+
+        {/* Pagination */}
+        {!isLoading && totalItems > 0 && (
+          <div className="border-t p-4">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
       </AdminCard>
 
       {/* Edit Category Dialog */}

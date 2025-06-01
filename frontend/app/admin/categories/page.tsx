@@ -9,12 +9,17 @@ import {
   CreateCategoryDialog,
 } from "@/components/admin/categories";
 import { Button } from "@/components/ui/button";
-import { Category, GetCategoriesRequestParams } from "colori-platform-shared";
+import {
+  Category,
+  GetCategoriesRequestParams,
+  PaginatedResponse,
+} from "colori-platform-shared";
 import { FolderOpen, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function CategoriesManagementPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesData, setCategoriesData] =
+    useState<PaginatedResponse<Category> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -39,8 +44,7 @@ export default function CategoriesManagementPage() {
 
       console.log("Categories response:", response);
       if (response) {
-        console.log("Categories data:", response.data);
-        setCategories((response.data || []) as Category[]);
+        setCategoriesData(response);
       }
     } catch (err) {
       setError(
@@ -55,8 +59,9 @@ export default function CategoriesManagementPage() {
   /**
    * Handle category creation
    */
-  const handleCategoryCreated = (newCategory: Category) => {
-    setCategories((prev) => [newCategory, ...prev]);
+  const handleCategoryCreated = () => {
+    // Refresh the data to get updated pagination
+    loadCategories();
     setIsCreateDialogOpen(false);
   };
 
@@ -64,20 +69,23 @@ export default function CategoriesManagementPage() {
    * Handle category update
    */
   const handleCategoryUpdated = (updatedCategory: Category) => {
-    setCategories((prev) =>
-      prev.map((category) =>
-        category.id === updatedCategory.id ? updatedCategory : category
-      )
-    );
+    if (categoriesData) {
+      const updatedData = {
+        ...categoriesData,
+        data: categoriesData.data.map((category) =>
+          category.id === updatedCategory.id ? updatedCategory : category
+        ),
+      };
+      setCategoriesData(updatedData);
+    }
   };
 
   /**
    * Handle category deletion
    */
-  const handleCategoryDeleted = (categoryId: string) => {
-    setCategories((prev) =>
-      prev.filter((category) => category.id !== categoryId)
-    );
+  const handleCategoryDeleted = () => {
+    // Refresh the data to get updated pagination
+    loadCategories();
   };
 
   /**
@@ -92,9 +100,10 @@ export default function CategoriesManagementPage() {
     loadCategories();
   }, [filters]);
 
-  // Calculate category statistics
+  // Calculate category statistics from current data
+  const categories = categoriesData?.data || [];
   const categoryStats = {
-    total: categories.length,
+    total: categoriesData?.total || 0,
     active: categories.filter(
       (category) => "active" in category && category.active === true
     ).length,
@@ -157,7 +166,7 @@ export default function CategoriesManagementPage() {
         </div>
 
         <CategoryManagementTable
-          categories={categories}
+          categoriesData={categoriesData}
           isLoading={isLoading}
           error={error}
           filters={filters}

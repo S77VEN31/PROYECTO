@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -39,7 +40,12 @@ import {
   getStatusDisplayText,
   getToggleStatusActionText,
 } from "@/lib/utils";
-import { GetUsersRequestParams, User, UserRole } from "colori-platform-shared";
+import {
+  GetUsersRequestParams,
+  PaginatedResponse,
+  User,
+  UserRole,
+} from "colori-platform-shared";
 import {
   Calendar,
   Edit,
@@ -58,7 +64,7 @@ import { EditUserDialog } from "./edit-user-dialog";
  * User management table props
  */
 interface UserManagementTableProps {
-  users: User[];
+  usersData: PaginatedResponse<User> | null;
   isLoading: boolean;
   error: string | null;
   filters: GetUsersRequestParams;
@@ -74,7 +80,7 @@ interface UserManagementTableProps {
  * @returns JSX element
  */
 export function UserManagementTable({
-  users,
+  usersData,
   isLoading,
   error,
   filters,
@@ -83,10 +89,22 @@ export function UserManagementTable({
   onUserDeleted,
   onRefresh,
 }: UserManagementTableProps): React.JSX.Element {
-  console.log("UserManagementTable - users:", users);
-  console.log("UserManagementTable - users.length:", users.length);
+  console.log("UserManagementTable - usersData:", usersData);
   console.log("UserManagementTable - isLoading:", isLoading);
   console.log("UserManagementTable - error:", error);
+
+  // Extract users and pagination info
+  const users = usersData?.data || [];
+  const totalItems = usersData?.total || 0;
+  const currentPage =
+    typeof usersData?.page === "string"
+      ? parseInt(usersData.page, 10)
+      : usersData?.page || 1;
+  const totalPages = usersData?.pages || 1;
+  const itemsPerPage =
+    typeof usersData?.limit === "string"
+      ? parseInt(usersData.limit, 10)
+      : usersData?.limit || 10;
 
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
@@ -112,6 +130,16 @@ export function UserManagementTable({
       ...filters,
       role: role === "all" ? undefined : role,
       page: 1, // Reset to first page when filtering
+    });
+  };
+
+  /**
+   * Handle page change
+   */
+  const handlePageChange = (page: number) => {
+    onFiltersChange({
+      ...filters,
+      page,
     });
   };
 
@@ -375,6 +403,19 @@ export function UserManagementTable({
             </TableBody>
           </Table>
         </div>
+
+        {/* Pagination */}
+        {!isLoading && totalItems > 0 && (
+          <div className="border-t p-4">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
       </AdminCard>
 
       {/* Edit User Dialog */}

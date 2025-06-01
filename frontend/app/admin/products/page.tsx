@@ -9,12 +9,17 @@ import {
   ProductStats,
 } from "@/components/admin/products";
 import { Button } from "@/components/ui/button";
-import { GetProductsRequestParams, Product } from "colori-platform-shared";
+import {
+  GetProductsRequestParams,
+  PaginatedResponse,
+  Product,
+} from "colori-platform-shared";
 import { Package, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ProductsManagementPage() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [productsData, setProductsData] =
+    useState<PaginatedResponse<Product> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -42,8 +47,7 @@ export default function ProductsManagementPage() {
 
       console.log("Products response:", response);
       if (response) {
-        console.log("Products data:", response.data);
-        setProducts((response.data || []) as Product[]);
+        setProductsData(response);
       }
     } catch (err) {
       setError(
@@ -58,8 +62,9 @@ export default function ProductsManagementPage() {
   /**
    * Handle product creation
    */
-  const handleProductCreated = (newProduct: Product) => {
-    setProducts((prev) => [newProduct, ...prev]);
+  const handleProductCreated = () => {
+    // Refresh the data to get updated pagination
+    loadProducts();
     setIsCreateDialogOpen(false);
   };
 
@@ -67,18 +72,23 @@ export default function ProductsManagementPage() {
    * Handle product update
    */
   const handleProductUpdated = (updatedProduct: Product) => {
-    setProducts((prev) =>
-      prev.map((product) =>
-        product.id === updatedProduct.id ? updatedProduct : product
-      )
-    );
+    if (productsData) {
+      const updatedData = {
+        ...productsData,
+        data: productsData.data.map((product) =>
+          product.id === updatedProduct.id ? updatedProduct : product
+        ),
+      };
+      setProductsData(updatedData);
+    }
   };
 
   /**
    * Handle product deletion
    */
-  const handleProductDeleted = (productId: string) => {
-    setProducts((prev) => prev.filter((product) => product.id !== productId));
+  const handleProductDeleted = () => {
+    // Refresh the data to get updated pagination
+    loadProducts();
   };
 
   /**
@@ -93,9 +103,10 @@ export default function ProductsManagementPage() {
     loadProducts();
   }, [filters]);
 
-  // Calculate product statistics
+  // Calculate product statistics from current data
+  const products = productsData?.data || [];
   const productStats = {
-    total: products.length,
+    total: productsData?.total || 0,
     active: products.filter(
       (product) => "active" in product && product.active === true
     ).length,
@@ -155,7 +166,7 @@ export default function ProductsManagementPage() {
         </div>
 
         <ProductManagementTable
-          products={products}
+          productsData={productsData}
           isLoading={isLoading}
           error={error}
           filters={filters}

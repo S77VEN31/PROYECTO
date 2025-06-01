@@ -7,12 +7,18 @@ import { CreateUserDialog } from "@/components/admin/users/create-user-dialog";
 import { UserManagementTable } from "@/components/admin/users/user-management-table";
 import { UserStats } from "@/components/admin/users/user-stats";
 import { Button } from "@/components/ui/button";
-import { GetUsersRequestParams, User } from "colori-platform-shared";
+import {
+  GetUsersRequestParams,
+  PaginatedResponse,
+  User,
+} from "colori-platform-shared";
 import { UserPlus, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function UsersManagementPage() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [usersData, setUsersData] = useState<PaginatedResponse<User> | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -36,8 +42,9 @@ export default function UsersManagementPage() {
       });
 
       console.log("Users response:", response);
-      console.log("Users data:", response.data);
-      setUsers(response.data || []);
+      if (response) {
+        setUsersData(response);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al cargar usuarios");
       console.error("Error loading users:", err);
@@ -49,8 +56,9 @@ export default function UsersManagementPage() {
   /**
    * Handle user creation
    */
-  const handleUserCreated = (newUser: User) => {
-    setUsers((prev) => [newUser, ...prev]);
+  const handleUserCreated = () => {
+    // Refresh the data to get updated pagination
+    loadUsers();
     setIsCreateDialogOpen(false);
   };
 
@@ -58,16 +66,23 @@ export default function UsersManagementPage() {
    * Handle user update
    */
   const handleUserUpdated = (updatedUser: User) => {
-    setUsers((prev) =>
-      prev.map((user) => (user.id === updatedUser.id ? updatedUser : user))
-    );
+    if (usersData) {
+      const updatedData = {
+        ...usersData,
+        data: usersData.data.map((user) =>
+          user.id === updatedUser.id ? updatedUser : user
+        ),
+      };
+      setUsersData(updatedData);
+    }
   };
 
   /**
    * Handle user deletion
    */
-  const handleUserDeleted = (userId: string) => {
-    setUsers((prev) => prev.filter((user) => user.id !== userId));
+  const handleUserDeleted = () => {
+    // Refresh the data to get updated pagination
+    loadUsers();
   };
 
   /**
@@ -82,9 +97,10 @@ export default function UsersManagementPage() {
     loadUsers();
   }, [filters]);
 
-  // Calculate user statistics
+  // Calculate user statistics from current data
+  const users = usersData?.data || [];
   const userStats = {
-    total: users.length,
+    total: usersData?.total || 0,
     admins: users.filter((user) => "role" in user && user.role === "admin")
       .length,
     managers: users.filter((user) => "role" in user && user.role === "manager")
@@ -135,7 +151,7 @@ export default function UsersManagementPage() {
         </div>
 
         <UserManagementTable
-          users={users}
+          usersData={usersData}
           isLoading={isLoading}
           error={error}
           filters={filters}
