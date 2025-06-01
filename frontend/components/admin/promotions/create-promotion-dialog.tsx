@@ -17,6 +17,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { DateTimePicker } from "@/components/ui/datetime-picker";
 import {
   Dialog,
   DialogContent,
@@ -180,7 +181,7 @@ export function CreatePromotionDialog({
         }
       }
 
-      // Validate dates
+      // Additional client-side validation for dates
       const startDate = new Date(data.startDate);
       const endDate = new Date(data.endDate);
 
@@ -192,11 +193,7 @@ export function CreatePromotionDialog({
         return;
       }
 
-      const promotionData: CreatePromotionRequestBody = {
-        ...data,
-        startDate: new Date(data.startDate).toISOString(),
-        endDate: new Date(data.endDate).toISOString(),
-      };
+      const promotionData: CreatePromotionRequestBody = data;
 
       const newPromotion = await PromotionApiService.createPromotion(
         promotionData
@@ -387,7 +384,16 @@ export function CreatePromotionDialog({
                     <FormItem>
                       <FormLabel>Fecha de Inicio</FormLabel>
                       <FormControl>
-                        <Input type="datetime-local" {...field} />
+                        <DateTimePicker
+                          value={
+                            field.value ? new Date(field.value) : undefined
+                          }
+                          onChange={(date) =>
+                            field.onChange(date?.toISOString())
+                          }
+                          placeholder="Selecciona fecha y hora de inicio"
+                          minDate={new Date()}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -397,15 +403,31 @@ export function CreatePromotionDialog({
                 <FormField
                   control={form.control}
                   name="endDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Fecha de Fin</FormLabel>
-                      <FormControl>
-                        <Input type="datetime-local" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const startDateValue = form.watch("startDate");
+                    const minEndDate = startDateValue
+                      ? new Date(startDateValue)
+                      : new Date();
+
+                    return (
+                      <FormItem>
+                        <FormLabel>Fecha de Fin</FormLabel>
+                        <FormControl>
+                          <DateTimePicker
+                            value={
+                              field.value ? new Date(field.value) : undefined
+                            }
+                            onChange={(date) =>
+                              field.onChange(date?.toISOString())
+                            }
+                            placeholder="Selecciona fecha y hora de fin"
+                            minDate={minEndDate}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
             </div>

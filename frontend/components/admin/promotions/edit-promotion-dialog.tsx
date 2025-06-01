@@ -12,6 +12,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { DateTimePicker } from "@/components/ui/datetime-picker";
 import {
   Dialog,
   DialogContent,
@@ -153,12 +154,8 @@ export function EditPromotionDialog({
         name: promotionData.name || "",
         description: promotionData.description || "",
         type: promotionData.type,
-        startDate: promotionData.startDate
-          ? new Date(promotionData.startDate).toISOString().slice(0, 16)
-          : "",
-        endDate: promotionData.endDate
-          ? new Date(promotionData.endDate).toISOString().slice(0, 16)
-          : "",
+        startDate: promotionData.startDate || "",
+        endDate: promotionData.endDate || "",
         code: promotionData.code || "",
         discountValue: promotionData.discountValue || undefined,
         discountPercent: promotionData.discountPercent || undefined,
@@ -192,7 +189,7 @@ export function EditPromotionDialog({
         }
       }
 
-      // Validate dates
+      // Additional client-side validation for dates
       if (data.startDate && data.endDate) {
         const startDate = new Date(data.startDate);
         const endDate = new Date(data.endDate);
@@ -206,15 +203,7 @@ export function EditPromotionDialog({
         }
       }
 
-      const updateData: UpdatePromotionRequestBody = {
-        ...data,
-        startDate: data.startDate
-          ? new Date(data.startDate).toISOString()
-          : undefined,
-        endDate: data.endDate
-          ? new Date(data.endDate).toISOString()
-          : undefined,
-      };
+      const updateData: UpdatePromotionRequestBody = data;
 
       const updatedPromotion = await PromotionApiService.updatePromotion(
         { id: promotion.id },
@@ -405,7 +394,15 @@ export function EditPromotionDialog({
                     <FormItem>
                       <FormLabel>Fecha de Inicio</FormLabel>
                       <FormControl>
-                        <Input type="datetime-local" {...field} />
+                        <DateTimePicker
+                          value={
+                            field.value ? new Date(field.value) : undefined
+                          }
+                          onChange={(date) =>
+                            field.onChange(date?.toISOString())
+                          }
+                          placeholder="Selecciona fecha y hora de inicio"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -415,15 +412,32 @@ export function EditPromotionDialog({
                 <FormField
                   control={form.control}
                   name="endDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Fecha de Fin</FormLabel>
-                      <FormControl>
-                        <Input type="datetime-local" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const startDateValue = form.watch("startDate");
+                    // For edit dialog, only enforce that endDate > startDate if startDate is provided
+                    const minEndDate = startDateValue
+                      ? new Date(startDateValue)
+                      : undefined;
+
+                    return (
+                      <FormItem>
+                        <FormLabel>Fecha de Fin</FormLabel>
+                        <FormControl>
+                          <DateTimePicker
+                            value={
+                              field.value ? new Date(field.value) : undefined
+                            }
+                            onChange={(date) =>
+                              field.onChange(date?.toISOString())
+                            }
+                            placeholder="Selecciona fecha y hora de fin"
+                            minDate={minEndDate}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
             </div>

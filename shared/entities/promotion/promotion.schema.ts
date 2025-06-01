@@ -51,44 +51,74 @@ export const PromotionSchema = PromotionBaseSchema.extend({
 /**
  * Schema for promotion creation
  */
-export const PromotionCreateSchema = z.object({
-  name: z.string().min(1).max(100),
-  description: z.string().min(1),
-  type: z.nativeEnum(PromotionType),
-  startDate: z.string().datetime(),
-  endDate: z.string().datetime(),
-  code: z.string().optional(),
-  discountValue: z.number().nonnegative().optional(),
-  discountPercent: z.number().min(0).max(100).optional(),
-  minimumPurchase: z.number().nonnegative().optional(),
-  usageLimit: z.number().int().nonnegative().optional(),
-  applicableProducts: OptionalMongoIdArraySchema,
-  applicableCategories: OptionalMongoIdArraySchema,
-  slug: z.string().optional(),
-  backgroundImages: z.array(ImageSchema).optional(),
-  active: z.boolean().optional(),
-}) satisfies z.ZodType<PromotionCreate>;
+export const PromotionCreateSchema = z
+  .object({
+    name: z.string().min(1).max(100),
+    description: z.string().min(1),
+    type: z.nativeEnum(PromotionType),
+    startDate: z.string().datetime(),
+    endDate: z.string().datetime(),
+    code: z.string().optional(),
+    discountValue: z.number().nonnegative().optional(),
+    discountPercent: z.number().min(0).max(100).optional(),
+    minimumPurchase: z.number().nonnegative().optional(),
+    usageLimit: z.number().int().nonnegative().optional(),
+    applicableProducts: OptionalMongoIdArraySchema,
+    applicableCategories: OptionalMongoIdArraySchema,
+    slug: z.string().optional(),
+    searchTerm: z.string().optional(),
+    backgroundImages: z.array(ImageSchema).optional(),
+    active: z.boolean().optional(),
+  })
+  .refine(
+    (data) => {
+      const startDate = new Date(data.startDate);
+      const endDate = new Date(data.endDate);
+      return endDate > startDate;
+    },
+    {
+      message: "La fecha de fin debe ser posterior a la fecha de inicio",
+      path: ["endDate"],
+    }
+  ) satisfies z.ZodType<PromotionCreate>;
 
 /**
  * Schema for promotion updates
  */
-export const PromotionUpdateSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
-  description: z.string().min(1).optional(),
-  type: z.nativeEnum(PromotionType).optional(),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
-  code: z.string().optional(),
-  discountValue: z.number().nonnegative().optional(),
-  discountPercent: z.number().min(0).max(100).optional(),
-  minimumPurchase: z.number().nonnegative().optional(),
-  usageLimit: z.number().int().nonnegative().optional(),
-  applicableProducts: OptionalMongoIdArraySchema,
-  applicableCategories: OptionalMongoIdArraySchema,
-  slug: z.string().optional(),
-  backgroundImages: z.array(ImageSchema).optional(),
-  active: z.boolean().optional(),
-}) satisfies z.ZodType<PromotionUpdate>;
+export const PromotionUpdateSchema = z
+  .object({
+    name: z.string().min(1).max(100).optional(),
+    description: z.string().min(1).optional(),
+    type: z.nativeEnum(PromotionType).optional(),
+    startDate: z.string().datetime().optional(),
+    endDate: z.string().datetime().optional(),
+    code: z.string().optional(),
+    discountValue: z.number().nonnegative().optional(),
+    discountPercent: z.number().min(0).max(100).optional(),
+    minimumPurchase: z.number().nonnegative().optional(),
+    usageLimit: z.number().int().nonnegative().optional(),
+    applicableProducts: OptionalMongoIdArraySchema,
+    applicableCategories: OptionalMongoIdArraySchema,
+    slug: z.string().optional(),
+    searchTerm: z.string().optional(),
+    backgroundImages: z.array(ImageSchema).optional(),
+    active: z.boolean().optional(),
+  })
+  .refine(
+    (data) => {
+      // Only validate if both dates are provided
+      if (data.startDate && data.endDate) {
+        const startDate = new Date(data.startDate);
+        const endDate = new Date(data.endDate);
+        return endDate > startDate;
+      }
+      return true;
+    },
+    {
+      message: "La fecha de fin debe ser posterior a la fecha de inicio",
+      path: ["endDate"],
+    }
+  ) satisfies z.ZodType<PromotionUpdate>;
 
 /**
  * Promotion request validation schemas
