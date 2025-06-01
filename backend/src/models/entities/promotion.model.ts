@@ -3,54 +3,31 @@
  * Defines the schema and model for promotion entities
  */
 
-import mongoose, { Schema, Document } from "mongoose";
-import { PromotionType } from "colori-platform-shared";
+import { addSlugGenerationMiddleware } from "@middlewares";
+import {
+  IBaseDocument,
+  baseEntitySchemaFields,
+  baseEntitySchemaOptions,
+} from "@models";
+import { PromotionCreate, PromotionType } from "colori-platform-shared";
+import mongoose, { Schema } from "mongoose";
 
 /**
- * Promotion document interface for MongoDB
+ * Promotion document interface that extends IBaseDocument with PromotionCreate fields
+ * @interface PromotionDocument
  */
-export interface IPromotionDocument extends Document {
-  name: string;
-  description: string;
-  slug: string;
-  type: PromotionType;
-  startDate: string;
-  endDate: string;
-  code?: string;
-  discountValue?: number;
-  discountPercent?: number;
-  minimumPurchase?: number;
-  usageLimit?: number;
-  applicableProducts?: string[];
-  applicableCategories?: string[];
-  active: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
+interface PromotionDocument
+  extends IBaseDocument,
+    Omit<PromotionCreate, keyof IBaseDocument> {}
 
 /**
- * Promotion MongoDB schema
+ * Schema for promotion model using PromotionCreate type from shared repository
+ * @const promotionSchema
  */
-const PromotionSchema = new Schema<IPromotionDocument>(
+const promotionSchema = new Schema<PromotionDocument>(
   {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 100,
-    },
-    description: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
+    ...baseEntitySchemaFields,
+    // Required fields from PromotionCreate
     type: {
       type: String,
       enum: Object.values(PromotionType),
@@ -64,6 +41,7 @@ const PromotionSchema = new Schema<IPromotionDocument>(
       type: String,
       required: true,
     },
+    // Optional fields from PromotionCreate
     code: {
       type: String,
       trim: true,
@@ -87,73 +65,72 @@ const PromotionSchema = new Schema<IPromotionDocument>(
       type: Number,
       min: 1,
     },
-    applicableProducts: [{
-      type: String,
-      trim: true,
-    }],
-    applicableCategories: [{
-      type: String,
-      trim: true,
-    }],
-    active: {
-      type: Boolean,
-      default: true,
-    },
+    applicableProducts: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    applicableCategories: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
   },
-  {
-    timestamps: true,
-    collection: "promotions",
-  }
+  baseEntitySchemaOptions
 );
 
 /**
  * Indexes for better query performance
  */
-PromotionSchema.index({ name: 1 });
-PromotionSchema.index({ type: 1 });
-PromotionSchema.index({ active: 1 });
-PromotionSchema.index({ startDate: 1, endDate: 1 });
-PromotionSchema.index({ code: 1 }, { sparse: true });
-PromotionSchema.index({ slug: 1 }, { unique: true });
+promotionSchema.index({ name: 1 });
+promotionSchema.index({ type: 1 });
+promotionSchema.index({ active: 1 });
+promotionSchema.index({ startDate: 1, endDate: 1 });
+promotionSchema.index({ code: 1 }, { sparse: true });
+promotionSchema.index({ slug: 1 }, { unique: true });
 
 /**
- * Pre-save middleware to generate slug if not provided
+ * Add middleware for automatic slug generation
  */
-PromotionSchema.pre("save", function (next) {
-  if (!this.slug && this.name) {
-    this.slug = this.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-  }
-  next();
-});
+addSlugGenerationMiddleware(promotionSchema as any);
 
 /**
  * Validation for discount configuration
  */
-PromotionSchema.pre("save", function (next) {
+promotionSchema.pre("save", function (next) {
   // Only require discount for DISCOUNT type promotions
   if (this.type === PromotionType.DISCOUNT) {
     if (!this.discountValue && !this.discountPercent) {
-      return next(new Error("Either discountValue or discountPercent must be provided for discount promotions"));
+      return next(
+        new Error(
+          "Either discountValue or discountPercent must be provided for discount promotions"
+        )
+      );
     }
   }
-  
+
   // Ensure dates are valid
   const startDate = new Date(this.startDate);
   const endDate = new Date(this.endDate);
-  
+
   if (endDate <= startDate) {
     return next(new Error("End date must be after start date"));
   }
-  
+
   next();
 });
 
 /**
- * Export the Promotion model
+ * Mongoose model for promotions
+ * @const PromotionModel
  */
-const PromotionModel = mongoose.model<IPromotionDocument>("Promotion", PromotionSchema);
+const PromotionModel = mongoose.model<PromotionDocument>(
+  "Promotion",
+  promotionSchema
+);
 
 export default PromotionModel;
+export type { PromotionDocument };
+

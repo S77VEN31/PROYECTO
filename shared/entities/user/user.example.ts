@@ -23,27 +23,30 @@ const newUserModel: UserCreate = {
 /**
  * Example of a complete user model as stored in the database
  */
-const userModel: User = {
+const userModel = {
   id: "user-123456",
+  // EntityBase fields
   name: "John Smith",
   description: "Café Manager",
+  active: true,
+  createdAt: "2023-07-01T10:00:00Z",
+  updatedAt: "2023-08-15T08:30:00Z",
+  // EntityMetadata fields
+  slug: "john-smith",
+  // UserBase specific fields (excluding password)
   firstName: "John",
   lastName: "Smith",
   email: "john.smith@example.com",
   role: UserRole.MANAGER,
   lastLogin: "2023-08-15T08:30:00Z",
-  slug: "john-smith",
-  active: true,
-  createdAt: "2023-07-01T10:00:00Z",
-  updatedAt: "2023-08-15T08:30:00Z",
-};
+} as User;
 
 /**
  * Example of a user update model
  */
 const userUpdateModel: UserUpdate = {
   role: UserRole.ADMIN,
-  lastLogin: "2023-08-16T09:45:00Z",
+  // Note: lastLogin is not in UserUpdate type, it's typically set by the system
 };
 
 /**
@@ -61,3 +64,4 @@ const serverUserModel: UserCreate = {
 };
 
 export { newUserModel, serverUserModel, userModel, userUpdateModel };
+

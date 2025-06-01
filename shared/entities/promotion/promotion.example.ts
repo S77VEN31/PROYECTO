@@ -36,11 +36,17 @@ const bogoPromotionModel: PromotionCreate = {
 /**
  * Example of a complete promotion model as stored in the database
  */
-const promotionModel: Promotion = {
+const promotionModel = {
   id: "promo-12345",
+  // EntityBase fields
   name: "Weekend Special",
   description: "15% off on all coffee drinks during the weekend",
+  active: true,
+  createdAt: "2023-08-15T14:00:00Z",
+  updatedAt: "2023-08-15T14:00:00Z",
+  // EntityMetadata fields
   slug: "weekend-special",
+  // PromotionBase specific fields
   type: PromotionType.DISCOUNT,
   startDate: "2023-08-18T00:00:00Z",
   endDate: "2023-08-20T23:59:59Z",
@@ -48,10 +54,7 @@ const promotionModel: Promotion = {
   discountPercent: 15,
   minimumPurchase: 10,
   applicableCategories: ["cat-coffee"],
-  active: true,
-  createdAt: "2023-08-15T14:00:00Z",
-  updatedAt: "2023-08-15T14:00:00Z",
-};
+} as Promotion;
 
 /**
  * Example of a promotion update model
@@ -80,3 +83,4 @@ export {
   promotionUpdateModel,
   seasonalPromotionModel,
 };
+

@@ -3,22 +3,22 @@
 import { PromotionApiService } from "@/api/entities/promotion.api";
 import { AdminPageLayout } from "@/components/admin/admin-page-layout";
 import { AdminSectionHeader } from "@/components/admin/admin-section-header";
-import { 
-  CreatePromotionDialog,
-  PromotionManagementTable,
-  PromotionStats
-} from "../../../components/admin/promotions";
 import { Button } from "@/components/ui/button";
-import { GetPromotionsRequest, Promotion } from "colori-platform-shared";
+import { GetPromotionsRequestParams, Promotion } from "colori-platform-shared";
 import { Percent, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import {
+  CreatePromotionDialog,
+  PromotionManagementTable,
+  PromotionStats,
+} from "../../../components/admin/promotions";
 
 export default function PromotionsManagementPage() {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [filters, setFilters] = useState<GetPromotionsRequest>({
+  const [filters, setFilters] = useState<GetPromotionsRequestParams>({
     page: 1,
     limit: 10,
   });
@@ -39,10 +39,14 @@ export default function PromotionsManagementPage() {
       });
 
       console.log("Promotions response:", response);
-      console.log("Promotions data:", response.promotions);
-      setPromotions(response.promotions || []);
+      if (response) {
+        console.log("Promotions data:", response.data);
+        setPromotions(response.data || []);
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al cargar promociones");
+      setError(
+        err instanceof Error ? err.message : "Error al cargar promociones"
+      );
       console.error("Error loading promotions:", err);
     } finally {
       setIsLoading(false);
@@ -62,7 +66,9 @@ export default function PromotionsManagementPage() {
    */
   const handlePromotionUpdated = (updatedPromotion: Promotion) => {
     setPromotions((prev) =>
-      prev.map((promotion) => (promotion.id === updatedPromotion.id ? updatedPromotion : promotion))
+      prev.map((promotion) =>
+        promotion.id === updatedPromotion.id ? updatedPromotion : promotion
+      )
     );
   };
 
@@ -70,13 +76,15 @@ export default function PromotionsManagementPage() {
    * Handle promotion deletion
    */
   const handlePromotionDeleted = (promotionId: string) => {
-    setPromotions((prev) => prev.filter((promotion) => promotion.id !== promotionId));
+    setPromotions((prev) =>
+      prev.filter((promotion) => promotion.id !== promotionId)
+    );
   };
 
   /**
    * Handle filter changes
    */
-  const handleFiltersChange = (newFilters: GetPromotionsRequest) => {
+  const handleFiltersChange = (newFilters: GetPromotionsRequestParams) => {
     setFilters(newFilters);
   };
 
@@ -88,15 +96,25 @@ export default function PromotionsManagementPage() {
   // Calculate promotion statistics
   const promotionStats = {
     total: promotions.length,
-    active: promotions.filter((promotion) => promotion.active === true).length,
-    inactive: promotions.filter((promotion) => promotion.active === false).length,
+    active: promotions.filter(
+      (promotion) => "active" in promotion && promotion.active === true
+    ).length,
+    inactive: promotions.filter(
+      (promotion) => "active" in promotion && promotion.active === false
+    ).length,
     expired: promotions.filter((promotion) => {
-      const endDate = new Date(promotion.endDate);
-      return endDate < new Date();
+      if ("endDate" in promotion && promotion.endDate) {
+        const endDate = new Date(promotion.endDate as string);
+        return endDate < new Date();
+      }
+      return false;
     }).length,
     upcoming: promotions.filter((promotion) => {
-      const startDate = new Date(promotion.startDate);
-      return startDate > new Date();
+      if ("startDate" in promotion && promotion.startDate) {
+        const startDate = new Date(promotion.startDate as string);
+        return startDate > new Date();
+      }
+      return false;
     }).length,
   };
 

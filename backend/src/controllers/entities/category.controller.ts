@@ -5,47 +5,43 @@
 
 import { CategoryService } from "@services";
 import {
-  ApiResponse,
-  CreateCategoryRequest,
-  CreateResponse,
+  CreateCategoryRequestBody,
+  CreateCategoryResponse,
   DeleteCategoryRequestParams,
-  DeleteResponse,
+  DeleteCategoryResponse,
+  GetCategoriesRequestParams,
+  GetCategoriesResponse,
   GetCategoryRequestParams,
-  UpdateCategoryRequest,
+  GetCategoryResponse,
+  UpdateCategoryRequestBody,
   UpdateCategoryRequestParams,
-  UpdateResponse,
+  UpdateCategoryResponse,
 } from "colori-platform-shared";
 import { Request, Response } from "express";
 
 /**
  * Get all categories with optional pagination and filtering
  */
-export const getCategories = async (req: Request, res: Response) => {
+export const getCategories = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
-    const { page = 1, limit = 10, search } = req.query;
+    const filterParams = req.query as GetCategoriesRequestParams;
+    const result = await CategoryService.findAll(filterParams);
 
-    const options = {
-      page: Number(page),
-      limit: Number(limit),
-      search: search as string,
-    };
-
-    const result = await CategoryService.findAll(options);
-
-    return res.status(200).json({
+    const response: GetCategoriesResponse = {
       success: true,
-      categories: result.data,
-      total: result.total,
-      page: result.page,
-      limit: result.limit,
-      pages: result.pages,
-    });
+      data: result,
+    };
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: GetCategoriesResponse = {
       success: false,
       error: "Failed to retrieve categories",
       message: error.message,
-    } as ApiResponse);
+    };
+    return res.status(500).json(response);
   }
 };
 
@@ -53,31 +49,33 @@ export const getCategories = async (req: Request, res: Response) => {
  * Get a single category by ID
  */
 export const getCategoryById = async (
-  req: Request<GetCategoryRequestParams>,
+  req: Request,
   res: Response
-) => {
+): Promise<Response> => {
   try {
-    const { id } = req.params;
-
-    const category = await CategoryService.findById(id);
+    const params = req.params as unknown as GetCategoryRequestParams;
+    const category = await CategoryService.findById(params);
 
     if (!category) {
-      return res.status(404).json({
+      const response: GetCategoryResponse = {
         success: false,
         error: "Category not found",
-      } as ApiResponse);
+      };
+      return res.status(404).json(response);
     }
 
-    return res.status(200).json({
+    const response: GetCategoryResponse = {
       success: true,
       data: category,
-    } as ApiResponse<typeof category>);
+    };
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: GetCategoryResponse = {
       success: false,
       error: "Failed to retrieve category",
       message: error.message,
-    } as ApiResponse);
+    };
+    return res.status(500).json(response);
   }
 };
 
@@ -85,33 +83,36 @@ export const getCategoryById = async (
  * Create a new category
  */
 export const createCategory = async (
-  req: Request<{}, any, CreateCategoryRequest>,
+  req: Request,
   res: Response
-) => {
+): Promise<Response> => {
   try {
-    const { category } = req.body;
+    const categoryData = req.body as CreateCategoryRequestBody;
 
     // Get user ID from authenticated request
     const userId = req.user?.id;
 
-    const categoryData = {
-      ...category,
+    const createData = {
+      ...categoryData,
       createdBy: userId,
     };
 
-    const newCategory = await CategoryService.create(categoryData);
+    const newCategory = await CategoryService.create(createData);
 
-    return res.status(201).json({
+    const response: CreateCategoryResponse = {
       success: true,
       id: newCategory.id,
-      data: category,
-    } as CreateResponse);
+      data: categoryData,
+    };
+    return res.status(201).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: CreateCategoryResponse = {
       success: false,
       error: "Failed to create category",
       message: error.message,
-    } as ApiResponse);
+      id: "",
+    };
+    return res.status(500).json(response);
   }
 };
 
@@ -119,43 +120,48 @@ export const createCategory = async (
  * Update an existing category
  */
 export const updateCategory = async (
-  req: Request<UpdateCategoryRequestParams, any, UpdateCategoryRequest>,
+  req: Request,
   res: Response
-) => {
+): Promise<Response> => {
   try {
-    const { id } = req.params;
-    const { category } = req.body;
+    const params = req.params as unknown as UpdateCategoryRequestParams;
+    const updateData = req.body as UpdateCategoryRequestBody;
 
     // Get user ID from authenticated request
     const userId = req.user?.id;
 
-    const existingCategory = await CategoryService.findById(id);
+    const existingCategory = await CategoryService.findById(params);
 
     if (!existingCategory) {
-      return res.status(404).json({
+      const response: UpdateCategoryResponse = {
         success: false,
         error: "Category not found",
-      } as ApiResponse);
+        updated: false,
+      };
+      return res.status(404).json(response);
     }
 
-    const updateData = {
-      ...category,
+    const updateDataWithUser = {
+      ...updateData,
       updatedBy: userId,
     };
 
-    await CategoryService.update(id, updateData);
+    await CategoryService.update(params, updateDataWithUser);
 
-    return res.status(200).json({
+    const response: UpdateCategoryResponse = {
       success: true,
       updated: true,
-      data: category,
-    } as UpdateResponse);
+      data: updateData,
+    };
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: UpdateCategoryResponse = {
       success: false,
       error: "Failed to update category",
       message: error.message,
-    } as ApiResponse);
+      updated: false,
+    };
+    return res.status(500).json(response);
   }
 };
 
@@ -163,32 +169,37 @@ export const updateCategory = async (
  * Delete a category by ID
  */
 export const deleteCategory = async (
-  req: Request<DeleteCategoryRequestParams>,
+  req: Request,
   res: Response
-) => {
+): Promise<Response> => {
   try {
-    const { id } = req.params;
+    const params = req.params as unknown as DeleteCategoryRequestParams;
 
-    const existingCategory = await CategoryService.findById(id);
+    const existingCategory = await CategoryService.findById(params);
 
     if (!existingCategory) {
-      return res.status(404).json({
+      const response: DeleteCategoryResponse = {
         success: false,
         error: "Category not found",
-      } as ApiResponse);
+        deleted: false,
+      };
+      return res.status(404).json(response);
     }
 
-    await CategoryService.delete(id);
+    await CategoryService.delete(params);
 
-    return res.status(200).json({
+    const response: DeleteCategoryResponse = {
       success: true,
       deleted: true,
-    } as DeleteResponse);
+    };
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: DeleteCategoryResponse = {
       success: false,
       error: "Failed to delete category",
       message: error.message,
-    } as ApiResponse);
+      deleted: false,
+    };
+    return res.status(500).json(response);
   }
 };

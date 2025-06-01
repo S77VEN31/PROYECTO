@@ -3,15 +3,17 @@
  * Handles all promotion-related HTTP endpoints
  */
 
+import {
+  CreatePromotionRequestBodySchema,
+  DeletePromotionRequestParamsSchema,
+  GetPromotionRequestParamsSchema,
+  GetPromotionsRequestParamsSchema,
+  UpdatePromotionRequestBodySchema,
+  UpdatePromotionRequestParamsSchema,
+} from "colori-platform-shared";
 import { Router } from "express";
 import { PromotionController } from "../../controllers/entities/promotion.controller";
 import { validate } from "../../middlewares/validation/validation.middleware";
-import {
-  CreatePromotionRequestSchema,
-  DeletePromotionRequestSchema,
-  GetPromotionRequestSchema,
-  UpdatePromotionRequestSchema,
-} from "colori-platform-shared";
 
 const router = Router();
 
@@ -19,7 +21,11 @@ const router = Router();
  * GET /promotions
  * Get all promotions with optional filtering
  */
-router.get("/", PromotionController.getPromotions);
+router.get(
+  "/",
+  validate(GetPromotionsRequestParamsSchema, "query"),
+  PromotionController.getPromotions
+);
 
 /**
  * GET /promotions/:id
@@ -27,7 +33,7 @@ router.get("/", PromotionController.getPromotions);
  */
 router.get(
   "/:id",
-  validate(GetPromotionRequestSchema, "params"),
+  validate(GetPromotionRequestParamsSchema, "params"),
   PromotionController.getPromotionById
 );
 
@@ -37,7 +43,7 @@ router.get(
  */
 router.post(
   "/",
-  validate(CreatePromotionRequestSchema, "body"),
+  validate(CreatePromotionRequestBodySchema, "body"),
   PromotionController.createPromotion
 );
 
@@ -47,7 +53,8 @@ router.post(
  */
 router.put(
   "/:id",
-  validate(UpdatePromotionRequestSchema, "body"),
+  validate(UpdatePromotionRequestParamsSchema, "params"),
+  validate(UpdatePromotionRequestBodySchema, "body"),
   PromotionController.updatePromotion
 );
 
@@ -57,7 +64,7 @@ router.put(
  */
 router.delete(
   "/:id",
-  validate(DeletePromotionRequestSchema, "params"),
+  validate(DeletePromotionRequestParamsSchema, "params"),
   PromotionController.deletePromotion
 );
 

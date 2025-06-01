@@ -2,7 +2,8 @@
  * Type declarations for Promotion entities
  */
 
-import { EntityBase, EntityMetadata } from "@shared/entities";
+import { Image } from "@shared/common";
+import { ClientEntity, DatabaseEntity, EntityMetadata } from "@shared/entities";
 import { PromotionType } from "@shared/enums";
 
 /**
@@ -34,101 +35,129 @@ export declare interface PromotionBase extends EntityMetadata {
 }
 
 /**
- * Complete promotion representation with unique identifier
+ * Complete promotion representation for client-side (API responses, frontend)
  * @interface Promotion
- * @extends PromotionBase
+ * @extends ClientEntity<PromotionBase>
  * @property {string} id - Unique identifier for the promotion
  */
-export declare interface Promotion extends PromotionBase {
-  id: string;
-}
+export declare interface Promotion extends ClientEntity<PromotionBase> {}
+
+/**
+ * Promotion representation for database operations (backend)
+ * @interface PromotionDocument
+ * @extends DatabaseEntity<PromotionBase>
+ * @property {string} _id - MongoDB ObjectId as string
+ */
+export declare interface PromotionDocument
+  extends DatabaseEntity<PromotionBase> {}
 
 /**
  * Input type for promotion creation operations
  * @type PromotionCreate
  */
-export declare type PromotionCreate = Omit<Partial<Promotion>, "id"> &
-  Pick<EntityBase, "name" | "description">;
+export declare type PromotionCreate = {
+  // Required fields from EntityBase
+  name: string;
+  description: string;
+  // Required promotion-specific fields
+  type: PromotionType;
+  startDate: string;
+  endDate: string;
+  // Optional promotion-specific fields
+  code?: string;
+  discountValue?: number;
+  discountPercent?: number;
+  minimumPurchase?: number;
+  usageLimit?: number;
+  applicableProducts?: string[];
+  applicableCategories?: string[];
+  // Optional EntityBase fields
+  active?: boolean;
+  // Optional EntityMetadata fields
+  slug?: string;
+  searchTerm?: string;
+  backgroundImages?: Image[];
+};
 
 /**
  * Input type for promotion update operations
  * @type PromotionUpdate
  */
-export declare type PromotionUpdate = Omit<Partial<Promotion>, "id">;
+export declare type PromotionUpdate = Partial<{
+  name: string;
+  description: string;
+  type: PromotionType;
+  startDate: string;
+  endDate: string;
+  code: string;
+  discountValue: number;
+  discountPercent: number;
+  minimumPurchase: number;
+  usageLimit: number;
+  applicableProducts: string[];
+  applicableCategories: string[];
+  slug: string;
+  searchTerm: string;
+}>;
 
 /**
  * @fileoverview Promotion API request and response type definitions
  */
 
-import { IdParam, PaginationParams } from "@shared/common";
-import { Promotion, PromotionCreate, PromotionUpdate } from "@shared/entities";
+import {
+  ApiResponse,
+  CreateResponse,
+  DeleteResponse,
+  GetResponse,
+  IdParam,
+  PaginatedResponse,
+  PaginationParams,
+  SearchableParams,
+  UpdateResponse,
+} from "@shared/common";
 
-// GET /promotions
-export interface GetPromotionsRequest extends PaginationParams {
+/**
+ * Promotion filter parameters
+ * @interface PromotionFilterParams
+ * @extends PaginationParams
+ * @extends SearchableParams
+ * @property {boolean} [active] - Filter by active status
+ * @property {string} [type] - Filter by promotion type
+ */
+export interface PromotionFilterParams
+  extends PaginationParams,
+    SearchableParams {
   active?: boolean;
-  search?: string;
   type?: string;
 }
 
-export interface GetPromotionsResponse {
-  promotions: Promotion[];
-  total: number;
-  page: number;
-  limit: number;
-}
+// GET /promotions
+export interface GetPromotionsRequestParams extends PromotionFilterParams {}
 
-// GET /promotions/:id
-export interface GetPromotionRequest extends IdParam {}
+export interface GetPromotionsResponse
+  extends ApiResponse<PaginatedResponse<Promotion>> {}
 
-export interface GetPromotionResponse {
-  promotion: Promotion;
-}
+// GET /promotions/:id - params only
+export interface GetPromotionRequestParams extends IdParam {}
 
-// POST /promotions
-export interface CreatePromotionRequest {
-  promotion: PromotionCreate;
-}
+export interface GetPromotionResponse extends GetResponse<Promotion> {}
 
-export interface CreatePromotionResponse {
-  id: string;
-  promotion: Promotion;
-}
+// POST /promotions - body only (promotion data without nesting)
+export interface CreatePromotionRequestBody extends PromotionCreate {}
 
-// PUT /promotions/:id
-export interface UpdatePromotionRequest extends IdParam {
-  promotion: PromotionUpdate;
-}
+export interface CreatePromotionResponse
+  extends CreateResponse<PromotionCreate> {}
 
-export interface UpdatePromotionResponse {
-  updated: boolean;
-  promotion: Promotion;
-}
+// PUT /promotions/:id - params + body
+export interface UpdatePromotionRequestParams extends IdParam {}
 
-// DELETE /promotions/:id
-export interface DeletePromotionRequest extends IdParam {}
+export interface UpdatePromotionRequestBody extends PromotionUpdate {}
 
-export interface DeletePromotionResponse {
-  deleted: boolean;
-}
+export interface UpdatePromotionResponse
+  extends UpdateResponse<PromotionUpdate> {}
 
-// Request type extensions for Express
-declare global {
-  namespace Express {
-    interface Request<P = any, ResBody = any, ReqBody = any> {
-      params: P;
-    }
-  }
-}
+// DELETE /promotions/:id - params only
+export interface DeletePromotionRequestParams extends IdParam {}
 
-// Express compatible request types
-export type GetPromotionRequestParams = {
-  id: string;
-};
+export interface DeletePromotionResponse extends DeleteResponse<Promotion> {}
 
-export type UpdatePromotionRequestParams = {
-  id: string;
-};
-
-export type DeletePromotionRequestParams = {
-  id: string;
-};

@@ -1,56 +1,79 @@
 "use client";
 
+import { PromotionApiService } from "@/api/entities/promotion.api";
 import { PromotionDetail } from "@/components/promotions/promotion-detail";
 import { Button } from "@/components/ui/button";
-import { mockPromotions } from "@/data/mock/promotions";
+import { Promotion } from "colori-platform-shared";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-interface PromotionDetailPageProps {
-  params: {
-    id: string;
-  };
-}
+export default function PromotionDetailPage() {
+  const params = useParams();
+  const promotionId = params.id as string;
+  const [promotion, setPromotion] = useState<Promotion | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export default function PromotionDetailPage({
-  params,
-}: PromotionDetailPageProps) {
-  // Since the warning states that direct access is still supported in the current version,
-  // we'll keep using it for now, but add a comment to remind us to update in the future
-  const { id } = params;
+  useEffect(() => {
+    const fetchPromotion = async () => {
+      try {
+        setIsLoading(true);
+        const fetchedPromotion = await PromotionApiService.getPromotionById({
+          id: promotionId,
+        });
+        setPromotion(fetchedPromotion);
+      } catch (err) {
+        console.error("Error fetching promotion:", err);
+        setError("Error al cargar la promoción");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // Future implementation would look like:
-  // const unwrappedParams = React.use(params as any);
-  // const { id } = unwrappedParams;
+    if (promotionId) {
+      fetchPromotion();
+    }
+  }, [promotionId]);
 
-  // Buscar la promoción por ID
-  const promotion = mockPromotions.find((promo) => promo.id === id);
-
-  // Si no existe la promoción, redirigir a 404
-  if (!promotion) {
-    notFound();
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">Cargando promoción...</div>
+      </div>
+    );
   }
 
-  // Función para agregar productos al carrito
-  const handleAddToCart = (productId: string) => {
-    console.log(
-      `Añadiendo producto ${productId} al carrito con promoción ${id}`
+  if (error || !promotion) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">
+            {error || "Promoción no encontrada"}
+          </p>
+          <Button asChild>
+            <Link href="/client/category/promotions">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Volver a promociones
+            </Link>
+          </Button>
+        </div>
+      </div>
     );
-    // Aquí implementarías la lógica para agregar al carrito
-  };
+  }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
+    <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
-        <Button asChild variant="ghost" size="sm" className="mb-4">
+        <Button variant="outline" asChild>
           <Link href="/client/category/promotions">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Volver a promociones
           </Link>
         </Button>
       </div>
-      <PromotionDetail promotion={promotion} onAddToCart={handleAddToCart} />
+      <PromotionDetail promotion={promotion} />
     </div>
   );
 }

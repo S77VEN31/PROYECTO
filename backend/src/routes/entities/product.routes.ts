@@ -7,10 +7,12 @@ import {
 } from "@controllers";
 import { authMiddleware, validate } from "@middlewares";
 import {
-  CreateProductRequestSchema,
-  DeleteProductRequestSchema,
-  GetProductRequestSchema,
-  UpdateProductRequestSchema,
+  CreateProductRequestBodySchema,
+  DeleteProductRequestParamsSchema,
+  GetProductRequestParamsSchema,
+  GetProductsRequestParamsSchema,
+  UpdateProductRequestBodySchema,
+  UpdateProductRequestParamsSchema,
 } from "colori-platform-shared";
 import { Router } from "express";
 
@@ -20,21 +22,26 @@ const router = Router();
 router.post(
   "/",
   authMiddleware,
-  validate(CreateProductRequestSchema, "body"),
+  validate(CreateProductRequestBodySchema, "body"),
   createProduct
 );
-router.get("/", getProducts);
-router.get("/:id", validate(GetProductRequestSchema, "params"), getProductById);
+router.get("/", validate(GetProductsRequestParamsSchema, "query"), getProducts);
+router.get(
+  "/:id",
+  validate(GetProductRequestParamsSchema, "params"),
+  getProductById
+);
 router.put(
   "/:id",
   authMiddleware,
-  validate(UpdateProductRequestSchema, "body"),
+  validate(UpdateProductRequestParamsSchema, "params"),
+  validate(UpdateProductRequestBodySchema, "body"),
   updateProduct
 );
 router.delete(
   "/:id",
   authMiddleware,
-  validate(DeleteProductRequestSchema, "params"),
+  validate(DeleteProductRequestParamsSchema, "params"),
   deleteProduct
 );
 

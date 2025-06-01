@@ -1,18 +1,5 @@
 import { Product } from "@/types/products";
 import { mockCategories } from "./categories";
-import { mockPromotions } from "./promotions";
-
-// Función para comprobar si un producto tiene una promoción activa
-const hasActivePromotion = (productId: string): boolean => {
-  const now = new Date();
-  return mockPromotions.some(
-    (promo) =>
-      promo.active &&
-      new Date(promo.startDate) <= now &&
-      new Date(promo.endDate) >= now &&
-      promo.applicableProducts.includes(productId)
-  );
-};
 
 // Función para obtener objetos de categoría a partir de IDs o nombres
 const getCategoriesFromIds = (
@@ -48,7 +35,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 10,
     available: true,
-    isPromo: hasActivePromotion("101") || false,
+    isPromo: false, // Las promociones ahora se manejan desde el API
   },
   {
     id: "103",
@@ -71,7 +58,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 12,
     available: true,
-    isPromo: hasActivePromotion("103") || true,
+    isPromo: false,
   },
   {
     id: "106",
@@ -94,7 +81,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 20,
     available: true,
-    isPromo: hasActivePromotion("106") || true,
+    isPromo: false,
   },
   {
     id: "107",
@@ -117,7 +104,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 10,
     available: true,
-    isPromo: hasActivePromotion("107") || false,
+    isPromo: false,
   },
   {
     id: "110",
@@ -140,7 +127,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 15,
     available: true,
-    isPromo: hasActivePromotion("110") || false,
+    isPromo: false,
   },
   {
     id: "112",
@@ -163,7 +150,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 8,
     available: true,
-    isPromo: hasActivePromotion("112") || false,
+    isPromo: false,
   },
 
   // Platos Principales
@@ -188,7 +175,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 25,
     available: true,
-    isPromo: hasActivePromotion("201") || true,
+    isPromo: false,
   },
   {
     id: "202",
@@ -211,7 +198,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 20,
     available: true,
-    isPromo: hasActivePromotion("202") || false,
+    isPromo: false,
   },
   {
     id: "203",
@@ -234,7 +221,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 30,
     available: true,
-    isPromo: hasActivePromotion("203") || true,
+    isPromo: false,
   },
   {
     id: "204",
@@ -256,7 +243,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 45,
     available: true,
-    isPromo: hasActivePromotion("204") || true,
+    isPromo: false,
   },
   {
     id: "205",
@@ -279,7 +266,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 25,
     available: true,
-    isPromo: hasActivePromotion("205") || false,
+    isPromo: false,
   },
   {
     id: "206",
@@ -302,7 +289,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 20,
     available: true,
-    isPromo: hasActivePromotion("206") || false,
+    isPromo: false,
   },
   {
     id: "207",
@@ -324,7 +311,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 25,
     available: true,
-    isPromo: hasActivePromotion("207") || true,
+    isPromo: false,
   },
   {
     id: "210",
@@ -347,7 +334,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 20,
     available: true,
-    isPromo: hasActivePromotion("210") || true,
+    isPromo: false,
   },
   {
     id: "211",
@@ -370,7 +357,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 30,
     available: true,
-    isPromo: hasActivePromotion("211") || false,
+    isPromo: false,
   },
   {
     id: "213",
@@ -392,7 +379,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 25,
     available: true,
-    isPromo: hasActivePromotion("213") || false,
+    isPromo: false,
   },
   {
     id: "214",
@@ -415,7 +402,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 22,
     available: true,
-    isPromo: hasActivePromotion("214") || true,
+    isPromo: false,
   },
   {
     id: "215",
@@ -437,7 +424,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 30,
     available: true,
-    isPromo: hasActivePromotion("215") || false,
+    isPromo: false,
   },
 
   // Postres
@@ -462,7 +449,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 15,
     available: true,
-    isPromo: hasActivePromotion("301") || true,
+    isPromo: false,
   },
   {
     id: "303",
@@ -484,7 +471,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 12,
     available: true,
-    isPromo: hasActivePromotion("303") || true,
+    isPromo: false,
   },
   {
     id: "304",
@@ -507,7 +494,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 15,
     available: true,
-    isPromo: hasActivePromotion("304") || false,
+    isPromo: false,
   },
   {
     id: "306",
@@ -530,7 +517,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 15,
     available: true,
-    isPromo: hasActivePromotion("306") || true,
+    isPromo: false,
   },
   {
     id: "307",
@@ -552,7 +539,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 15,
     available: true,
-    isPromo: hasActivePromotion("307") || false,
+    isPromo: false,
   },
   {
     id: "309",
@@ -575,7 +562,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 15,
     available: true,
-    isPromo: hasActivePromotion("309") || true,
+    isPromo: false,
   },
   {
     id: "310",
@@ -597,7 +584,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 15,
     available: true,
-    isPromo: hasActivePromotion("310") || false,
+    isPromo: false,
   },
   {
     id: "311",
@@ -619,7 +606,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 10,
     available: true,
-    isPromo: hasActivePromotion("311") || false,
+    isPromo: false,
   },
   {
     id: "313",
@@ -641,7 +628,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 5,
     available: true,
-    isPromo: hasActivePromotion("313") || false,
+    isPromo: false,
   },
 
   {
@@ -665,7 +652,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 12,
     available: true,
-    isPromo: hasActivePromotion("315") || true,
+    isPromo: false,
   },
 
   // Bebidas
@@ -689,7 +676,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 8,
     available: true,
-    isPromo: hasActivePromotion("402") || true,
+    isPromo: false,
   },
   {
     id: "403",
@@ -711,7 +698,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 5,
     available: true,
-    isPromo: hasActivePromotion("403") || false,
+    isPromo: false,
   },
   {
     id: "405",
@@ -733,7 +720,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 5,
     available: true,
-    isPromo: hasActivePromotion("405") || true,
+    isPromo: false,
   },
   {
     id: "406",
@@ -756,7 +743,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 5,
     available: true,
-    isPromo: hasActivePromotion("406") || false,
+    isPromo: false,
   },
   {
     id: "407",
@@ -778,7 +765,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 6,
     available: true,
-    isPromo: hasActivePromotion("407") || true,
+    isPromo: false,
   },
   {
     id: "408",
@@ -801,7 +788,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 3,
     available: true,
-    isPromo: hasActivePromotion("408") || false,
+    isPromo: false,
   },
   {
     id: "410",
@@ -823,7 +810,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 8,
     available: true,
-    isPromo: hasActivePromotion("410") || false,
+    isPromo: false,
   },
   {
     id: "411",
@@ -846,7 +833,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 3,
     available: true,
-    isPromo: hasActivePromotion("411") || true,
+    isPromo: false,
   },
   {
     id: "412",
@@ -869,7 +856,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 7,
     available: true,
-    isPromo: hasActivePromotion("412") || false,
+    isPromo: false,
   },
   {
     id: "415",
@@ -891,7 +878,7 @@ export const mockProducts: Product[] = [
     },
     preparationTime: 7,
     available: true,
-    isPromo: hasActivePromotion("415") || false,
+    isPromo: false,
   },
 ];
 

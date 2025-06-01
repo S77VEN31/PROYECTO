@@ -9,33 +9,38 @@ import mongoose, { Schema } from "mongoose";
 import { addSlugGenerationMiddleware } from "@middlewares";
 
 /**
- * Specific type that merges IBaseDocument with CategoryCreate without conflicts
- * Takes only the fields from CategoryCreate that are not in IBaseDocument
- * @typedef {Object} CategoryDocument
+ * Category document interface that extends IBaseDocument with CategoryCreate fields
+ * @interface CategoryDocument
  */
-type CategoryDocument = Omit<CategoryCreate, keyof IBaseDocument>;
+interface CategoryDocument
+  extends IBaseDocument,
+    Omit<CategoryCreate, keyof IBaseDocument> {}
 
 /**
- * Schema for category model with base fields and category-specific fields
+ * Schema for category model using CategoryCreate type from shared repository
  * @const categorySchema
  */
 const categorySchema = new Schema<CategoryDocument>(
   {
     ...baseEntitySchemaFields,
+    // Required fields from CategoryCreate
     icon: { type: String, required: true },
-    displayOrder: { type: Number, default: 0 },
-    products: [{ type: String, default: [] }],
     variant: {
       type: String,
       enum: Object.values(CategoryVariant),
       required: true,
     },
+    // Optional fields from CategoryCreate with defaults
+    displayOrder: { type: Number, default: 0 },
+    products: [{ type: String, default: [] }],
   },
   baseEntitySchemaOptions
 );
 
-// Add middleware for automatic slug generation
-addSlugGenerationMiddleware(categorySchema);
+/**
+ * Add middleware for automatic slug generation
+ */
+addSlugGenerationMiddleware(categorySchema as any);
 
 /**
  * Mongoose model for categories
@@ -47,3 +52,4 @@ const CategoryModel = mongoose.model<CategoryDocument>(
 );
 
 export default CategoryModel;
+export type { CategoryDocument };

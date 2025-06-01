@@ -5,16 +5,16 @@
 
 import { AxiosError } from 'axios';
 import {
-  CreatePromotionRequest,
+  CreatePromotionRequestBody,
   CreatePromotionResponse,
   DeletePromotionRequestParams,
   DeletePromotionResponse,
   GetPromotionRequestParams,
   GetPromotionResponse,
-  GetPromotionsRequest,
+  GetPromotionsRequestParams,
   GetPromotionsResponse,
   Promotion,
-  UpdatePromotionRequest,
+  UpdatePromotionRequestBody,
   UpdatePromotionRequestParams,
   UpdatePromotionResponse,
 } from "colori-platform-shared";
@@ -30,19 +30,24 @@ export class PromotionApiService {
    * @returns Promise with paginated promotion list
    */
   static async getPromotions(
-    filterParams: GetPromotionsRequest = {}
-  ): Promise<GetPromotionsResponse> {
+    filterParams: GetPromotionsRequestParams = {}
+  ): Promise<GetPromotionsResponse["data"]> {
     try {
-      const response = await apiClient.get<GetPromotionsResponse>("/promotions", {
-        params: filterParams,
-      });
+      const response = await apiClient.get<GetPromotionsResponse>(
+        "/promotions",
+        {
+          params: filterParams,
+        }
+      );
 
-      return response.data;
+      if (response.data.success && response.data.data) {
+        return response.data.data;
+      }
+
+      throw new Error(response.data.error || "Failed to fetch promotions");
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
-      throw new Error(
-        axiosError.message || "Failed to fetch promotions"
-      );
+      throw new Error(axiosError.message || "Failed to fetch promotions");
     }
   }
 
@@ -51,18 +56,22 @@ export class PromotionApiService {
    * @param params - Promotion request parameters
    * @returns Promise with promotion data
    */
-  static async getPromotionById(params: GetPromotionRequestParams): Promise<Promotion> {
+  static async getPromotionById(
+    params: GetPromotionRequestParams
+  ): Promise<Promotion> {
     try {
       const response = await apiClient.get<GetPromotionResponse>(
         `/promotions/${params.id}`
       );
 
-      return response.data.promotion;
+      if (response.data.success && response.data.data) {
+        return response.data.data;
+      }
+
+      throw new Error(response.data.error || "Failed to fetch promotion");
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
-      throw new Error(
-        axiosError.message || "Failed to fetch promotion"
-      );
+      throw new Error(axiosError.message || "Failed to fetch promotion");
     }
   }
 
@@ -71,24 +80,24 @@ export class PromotionApiService {
    * @param promotionData - Promotion creation data
    * @returns Promise with created promotion
    */
-  static async createPromotion(promotionData: CreatePromotionRequest): Promise<Promotion> {
+  static async createPromotion(
+    promotionData: CreatePromotionRequestBody
+  ): Promise<Promotion> {
     try {
       const response = await apiClient.post<CreatePromotionResponse>(
         "/promotions",
         promotionData
       );
 
-      if (response.data.promotion) {
-        // Return the promotion directly from the response
-        return response.data.promotion;
+      if (response.data.success && response.data.id) {
+        // Fetch the created promotion to return the complete Promotion object
+        return await this.getPromotionById({ id: response.data.id });
       }
 
-      throw new Error("Failed to create promotion");
+      throw new Error(response.data.error || "Failed to create promotion");
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
-      throw new Error(
-        axiosError.message || "Failed to create promotion"
-      );
+      throw new Error(axiosError.message || "Failed to create promotion");
     }
   }
 
@@ -100,7 +109,7 @@ export class PromotionApiService {
    */
   static async updatePromotion(
     params: UpdatePromotionRequestParams,
-    promotionData: UpdatePromotionRequest
+    promotionData: UpdatePromotionRequestBody
   ): Promise<Promotion> {
     try {
       const response = await apiClient.put<UpdatePromotionResponse>(
@@ -108,17 +117,15 @@ export class PromotionApiService {
         promotionData
       );
 
-      if (response.data.updated) {
+      if (response.data.success && response.data.updated) {
         // For updates, we need to fetch the updated promotion since the response doesn't include it
         return await this.getPromotionById({ id: params.id });
       }
 
-      throw new Error("Failed to update promotion");
+      throw new Error(response.data.error || "Failed to update promotion");
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
-      throw new Error(
-        axiosError.message || "Failed to update promotion"
-      );
+      throw new Error(axiosError.message || "Failed to update promotion");
     }
   }
 
@@ -127,14 +134,16 @@ export class PromotionApiService {
    * @param params - Promotion request parameters
    * @returns Promise with deletion confirmation
    */
-  static async deletePromotion(params: DeletePromotionRequestParams): Promise<boolean> {
+  static async deletePromotion(
+    params: DeletePromotionRequestParams
+  ): Promise<boolean> {
     try {
       const response = await apiClient.delete<DeletePromotionResponse>(
         `/promotions/${params.id}`
       );
 
-      // Handle successful response - backend returns { deleted: true }
-      if (response.data.deleted !== undefined) {
+      // Handle successful response - backend returns { success: true, deleted: true }
+      if (response.data.success && response.data.deleted !== undefined) {
         return response.data.deleted;
       }
 
@@ -143,7 +152,7 @@ export class PromotionApiService {
         return true;
       }
 
-      throw new Error("Failed to delete promotion");
+      throw new Error(response.data.error || "Failed to delete promotion");
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
 
@@ -163,9 +172,7 @@ export class PromotionApiService {
         return true;
       }
 
-      throw new Error(
-        axiosError.message || "Failed to delete promotion"
-      );
+      throw new Error(axiosError.message || "Failed to delete promotion");
     }
   }
 } 

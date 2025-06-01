@@ -12,7 +12,7 @@ import {
   DeleteUserResponse,
   GetUserRequestParams,
   GetUserResponse,
-  GetUsersRequest,
+  GetUsersRequestParams,
   GetUsersResponse,
   PaginatedResponse,
   UpdateUserRequestBody,
@@ -33,7 +33,7 @@ export class UserApiService {
    * @returns Promise with paginated user list
    */
   static async getUsers(
-    filterParams: GetUsersRequest = {}
+    filterParams: GetUsersRequestParams = {}
   ): Promise<PaginatedResponse<User>> {
     try {
       const response = await apiClient.get<GetUsersResponse>("/users", {

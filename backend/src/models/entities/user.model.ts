@@ -12,33 +12,35 @@ import { UserCreate, UserRole } from "colori-platform-shared";
 import mongoose, { Schema } from "mongoose";
 
 /**
- * Specific type that merges IBaseDocument with UserCreate without conflicts
- * Takes only the fields from UserCreate that are not in IBaseDocument
- * Adds the comparePassword method for password verification
- * @typedef {Object} UserDocument
+ * User document interface that extends IBaseDocument with UserCreate fields
+ * Omits conflicting fields and adds authentication methods
+ * @interface UserDocument
  */
-type UserDocument = IBaseDocument &
-  Omit<UserCreate, keyof IBaseDocument> & {
-    comparePassword(candidatePassword: string): Promise<boolean>;
-  };
+interface UserDocument
+  extends IBaseDocument,
+    Omit<UserCreate, keyof IBaseDocument> {
+  comparePassword(candidatePassword: string): Promise<boolean>;
+}
 
 /**
- * Schema for user model with base fields and user-specific fields
+ * Schema for user model using UserCreate type from shared repository
  * @const userSchema
  */
 const userSchema = new Schema<UserDocument>(
   {
     ...baseEntitySchemaFields,
-    password: { type: String, required: true, select: false },
+    // Required fields from UserCreate
     firstName: { type: String, required: true },
-    lastName: { type: String, required: false, default: "" },
     email: { type: String, required: true, unique: true },
+    password: { type: String, required: true, select: false },
+    // Optional fields from UserCreate with defaults
+    lastName: { type: String, default: "" },
     role: {
       type: String,
       enum: Object.values(UserRole),
       default: UserRole.SERVER,
     },
-    lastLogin: { type: String, default: null, required: false },
+    lastLogin: { type: String, default: null },
   },
   baseEntitySchemaOptions
 );
@@ -46,9 +48,9 @@ const userSchema = new Schema<UserDocument>(
 /**
  * Add middleware for password hashing, slug generation, and password comparison
  */
-addPasswordHashMiddleware(userSchema);
-addSlugGenerationMiddleware(userSchema);
-addPasswordCompareMethod(userSchema);
+addPasswordHashMiddleware(userSchema as any);
+addSlugGenerationMiddleware(userSchema as any);
+addPasswordCompareMethod(userSchema as any);
 
 /**
  * Mongoose model for users
@@ -57,3 +59,4 @@ addPasswordCompareMethod(userSchema);
 const UserModel = mongoose.model<UserDocument>("User", userSchema);
 
 export default UserModel;
+export type { UserDocument };

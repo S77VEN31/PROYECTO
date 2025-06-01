@@ -3,13 +3,13 @@
 import { ProductApiService } from "@/api/entities/product.api";
 import { AdminPageLayout } from "@/components/admin/admin-page-layout";
 import { AdminSectionHeader } from "@/components/admin/admin-section-header";
-import { 
+import {
   CreateProductDialog,
   ProductManagementTable,
-  ProductStats
+  ProductStats,
 } from "@/components/admin/products";
 import { Button } from "@/components/ui/button";
-import { GetProductsRequest, Product } from "colori-platform-shared";
+import { GetProductsRequestParams, Product } from "colori-platform-shared";
 import { Package, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -18,7 +18,7 @@ export default function ProductsManagementPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [filters, setFilters] = useState<GetProductsRequest>({
+  const [filters, setFilters] = useState<GetProductsRequestParams>({
     page: 1,
     limit: 10,
   });
@@ -41,10 +41,14 @@ export default function ProductsManagementPage() {
       });
 
       console.log("Products response:", response);
-      console.log("Products data:", response.products);
-      setProducts(response.products || []);
+      if (response) {
+        console.log("Products data:", response.data);
+        setProducts((response.data || []) as Product[]);
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al cargar productos");
+      setError(
+        err instanceof Error ? err.message : "Error al cargar productos"
+      );
       console.error("Error loading products:", err);
     } finally {
       setIsLoading(false);
@@ -64,7 +68,9 @@ export default function ProductsManagementPage() {
    */
   const handleProductUpdated = (updatedProduct: Product) => {
     setProducts((prev) =>
-      prev.map((product) => (product.id === updatedProduct.id ? updatedProduct : product))
+      prev.map((product) =>
+        product.id === updatedProduct.id ? updatedProduct : product
+      )
     );
   };
 
@@ -78,7 +84,7 @@ export default function ProductsManagementPage() {
   /**
    * Handle filter changes
    */
-  const handleFiltersChange = (newFilters: GetProductsRequest) => {
+  const handleFiltersChange = (newFilters: GetProductsRequestParams) => {
     setFilters(newFilters);
   };
 
@@ -90,12 +96,26 @@ export default function ProductsManagementPage() {
   // Calculate product statistics
   const productStats = {
     total: products.length,
-    active: products.filter((product) => product.active === true).length,
-    inactive: products.filter((product) => product.active === false).length,
-    averagePrice: products.length > 0 
-      ? products.reduce((sum, product) => sum + product.price, 0) / products.length 
-      : 0,
-    withNutrition: products.filter((product) => product.nutritionalInfo).length,
+    active: products.filter(
+      (product) => "active" in product && product.active === true
+    ).length,
+    inactive: products.filter(
+      (product) => "active" in product && product.active === false
+    ).length,
+    averagePrice:
+      products.length > 0
+        ? products.reduce(
+            (sum, product) =>
+              sum +
+              ("price" in product && typeof product.price === "number"
+                ? product.price
+                : 0),
+            0
+          ) / products.length
+        : 0,
+    withNutrition: products.filter(
+      (product) => "nutritionalInfo" in product && product.nutritionalInfo
+    ).length,
   };
 
   return (

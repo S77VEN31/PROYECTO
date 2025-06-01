@@ -6,15 +6,15 @@
  */
 
 // Entity models
-import CategoryModel from "./entities/category.model";
+import CategoryModel, { CategoryDocument } from "./entities/category.model";
 import {
   IBaseDocument,
   baseEntitySchemaFields,
   baseEntitySchemaOptions,
 } from "./entities/entity.model";
-import { ProductModel } from "./entities/product.model";
-import PromotionModel from "./entities/promotion.model";
-import UserModel from "./entities/user.model";
+import { ProductDocument, ProductModel } from "./entities/product.model";
+import PromotionModel, { PromotionDocument } from "./entities/promotion.model";
+import UserModel, { UserDocument } from "./entities/user.model";
 
 // Transaction models
 import EventModel from "./transactions/event.model";
@@ -34,7 +34,15 @@ export {
   baseEntitySchemaFields,
   baseEntitySchemaOptions,
 };
-export type { IBaseDocument };
+
+// Entity document type exports
+export type {
+  CategoryDocument,
+  IBaseDocument,
+  ProductDocument,
+  PromotionDocument,
+  UserDocument,
+};
 
 // Transaction model exports
 export {
@@ -47,15 +55,15 @@ export type { ITransactionDocument };
 
 // Legacy type aliases for backward compatibility
 export type {
-  IBaseDocument as ICategoryDocument,
+  CategoryDocument as ICategoryDocument,
   IBaseDocument as IEntity,
   IBaseDocument as IEntityDocument,
   ITransactionDocument as IEventDocument,
   ITransactionDocument as IOrderDocument,
-  IBaseDocument as IProductDocument,
-  IBaseDocument as IPromotionDocument,
+  ProductDocument as IProductDocument,
+  PromotionDocument as IPromotionDocument,
   ITransactionDocument as ITransaction,
-  IBaseDocument as IUserDocument,
+  UserDocument as IUserDocument,
 };
 
 // Legacy model exports with interface names for backward compatibility

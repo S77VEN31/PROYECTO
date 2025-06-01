@@ -12,9 +12,10 @@ import {
   DeleteUserResponse,
   GetUserRequestParams,
   GetUserResponse,
-  GetUsersRequest,
+  GetUsersRequestParams,
   GetUsersResponse,
   LoginRequest,
+  LoginResponse,
   UpdateUserRequestBody,
   UpdateUserRequestParams,
   UpdateUserResponse,
@@ -24,59 +25,70 @@ import { Request, Response } from "express";
 /**
  * Get all users with optional pagination and filtering
  */
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
-    // Query parameters are already validated by middleware
-    const filterParams = req.query as GetUsersRequest;
-
+    const filterParams = req.query as GetUsersRequestParams;
     const result = await UserService.findAll(filterParams);
 
-    return res.status(200).json({
+    const response: GetUsersResponse = {
       success: true,
       data: result,
-    } as GetUsersResponse);
+    };
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: GetUsersResponse = {
       success: false,
       error: "Failed to retrieve users",
       message: error.message,
-    } as ApiResponse);
+    };
+    return res.status(500).json(response);
   }
 };
 
 /**
  * Get a single user by ID
  */
-export const getUserById = async (req: Request, res: Response) => {
+export const getUserById = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const params = req.params as unknown as GetUserRequestParams;
-
     const user = await UserService.findById(params);
 
     if (!user) {
-      return res.status(404).json({
+      const response: GetUserResponse = {
         success: false,
         error: "User not found",
-      } as ApiResponse);
+      };
+      return res.status(404).json(response);
     }
 
-    return res.status(200).json({
+    const response: GetUserResponse = {
       success: true,
       data: user,
-    } as GetUserResponse);
+    };
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: GetUserResponse = {
       success: false,
       error: "Failed to retrieve user",
       message: error.message,
-    } as ApiResponse);
+    };
+    return res.status(500).json(response);
   }
 };
 
 /**
  * Create a new user
  */
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const userData = req.body as CreateUserRequestBody;
 
@@ -92,12 +104,14 @@ export const createUser = async (req: Request, res: Response) => {
 
     // Ensure we have at least a firstName
     if (!userFirstName) {
-      return res.status(400).json({
+      const response: CreateUserResponse = {
         success: false,
         error: "First name is required",
         message:
           "First name must be provided either directly or extractable from name field",
-      } as ApiResponse);
+        id: "",
+      };
+      return res.status(400).json(response);
     }
 
     const createData = {
@@ -109,24 +123,30 @@ export const createUser = async (req: Request, res: Response) => {
 
     const newUser = await UserService.create(createData);
 
-    return res.status(201).json({
+    const response: CreateUserResponse = {
       success: true,
       id: newUser.id,
       data: createData,
-    } as CreateUserResponse);
+    };
+    return res.status(201).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: CreateUserResponse = {
       success: false,
       error: "Failed to create user",
       message: error.message,
-    } as ApiResponse);
+      id: "",
+    };
+    return res.status(500).json(response);
   }
 };
 
 /**
  * Update an existing user
  */
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUser = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const params = req.params as unknown as UpdateUserRequestParams;
     const updateData = req.body as UpdateUserRequestBody;
@@ -134,98 +154,117 @@ export const updateUser = async (req: Request, res: Response) => {
     const existingUser = await UserService.findById(params);
 
     if (!existingUser) {
-      return res.status(404).json({
+      const response: UpdateUserResponse = {
         success: false,
         error: "User not found",
-      } as ApiResponse);
+        updated: false,
+      };
+      return res.status(404).json(response);
     }
 
     await UserService.update(params, updateData);
 
-    return res.status(200).json({
+    const response: UpdateUserResponse = {
       success: true,
       updated: true,
       data: updateData,
-    } as UpdateUserResponse);
+    };
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: UpdateUserResponse = {
       success: false,
       error: "Failed to update user",
       message: error.message,
-    } as ApiResponse);
+      updated: false,
+    };
+    return res.status(500).json(response);
   }
 };
 
 /**
  * Delete a user by ID
  */
-export const deleteUser = async (req: Request, res: Response) => {
+export const deleteUser = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const params = req.params as unknown as DeleteUserRequestParams;
 
     const existingUser = await UserService.findById(params);
 
     if (!existingUser) {
-      return res.status(404).json({
+      const response: DeleteUserResponse = {
         success: false,
         error: "User not found",
-      } as ApiResponse);
+        deleted: false,
+      };
+      return res.status(404).json(response);
     }
 
     await UserService.delete(params);
 
-    return res.status(200).json({
+    const response: DeleteUserResponse = {
       success: true,
       deleted: true,
-    } as DeleteUserResponse);
+    };
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: DeleteUserResponse = {
       success: false,
       error: "Failed to delete user",
       message: error.message,
-    } as ApiResponse);
+      deleted: false,
+    };
+    return res.status(500).json(response);
   }
 };
 
 /**
  * Login a user
  */
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response): Promise<Response> => {
   try {
     const credentials = req.body as LoginRequest;
-
     const { user, token } = await UserService.authenticate(credentials);
 
-    return res.status(200).json({
-      success: true,
+    const response: LoginResponse = {
       token,
       user,
-    });
+    };
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(401).json({
+    const errorResponse: ApiResponse = {
       success: false,
       error: "Authentication failed",
       message: error.message,
-    } as ApiResponse);
+    };
+    return res.status(401).json(errorResponse);
   }
 };
 
 /**
  * Logout a user
  */
-export const logout = async (req: Request, res: Response) => {
+export const logout = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     // For token-based auth, the client typically just discards the token
     // But we could implement token blacklisting here if needed
 
-    return res.status(200).json({
+    const response: ApiResponse = {
       success: true,
-    } as ApiResponse);
+      message: "Logged out successfully",
+    };
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: ApiResponse = {
       success: false,
       error: "Logout failed",
       message: error.message,
-    } as ApiResponse);
+    };
+    return res.status(500).json(response);
   }
 };

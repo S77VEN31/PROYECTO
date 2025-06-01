@@ -5,52 +5,44 @@
 
 import { ProductService } from "@services";
 import {
-  ApiResponse,
-  CreateProductRequest,
-  CreateResponse,
+  CreateProductRequestBody,
+  CreateProductResponse,
   DeleteProductRequestParams,
-  DeleteResponse,
+  DeleteProductResponse,
   GetProductRequestParams,
-  UpdateProductRequest,
+  GetProductResponse,
+  GetProductsRequestParams,
+  GetProductsResponse,
+  UpdateProductRequestBody,
   UpdateProductRequestParams,
-  UpdateResponse,
+  UpdateProductResponse,
 } from "colori-platform-shared";
 import { Request, Response } from "express";
 
 /**
  * Get all products with optional pagination and filtering
  */
-export const getProducts = async (req: Request, res: Response) => {
+export const getProducts = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
-    const {
-      page = 1,
-      limit = 10,
-      search,
-      category,
-      tag,
-      minPrice,
-      maxPrice,
-    } = req.query;
-
-    const options = {
-      page: Number(page),
-      limit: Number(limit),
-      search: search as string,
-      category: category as string,
-      tag: tag as string,
-      minPrice: minPrice ? Number(minPrice) : undefined,
-      maxPrice: maxPrice ? Number(maxPrice) : undefined,
-    };
-
+    const options = req.query as GetProductsRequestParams;
     const result = await ProductService.findAll(options);
 
-    return res.status(200).json(result);
+    const response: GetProductsResponse = {
+      success: true,
+      data: result,
+    };
+
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: GetProductsResponse = {
       success: false,
       error: "Failed to retrieve products",
       message: error.message,
-    } as ApiResponse);
+    };
+    return res.status(500).json(response);
   }
 };
 
@@ -58,30 +50,33 @@ export const getProducts = async (req: Request, res: Response) => {
  * Get a single product by ID
  */
 export const getProductById = async (
-  req: Request<GetProductRequestParams>,
+  req: Request,
   res: Response
-) => {
+): Promise<Response> => {
   try {
-    const { id } = req.params;
-
+    const { id } = req.params as unknown as GetProductRequestParams;
     const product = await ProductService.findById(id);
 
     if (!product) {
-      return res.status(404).json({
+      const response: GetProductResponse = {
         success: false,
         error: "Product not found",
-      } as ApiResponse);
+      };
+      return res.status(404).json(response);
     }
 
-    return res.status(200).json({
-      product: product,
-    });
+    const response: GetProductResponse = {
+      success: true,
+      data: product,
+    };
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: GetProductResponse = {
       success: false,
       error: "Failed to retrieve product",
       message: error.message,
-    } as ApiResponse);
+    };
+    return res.status(500).json(response);
   }
 };
 
@@ -89,32 +84,36 @@ export const getProductById = async (
  * Create a new product
  */
 export const createProduct = async (
-  req: Request<{}, any, CreateProductRequest>,
+  req: Request,
   res: Response
-) => {
+): Promise<Response> => {
   try {
-    const { product } = req.body;
+    const productData = req.body as CreateProductRequestBody;
 
     // Get user ID from authenticated request
     const userId = req.user?.id;
 
-    const productData = {
-      ...product,
+    const productDataWithUser = {
+      ...productData,
       createdBy: userId,
     };
 
-    const newProduct = await ProductService.create(productData);
+    const newProduct = await ProductService.create(productDataWithUser);
 
-    return res.status(201).json({
+    const response: CreateProductResponse = {
+      success: true,
       id: newProduct.id,
-      product: newProduct,
-    });
+      data: productData,
+    };
+    return res.status(201).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: CreateProductResponse = {
       success: false,
       error: "Failed to create product",
       message: error.message,
-    } as ApiResponse);
+      id: "",
+    };
+    return res.status(500).json(response);
   }
 };
 
@@ -122,12 +121,12 @@ export const createProduct = async (
  * Update an existing product
  */
 export const updateProduct = async (
-  req: Request<UpdateProductRequestParams, any, UpdateProductRequest>,
+  req: Request,
   res: Response
-) => {
+): Promise<Response> => {
   try {
-    const { id } = req.params;
-    const { product } = req.body;
+    const { id } = req.params as unknown as UpdateProductRequestParams;
+    const updateData = req.body as UpdateProductRequestBody;
 
     // Get user ID from authenticated request
     const userId = req.user?.id;
@@ -135,30 +134,35 @@ export const updateProduct = async (
     const existingProduct = await ProductService.findById(id);
 
     if (!existingProduct) {
-      return res.status(404).json({
+      const response: UpdateProductResponse = {
         success: false,
         error: "Product not found",
-      } as ApiResponse);
+        updated: false,
+      };
+      return res.status(404).json(response);
     }
 
-    const updateData = {
-      ...product,
+    const updateDataWithUser = {
+      ...updateData,
       updatedBy: userId,
     };
 
-    await ProductService.update(id, updateData);
+    await ProductService.update(id, updateDataWithUser);
 
-    return res.status(200).json({
+    const response: UpdateProductResponse = {
       success: true,
       updated: true,
-      data: product,
-    } as UpdateResponse);
+      data: updateData,
+    };
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: UpdateProductResponse = {
       success: false,
       error: "Failed to update product",
       message: error.message,
-    } as ApiResponse);
+      updated: false,
+    };
+    return res.status(500).json(response);
   }
 };
 
@@ -166,32 +170,37 @@ export const updateProduct = async (
  * Delete a product by ID
  */
 export const deleteProduct = async (
-  req: Request<DeleteProductRequestParams>,
+  req: Request,
   res: Response
-) => {
+): Promise<Response> => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as unknown as DeleteProductRequestParams;
 
     const existingProduct = await ProductService.findById(id);
 
     if (!existingProduct) {
-      return res.status(404).json({
+      const response: DeleteProductResponse = {
         success: false,
         error: "Product not found",
-      } as ApiResponse);
+        deleted: false,
+      };
+      return res.status(404).json(response);
     }
 
     await ProductService.delete(id);
 
-    return res.status(200).json({
+    const response: DeleteProductResponse = {
       success: true,
       deleted: true,
-    } as DeleteResponse);
+    };
+    return res.status(200).json(response);
   } catch (error: any) {
-    return res.status(500).json({
+    const response: DeleteProductResponse = {
       success: false,
       error: "Failed to delete product",
       message: error.message,
-    } as ApiResponse);
+      deleted: false,
+    };
+    return res.status(500).json(response);
   }
 };

@@ -9,7 +9,7 @@ import {
   CreateUserRequestBody,
   DeleteUserRequestParams,
   GetUserRequestParams,
-  GetUsersRequest,
+  GetUsersRequestParams,
   LoginRequest,
   PaginatedResponse,
   UpdateUserRequestBody,
@@ -19,6 +19,28 @@ import {
 import jwt from "jsonwebtoken";
 
 /**
+ * Transform MongoDB document to User type
+ */
+function transformToUser(doc: any): User {
+  return {
+    id: doc._id?.toString() || doc.id,
+    name: doc.name,
+    description: doc.description,
+    slug: doc.slug,
+    firstName: doc.firstName,
+    lastName: doc.lastName,
+    email: doc.email,
+    role: doc.role,
+    active: doc.active,
+    createdAt: doc.createdAt,
+    updatedAt: doc.updatedAt,
+    lastLogin: doc.lastLogin || null,
+    searchTerm: doc.searchTerm,
+    backgroundImages: doc.backgroundImages || [],
+  } as any as User;
+}
+
+/**
  * Service for managing user operations
  */
 export class UserService {
@@ -26,7 +48,7 @@ export class UserService {
    * Find all users with optional filtering and pagination
    */
   static async findAll(
-    filterParams: GetUsersRequest
+    filterParams: GetUsersRequestParams
   ): Promise<PaginatedResponse<User>> {
     const { page = 1, limit = 10, search, role } = filterParams;
 
@@ -64,20 +86,7 @@ export class UserService {
       ]);
 
       // Transform MongoDB documents to User format
-      const transformedUsers: User[] = users.map((user: any) => ({
-        id: user._id.toString(),
-        name: user.name,
-        description: user.description,
-        slug: user.slug,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        role: user.role,
-        active: user.active,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        lastLogin: user.lastLogin || null,
-      }));
+      const transformedUsers: User[] = users.map(transformToUser);
 
       return {
         data: transformedUsers,
@@ -104,21 +113,7 @@ export class UserService {
         return null;
       }
 
-      // Transform MongoDB document to User format
-      return {
-        id: user._id.toString(),
-        name: user.name,
-        description: user.description,
-        slug: user.slug,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        role: user.role,
-        active: user.active,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        lastLogin: user.lastLogin || null,
-      } as User;
+      return transformToUser(user);
     } catch (error: any) {
       throw new Error(`Failed to fetch user: ${error.message}`);
     }
@@ -155,23 +150,10 @@ export class UserService {
         active: true,
       });
 
-      const savedUser = (await newUser.save()) as User;
+      const savedUser = await newUser.save();
+      const userObj = savedUser.toObject();
 
-      // Convert to User format (excluding password)
-      return {
-        id: savedUser.id,
-        name: savedUser.name,
-        description: savedUser.description,
-        slug: savedUser.slug,
-        firstName: savedUser.firstName,
-        lastName: savedUser.lastName,
-        email: savedUser.email,
-        role: savedUser.role,
-        active: savedUser.active,
-        createdAt: savedUser.createdAt,
-        updatedAt: savedUser.updatedAt,
-        lastLogin: savedUser.lastLogin || null,
-      } as User;
+      return transformToUser(userObj);
     } catch (error: any) {
       if (error.code === 11000) {
         throw new Error("Email already exists");
@@ -198,7 +180,6 @@ export class UserService {
       if (data.lastName !== undefined) updateData.lastName = data.lastName;
       if (data.email !== undefined) updateData.email = data.email;
       if (data.role !== undefined) updateData.role = data.role;
-      if (data.active !== undefined) updateData.active = data.active;
 
       // Update the user and return the updated document
       const updatedUser = await UserModel.findByIdAndUpdate(
@@ -215,21 +196,7 @@ export class UserService {
         throw new Error("User not found");
       }
 
-      // Transform MongoDB document to User format
-      return {
-        id: updatedUser._id.toString(),
-        name: updatedUser.name,
-        description: updatedUser.description,
-        slug: updatedUser.slug,
-        firstName: updatedUser.firstName,
-        lastName: updatedUser.lastName,
-        email: updatedUser.email,
-        role: updatedUser.role,
-        active: updatedUser.active,
-        createdAt: updatedUser.createdAt,
-        updatedAt: updatedUser.updatedAt,
-        lastLogin: updatedUser.lastLogin || null,
-      } as User;
+      return transformToUser(updatedUser);
     } catch (error: any) {
       if (error.code === 11000) {
         throw new Error("Email already exists");
@@ -277,28 +244,15 @@ export class UserService {
       userDoc.lastLogin = new Date().toISOString();
       await userDoc.save();
 
-      // Convert to User format (excluding password)
-      const user: User = {
-        id: userDoc._id.toString(),
-        name: userDoc.name,
-        description: userDoc.description,
-        slug: userDoc.slug,
-        firstName: userDoc.firstName!,
-        lastName: userDoc.lastName!,
-        email: userDoc.email!,
-        role: userDoc.role!,
-        active: userDoc.active!,
-        createdAt: userDoc.createdAt,
-        updatedAt: userDoc.updatedAt,
-        lastLogin: userDoc.lastLogin,
-      };
+      const userObj = userDoc.toObject();
+      const user = transformToUser(userObj);
 
       // Create and sign JWT token
       const token = jwt.sign(
         {
           id: user.id,
-          email: user.email,
-          role: user.role,
+          email: (user as any).email,
+          role: (user as any).role,
         },
         process.env.JWT_SECRET || "your-secret-key",
         { expiresIn: "24h" }

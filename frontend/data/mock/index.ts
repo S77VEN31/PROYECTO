@@ -2,5 +2,5 @@
 export * from "./categories";
 export * from "./orders";
 export * from "./products"; // esto incluirá tanto mockProducts como getProductById
-export * from "./promotions";
 export * from "./users";
+

@@ -7,10 +7,12 @@ import {
   updateCategory,
 } from "@controllers";
 import {
-  CreateCategoryRequestSchema,
-  DeleteCategoryRequestSchema,
-  GetCategoryRequestSchema,
-  UpdateCategoryRequestSchema,
+  CreateCategoryRequestBodySchema,
+  DeleteCategoryRequestParamsSchema,
+  GetCategoriesRequestParamsSchema,
+  GetCategoryRequestParamsSchema,
+  UpdateCategoryRequestBodySchema,
+  UpdateCategoryRequestParamsSchema,
 } from "colori-platform-shared";
 import express from "express";
 const router = express.Router();
@@ -19,21 +21,30 @@ const router = express.Router();
 router.post(
   "/",
   authMiddleware,
-  validate(CreateCategoryRequestSchema),
+  validate(CreateCategoryRequestBodySchema, "body"),
   createCategory
 );
-router.get("/", getCategories);
-router.get("/:id", validate(GetCategoryRequestSchema), getCategoryById);
+router.get(
+  "/",
+  validate(GetCategoriesRequestParamsSchema, "query"),
+  getCategories
+);
+router.get(
+  "/:id",
+  validate(GetCategoryRequestParamsSchema, "params"),
+  getCategoryById
+);
 router.put(
   "/:id",
   authMiddleware,
-  validate(UpdateCategoryRequestSchema),
+  validate(UpdateCategoryRequestParamsSchema, "params"),
+  validate(UpdateCategoryRequestBodySchema, "body"),
   updateCategory
 );
 router.delete(
   "/:id",
   authMiddleware,
-  validate(DeleteCategoryRequestSchema),
+  validate(DeleteCategoryRequestParamsSchema, "params"),
   deleteCategory
 );
 

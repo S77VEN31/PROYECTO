@@ -2,13 +2,25 @@
  * Schemas for Category entities
  */
 
-import { ImageSchema } from "@shared/common";
+import {
+  IdParamSchema,
+  ImageSchema,
+  PaginationParamsSchema,
+  SearchableParamsSchema,
+} from "@shared/common";
 import {
   Category,
   CategoryBase,
   CategoryCreate,
+  CategoryFilterParams,
   CategoryUpdate,
+  CreateCategoryRequestBody,
+  DeleteCategoryRequestParams,
   EntityMetadataSchema,
+  GetCategoriesRequestParams,
+  GetCategoryRequestParams,
+  UpdateCategoryRequestBody,
+  UpdateCategoryRequestParams,
 } from "@shared/entities";
 import { CategoryVariant } from "@shared/enums";
 import { z } from "zod";
@@ -17,9 +29,9 @@ import { z } from "zod";
  * Schema for core category information
  */
 export const CategoryBaseSchema = EntityMetadataSchema.extend({
-  icon: z.string(),
-  displayOrder: z.number().int(),
-  products: z.array(z.string().uuid()),
+  icon: z.string().min(1),
+  displayOrder: z.number().int().min(0),
+  products: z.array(z.string()),
   variant: z.nativeEnum(CategoryVariant),
 }) satisfies z.ZodType<CategoryBase>;
 
@@ -27,7 +39,7 @@ export const CategoryBaseSchema = EntityMetadataSchema.extend({
  * Schema for complete category representation
  */
 export const CategorySchema = CategoryBaseSchema.extend({
-  id: z.string().uuid(),
+  id: z.string().min(1),
 }) satisfies z.ZodType<Category>;
 
 /**
@@ -36,52 +48,66 @@ export const CategorySchema = CategoryBaseSchema.extend({
 export const CategoryCreateSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().min(1),
-  icon: z.string().optional(),
-  displayOrder: z.number().int().optional(),
-  products: z.array(z.string().uuid()).optional(),
-  variant: z.nativeEnum(CategoryVariant).optional(),
+  icon: z.string().min(1),
+  variant: z.nativeEnum(CategoryVariant),
+  displayOrder: z.number().int().min(0).optional(),
+  products: z.array(z.string()).optional(),
+  active: z.boolean().optional(),
   slug: z.string().optional(),
+  searchTerm: z.string().optional(),
   backgroundImages: z.array(ImageSchema).optional(),
 }) satisfies z.ZodType<CategoryCreate>;
 
 /**
  * Schema for category updates
  */
-export const CategoryUpdateSchema = CategoryBaseSchema.omit({
-  id: true,
-}).partial() satisfies z.ZodType<CategoryUpdate>;
+export const CategoryUpdateSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  description: z.string().min(1).optional(),
+  icon: z.string().min(1).optional(),
+  displayOrder: z.number().int().min(0).optional(),
+  products: z.array(z.string()).optional(),
+  variant: z.nativeEnum(CategoryVariant).optional(),
+  slug: z.string().optional(),
+  active: z.boolean().optional(),
+}) satisfies z.ZodType<CategoryUpdate>;
+
+/**
+ * Category filter parameters schema
+ */
+export const CategoryFilterParamsSchema = SearchableParamsSchema.merge(
+  PaginationParamsSchema
+).extend({
+  variant: z.string().optional(),
+}) satisfies z.ZodType<CategoryFilterParams>;
 
 /**
  * Category request validation schemas
  */
 
-export const GetCategoryRequestSchema = z.object({
-  id: z.string().uuid(),
-});
+// GET /categories - validate query parameters
+export const GetCategoriesRequestParamsSchema = SearchableParamsSchema.merge(
+  PaginationParamsSchema
+).extend({
+  variant: z.nativeEnum(CategoryVariant).optional(),
+}) satisfies z.ZodType<GetCategoriesRequestParams>;
 
-export const CreateCategoryRequestSchema = z.object({
-  category: z.object({
-    name: z.string().min(2).max(50),
-    description: z.string().optional(),
-    image: z.string().url().optional(),
-    active: z.boolean().optional().default(true),
-    order: z.number().int().optional(),
-    metadata: z.record(z.string()).optional(),
-  }),
-});
+// GET /categories/:id - validate params
+export const GetCategoryRequestParamsSchema =
+  IdParamSchema satisfies z.ZodType<GetCategoryRequestParams>;
 
-export const UpdateCategoryRequestSchema = z.object({
-  id: z.string().uuid(),
-  category: z.object({
-    name: z.string().min(2).max(50).optional(),
-    description: z.string().optional(),
-    image: z.string().url().optional(),
-    active: z.boolean().optional(),
-    order: z.number().int().optional(),
-    metadata: z.record(z.string()).optional(),
-  }),
-});
+// POST /categories - validate body (category data without nesting)
+export const CreateCategoryRequestBodySchema =
+  CategoryCreateSchema satisfies z.ZodType<CreateCategoryRequestBody>;
 
-export const DeleteCategoryRequestSchema = z.object({
-  id: z.string().uuid(),
-});
+// PUT /categories/:id - validate params
+export const UpdateCategoryRequestParamsSchema =
+  IdParamSchema satisfies z.ZodType<UpdateCategoryRequestParams>;
+
+// PUT /categories/:id - validate body
+export const UpdateCategoryRequestBodySchema =
+  CategoryUpdateSchema satisfies z.ZodType<UpdateCategoryRequestBody>;
+
+// DELETE /categories/:id - validate params
+export const DeleteCategoryRequestParamsSchema =
+  IdParamSchema satisfies z.ZodType<DeleteCategoryRequestParams>;

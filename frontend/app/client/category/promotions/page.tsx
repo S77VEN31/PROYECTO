@@ -1,95 +1,106 @@
 "use client";
 
+import { PromotionApiService } from "@/api/entities/promotion.api";
 import { PromotionsGrid } from "@/components/promotions/promotions-grid";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { mockPromotions } from "@/data/mock/promotions";
-import { ArrowLeft, Bell, Calendar } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Promotion } from "colori-platform-shared";
+import { Search } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function PromocionesPage() {
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [showInactive, setShowInactive] = useState(false);
 
-  return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
-      {/* Encabezado */}
-      <div className="flex flex-col md:flex-row md:items-center mb-8 gap-4">
-        <div className="flex-1">
-          <div className="inline-flex items-center mb-2">
-            <Button asChild variant="ghost" size="icon" className="mr-2">
-              <Link href="/client">
-                <ArrowLeft className="h-4 w-4" />
-              </Link>
-            </Button>
-            <h1 className="text-3xl font-bold">Promociones</h1>
-          </div>
-          <p className="text-muted-foreground">
-            Descubre las mejores ofertas y promociones para disfrutar en Colori
-          </p>
+  useEffect(() => {
+    const fetchPromotions = async () => {
+      try {
+        setIsLoading(true);
+        const response = await PromotionApiService.getPromotions({
+          search: searchTerm || undefined,
+          active: showInactive ? undefined : true,
+        });
+        setPromotions(response?.data || []);
+      } catch (err) {
+        console.error("Error fetching promotions:", err);
+        setError("Error al cargar las promociones");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPromotions();
+  }, [searchTerm, showInactive]);
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">Cargando promociones...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Reintentar</Button>
         </div>
-        <div>
-          <Button
-            variant="outline"
-            className="mr-2"
-            onClick={() => setShowInactive(!showInactive)}
-          >
-            <Calendar className="mr-2 h-4 w-4" />
-            {showInactive ? "Mostrar solo activas" : "Mostrar todas"}
-          </Button>
-          <Button variant="naranja">
-            <Bell className="mr-2 h-4 w-4" />
-            Recibir notificaciones
-          </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          Promociones y Ofertas
+        </h1>
+        <p className="text-muted-foreground">
+          Descubre nuestras mejores ofertas y promociones especiales
+        </p>
+      </div>
+
+      {/* Filters */}
+      <div className="mb-8 space-y-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar promociones..."
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="show-inactive"
+              checked={showInactive}
+              onCheckedChange={setShowInactive}
+            />
+            <label
+              htmlFor="show-inactive"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Mostrar promociones inactivas
+            </label>
+          </div>
         </div>
       </div>
 
-      <Separator className="mb-8" />
-
-      {/* Contenido principal */}
-      <Tabs defaultValue="all">
-        <TabsList className="mb-8">
-          <TabsTrigger value="all">Todas las promociones</TabsTrigger>
-          <TabsTrigger value="combos">Combos</TabsTrigger>
-          <TabsTrigger value="discounts">Descuentos</TabsTrigger>
-          <TabsTrigger value="specials">Ofertas especiales</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="all">
-          <PromotionsGrid
-            promotions={mockPromotions}
-            showInactive={showInactive}
-          />
-        </TabsContent>
-
-        <TabsContent value="combos">
-          <PromotionsGrid
-            promotions={mockPromotions.filter(
-              (p) => p.discountType === "bundle"
-            )}
-            showInactive={showInactive}
-          />
-        </TabsContent>
-
-        <TabsContent value="discounts">
-          <PromotionsGrid
-            promotions={mockPromotions.filter(
-              (p) => p.discountType === "percentage"
-            )}
-            showInactive={showInactive}
-          />
-        </TabsContent>
-
-        <TabsContent value="specials">
-          <PromotionsGrid
-            promotions={mockPromotions.filter(
-              (p) => p.discountType === "fixed"
-            )}
-            showInactive={showInactive}
-          />
-        </TabsContent>
-      </Tabs>
+      {/* Promotions Grid */}
+      <PromotionsGrid promotions={promotions} showInactive={showInactive} />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { mockProducts } from "@/data/mock/products";
-import { Promotion } from "@/data/mock/promotions";
+import { Promotion, PromotionCreate } from "colori-platform-shared";
 import {
   ArrowLeft,
   CalendarRange,
@@ -61,11 +61,13 @@ export function PromotionDetail({
 }: PromotionDetailProps) {
   const { toast } = useToast();
 
-  // Función para formatear fechas
+  // Cast to PromotionCreate to access properties
+  const promotionData = promotion as unknown as PromotionCreate;
+
+  // Formatear fecha
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("es-ES", {
-      day: "2-digit",
+    return new Date(dateString).toLocaleDateString("es-ES", {
+      day: "numeric",
       month: "long",
       year: "numeric",
     });
@@ -74,20 +76,26 @@ export function PromotionDetail({
   // Verificar si la promoción está activa
   const isActive = () => {
     const now = new Date();
-    const startDate = new Date(promotion.startDate);
-    const endDate = new Date(promotion.endDate);
-    return now >= startDate && now <= endDate && promotion.active;
+    const startDate = new Date(promotionData.startDate);
+    const endDate = new Date(promotionData.endDate);
+    return now >= startDate && now <= endDate && promotionData.active;
   };
 
   // Formatear el tipo de descuento
   const formatDiscountType = () => {
-    switch (promotion.discountType) {
-      case "percentage":
-        return "Descuento porcentual";
-      case "fixed":
-        return "Descuento fijo";
+    switch (promotionData.type) {
+      case "discount":
+        return "Descuento";
+      case "bogo":
+        return "Compra 1 Lleva 2";
       case "bundle":
-        return "Promoción 2x1";
+        return "Paquete";
+      case "free-shipping":
+        return "Envío Gratis";
+      case "gift-with-purchase":
+        return "Regalo con Compra";
+      case "seasonal":
+        return "Estacional";
       default:
         return "Oferta especial";
     }
@@ -95,11 +103,11 @@ export function PromotionDetail({
 
   // Copiar código al portapapeles
   const copyCodeToClipboard = () => {
-    if (promotion.code) {
-      navigator.clipboard.writeText(promotion.code);
+    if (promotionData.code) {
+      navigator.clipboard.writeText(promotionData.code);
       toast({
         title: "Código copiado",
-        description: `El código ${promotion.code} ha sido copiado al portapapeles.`,
+        description: `El código ${promotionData.code} ha sido copiado al portapapeles.`,
         duration: 3000,
       });
     }
@@ -107,7 +115,7 @@ export function PromotionDetail({
 
   // Filtrar productos aplicables a esta promoción
   const applicableProducts = mockProducts.filter((product) =>
-    promotion.applicableProducts.includes(product.id)
+    promotionData.applicableProducts?.includes(product.id)
   );
 
   return (
@@ -115,16 +123,19 @@ export function PromotionDetail({
       {/* Encabezado con imagen */}
       <div className="relative h-64 w-full rounded-lg overflow-hidden">
         <Image
-          src={promotion.imageSrc}
-          alt={promotion.name}
+          src={
+            promotionData.backgroundImages?.[0]?.src ||
+            "/placeholder-promotion.jpg"
+          }
+          alt={promotionData.name}
           fill
           className="object-cover"
           priority
         />
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-          <h1 className="text-3xl font-bold">{promotion.name}</h1>
-          <p className="mt-2 text-white/90">{promotion.description}</p>
+          <h1 className="text-3xl font-bold">{promotionData.name}</h1>
+          <p className="mt-2 text-white/90">{promotionData.description}</p>
         </div>
       </div>
 
@@ -145,7 +156,7 @@ export function PromotionDetail({
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      Tipo de descuento
+                      Tipo de promoción
                     </p>
                     <p className="font-medium">{formatDiscountType()}</p>
                   </div>
@@ -160,12 +171,13 @@ export function PromotionDetail({
                       Valor del descuento
                     </p>
                     <p className="font-medium">
-                      {promotion.discountType === "percentage" &&
-                        `${promotion.discountValue}%`}
-                      {promotion.discountType === "fixed" &&
-                        `$${promotion.discountValue.toFixed(2)}`}
-                      {promotion.discountType === "bundle" &&
-                        `${promotion.discountValue}% en producto adicional`}
+                      {promotionData.discountPercent &&
+                        `${promotionData.discountPercent}%`}
+                      {promotionData.discountValue &&
+                        `€${promotionData.discountValue.toFixed(2)}`}
+                      {!promotionData.discountPercent &&
+                        !promotionData.discountValue &&
+                        "Oferta especial"}
                     </p>
                   </div>
                 </div>
@@ -179,13 +191,13 @@ export function PromotionDetail({
                       Período de validez
                     </p>
                     <p className="font-medium">
-                      {formatDate(promotion.startDate)} -{" "}
-                      {formatDate(promotion.endDate)}
+                      {formatDate(promotionData.startDate)} -{" "}
+                      {formatDate(promotionData.endDate)}
                     </p>
                   </div>
                 </div>
 
-                {promotion.code && (
+                {promotionData.code && (
                   <div className="flex items-center gap-3">
                     <div className="bg-muted p-2 rounded-full">
                       <Ticket className="h-5 w-5 text-rojo" />
@@ -196,7 +208,7 @@ export function PromotionDetail({
                       </p>
                       <div className="flex items-center gap-2">
                         <code className="bg-muted px-2 py-1 rounded font-bold">
-                          {promotion.code}
+                          {promotionData.code}
                         </code>
                         <Button
                           variant="ghost"
@@ -211,23 +223,23 @@ export function PromotionDetail({
                   </div>
                 )}
 
-                {promotion.limitPerCustomer && (
+                {promotionData.usageLimit && (
                   <div className="flex items-center gap-3">
                     <div className="bg-muted p-2 rounded-full">
                       <Clock className="h-5 w-5 text-rojo" />
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">
-                        Límite por cliente
+                        Límite de uso
                       </p>
                       <p className="font-medium">
-                        {promotion.limitPerCustomer} uso(s) por cliente
+                        {promotionData.usageLimit} uso(s) total
                       </p>
                     </div>
                   </div>
                 )}
 
-                {promotion.minimumPurchase && (
+                {promotionData.minimumPurchase && (
                   <div className="flex items-center gap-3">
                     <div className="bg-muted p-2 rounded-full">
                       <ShoppingBag className="h-5 w-5 text-rojo" />
@@ -237,7 +249,7 @@ export function PromotionDetail({
                         Compra mínima
                       </p>
                       <p className="font-medium">
-                        ${promotion.minimumPurchase.toFixed(2)}
+                        €{promotionData.minimumPurchase.toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -249,7 +261,7 @@ export function PromotionDetail({
             <div className="space-y-4">
               <h2 className="text-xl font-bold border-b pb-2">Descripción</h2>
               <p className="text-muted-foreground leading-relaxed">
-                {promotion.longDescription || promotion.description}
+                {promotionData.description}
               </p>
 
               <div className="mt-6 p-4 bg-muted rounded-lg">

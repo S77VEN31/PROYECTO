@@ -12,7 +12,7 @@ import {
   DeleteUserRequestParams,
   EntityMetadataSchema,
   GetUserRequestParams,
-  GetUsersRequest,
+  GetUsersRequestParams,
   UpdateUserRequestBody,
   UpdateUserRequestParams,
   User,
@@ -76,11 +76,11 @@ export const UserUpdateSchema = z.object({
  */
 
 // GET /users - validate query parameters
-export const GetUsersRequestSchema = SearchableParamsSchema.merge(
+export const GetUsersRequestParamsSchema = SearchableParamsSchema.merge(
   PaginationParamsSchema
 ).extend({
   role: z.string().optional(),
-}) satisfies z.ZodType<GetUsersRequest>;
+}) satisfies z.ZodType<GetUsersRequestParams>;
 
 // GET /users/:id - validate params
 export const GetUserRequestParamsSchema =

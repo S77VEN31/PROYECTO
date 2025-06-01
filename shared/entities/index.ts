@@ -8,6 +8,8 @@
  * Base entity types
  */
 import {
+  ClientEntity,
+  DatabaseEntity,
   EntityBase,
   EntityMetadata,
   FullMetadata,
@@ -23,6 +25,8 @@ import {
 
 // Re-export base entity types
 export {
+  ClientEntity,
+  DatabaseEntity,
   EntityBase,
   // Schemas
   EntityBaseSchema,
@@ -37,35 +41,38 @@ export {
 /**
  * Category entity types and schemas
  */
-  import {
-    Category,
-    CategoryBase,
-    CategoryCreate,
-    CategoryUpdate,
-    CreateCategoryRequest,
-    CreateCategoryResponse,
-    DeleteCategoryRequest,
-    DeleteCategoryRequestParams,
-    DeleteCategoryResponse,
-    GetCategoriesRequest,
-    GetCategoriesResponse,
-    GetCategoryRequest,
-    GetCategoryRequestParams,
-    GetCategoryResponse,
-    UpdateCategoryRequest,
-    UpdateCategoryRequestParams,
-    UpdateCategoryResponse,
-  } from "./category/category.d";
+import {
+  Category,
+  CategoryBase,
+  CategoryCreate,
+  CategoryDocument,
+  CategoryFilterParams,
+  CategoryUpdate,
+  CreateCategoryRequestBody,
+  CreateCategoryResponse,
+  DeleteCategoryRequestParams,
+  DeleteCategoryResponse,
+  GetCategoriesRequestParams,
+  GetCategoriesResponse,
+  GetCategoryRequestParams,
+  GetCategoryResponse,
+  UpdateCategoryRequestBody,
+  UpdateCategoryRequestParams,
+  UpdateCategoryResponse,
+} from "./category/category.d";
 
   import {
     CategoryBaseSchema,
     CategoryCreateSchema,
+    CategoryFilterParamsSchema,
     CategorySchema,
     CategoryUpdateSchema,
-    CreateCategoryRequestSchema,
-    DeleteCategoryRequestSchema,
-    GetCategoryRequestSchema,
-    UpdateCategoryRequestSchema,
+    CreateCategoryRequestBodySchema,
+    DeleteCategoryRequestParamsSchema,
+    GetCategoriesRequestParamsSchema,
+    GetCategoryRequestParamsSchema,
+    UpdateCategoryRequestBodySchema,
+    UpdateCategoryRequestParamsSchema,
   } from "./category/category.schema";
 
   // Re-export category types
@@ -77,26 +84,29 @@ export {
     CategoryBaseSchema,
     CategoryCreate,
     CategoryCreateSchema,
+    CategoryDocument,
+    CategoryFilterParams,
+    CategoryFilterParamsSchema,
     CategorySchema,
     CategoryUpdate,
     CategoryUpdateSchema,
-    CreateCategoryRequest,
-    // Request validation schemas
-    CreateCategoryRequestSchema,
+    // Request/Response types
+    CreateCategoryRequestBody,
+    CreateCategoryRequestBodySchema,
     CreateCategoryResponse,
-    DeleteCategoryRequest,
     DeleteCategoryRequestParams,
-    DeleteCategoryRequestSchema,
+    DeleteCategoryRequestParamsSchema,
     DeleteCategoryResponse,
-    GetCategoriesRequest,
+    GetCategoriesRequestParams,
+    GetCategoriesRequestParamsSchema,
     GetCategoriesResponse,
-    GetCategoryRequest,
     GetCategoryRequestParams,
-    GetCategoryRequestSchema,
+    GetCategoryRequestParamsSchema,
     GetCategoryResponse,
-    UpdateCategoryRequest,
+    UpdateCategoryRequestBody,
+    UpdateCategoryRequestBodySchema,
     UpdateCategoryRequestParams,
-    UpdateCategoryRequestSchema,
+    UpdateCategoryRequestParamsSchema,
     UpdateCategoryResponse,
   };
 
@@ -104,55 +114,56 @@ export {
    * Product entity types and schemas
    */
   import {
-    CreateProductRequest,
+    CreateProductRequestBody,
     CreateProductResponse,
-    DeleteProductRequest,
     DeleteProductRequestParams,
     DeleteProductResponse,
-    GetProductRequest,
     GetProductRequestParams,
     GetProductResponse,
-    GetProductsRequest,
+    GetProductsRequestParams,
     GetProductsResponse,
     NutritionalInfo,
     Product,
     ProductBase,
     ProductCreate,
+    ProductDocument,
+    ProductFilterParams,
     ProductUpdate,
-    UpdateProductRequest,
+    UpdateProductRequestBody,
     UpdateProductRequestParams,
     UpdateProductResponse,
   } from "./product/product.d";
 
   import {
-    CreateProductRequestSchema,
-    DeleteProductRequestSchema,
-    GetProductRequestSchema,
+    CreateProductRequestBodySchema,
+    DeleteProductRequestParamsSchema,
+    GetProductRequestParamsSchema,
+    GetProductsRequestParamsSchema,
     NutritionalInfoSchema,
     ProductBaseSchema,
     ProductCreateSchema,
     ProductSchema,
     ProductUpdateSchema,
-    UpdateProductRequestSchema,
+    UpdateProductRequestBodySchema,
+    UpdateProductRequestParamsSchema,
   } from "./product/product.schema";
 
   // Re-export product types
   export {
-    // Product types
-    CreateProductRequest,
-    // Request validation schemas
-    CreateProductRequestSchema,
+    // Request/Response types
+    CreateProductRequestBody,
+    CreateProductRequestBodySchema,
     CreateProductResponse,
-    DeleteProductRequest,
     DeleteProductRequestParams,
-    DeleteProductRequestSchema,
+    DeleteProductRequestParamsSchema,
     DeleteProductResponse,
-    GetProductRequest,
     GetProductRequestParams,
-    GetProductRequestSchema,
+    GetProductRequestParamsSchema,
     GetProductResponse,
-    GetProductsRequest,
+    GetProductsRequestParams,
+    GetProductsRequestParamsSchema,
     GetProductsResponse,
+    // Product types
     NutritionalInfo,
     // Product schemas
     NutritionalInfoSchema,
@@ -161,12 +172,15 @@ export {
     ProductBaseSchema,
     ProductCreate,
     ProductCreateSchema,
+    ProductDocument,
+    ProductFilterParams,
     ProductSchema,
     ProductUpdate,
     ProductUpdateSchema,
-    UpdateProductRequest,
+    UpdateProductRequestBody,
+    UpdateProductRequestBodySchema,
     UpdateProductRequestParams,
-    UpdateProductRequestSchema,
+    UpdateProductRequestParamsSchema,
     UpdateProductResponse,
   };
 
@@ -174,65 +188,69 @@ export {
    * Promotion entity types and schemas
    */
   import {
-    CreatePromotionRequest,
+    CreatePromotionRequestBody,
     CreatePromotionResponse,
-    DeletePromotionRequest,
     DeletePromotionRequestParams,
     DeletePromotionResponse,
-    GetPromotionRequest,
     GetPromotionRequestParams,
     GetPromotionResponse,
-    GetPromotionsRequest,
+    GetPromotionsRequestParams,
     GetPromotionsResponse,
     Promotion,
     PromotionBase,
     PromotionCreate,
+    PromotionDocument,
+    PromotionFilterParams,
     PromotionUpdate,
-    UpdatePromotionRequest,
+    UpdatePromotionRequestBody,
     UpdatePromotionRequestParams,
     UpdatePromotionResponse,
   } from "./promotion/promotion.d";
 
   import {
-    CreatePromotionRequestSchema,
-    DeletePromotionRequestSchema,
-    GetPromotionRequestSchema,
+    CreatePromotionRequestBodySchema,
+    DeletePromotionRequestParamsSchema,
+    GetPromotionRequestParamsSchema,
+    GetPromotionsRequestParamsSchema,
     PromotionBaseSchema,
     PromotionCreateSchema,
     PromotionSchema,
     PromotionUpdateSchema,
-    UpdatePromotionRequestSchema,
+    UpdatePromotionRequestBodySchema,
+    UpdatePromotionRequestParamsSchema,
   } from "./promotion/promotion.schema";
 
   // Re-export promotion types
   export {
-    // Promotion types
-    CreatePromotionRequest,
-    // Request validation schemas
-    CreatePromotionRequestSchema,
+    // Request/Response types
+    CreatePromotionRequestBody,
+    CreatePromotionRequestBodySchema,
     CreatePromotionResponse,
-    DeletePromotionRequest,
     DeletePromotionRequestParams,
-    DeletePromotionRequestSchema,
+    DeletePromotionRequestParamsSchema,
     DeletePromotionResponse,
-    GetPromotionRequest,
     GetPromotionRequestParams,
-    GetPromotionRequestSchema,
+    GetPromotionRequestParamsSchema,
     GetPromotionResponse,
-    GetPromotionsRequest,
+    GetPromotionsRequestParams,
+    GetPromotionsRequestParamsSchema,
     GetPromotionsResponse,
+    // Promotion types
     Promotion,
     PromotionBase,
     // Promotion schemas
     PromotionBaseSchema,
     PromotionCreate,
     PromotionCreateSchema,
+    PromotionDocument,
+    PromotionFilterParams,
     PromotionSchema,
     PromotionUpdate,
     PromotionUpdateSchema,
-    UpdatePromotionRequest,
+    UpdatePromotionRequestBody,
+    UpdatePromotionRequestBodySchema,
     UpdatePromotionRequestParams,
-    UpdatePromotionRequestSchema,
+    UpdatePromotionRequestParamsSchema,
     UpdatePromotionResponse,
   };
 
@@ -246,7 +264,7 @@ export {
     DeleteUserResponse,
     GetUserRequestParams,
     GetUserResponse,
-    GetUsersRequest,
+    GetUsersRequestParams,
     GetUsersResponse,
     LoginRequest,
     LoginResponse,
@@ -257,6 +275,8 @@ export {
     User,
     UserBase,
     UserCreate,
+    UserDocument,
+    UserFilterParams,
     UserUpdate,
   } from "./user/user.d";
 
@@ -264,7 +284,7 @@ export {
     CreateUserRequestBodySchema,
     DeleteUserRequestParamsSchema,
     GetUserRequestParamsSchema,
-    GetUsersRequestSchema,
+    GetUsersRequestParamsSchema,
     LoginRequestSchema,
     UpdateUserRequestBodySchema,
     UpdateUserRequestParamsSchema,
@@ -276,9 +296,8 @@ export {
 
   // Re-export user types
   export {
-    // User types
+    // Request/Response types
     CreateUserRequestBody,
-    // User schemas
     CreateUserRequestBodySchema,
     CreateUserResponse,
     DeleteUserRequestParams,
@@ -287,8 +306,8 @@ export {
     GetUserRequestParams,
     GetUserRequestParamsSchema,
     GetUserResponse,
-    GetUsersRequest,
-    GetUsersRequestSchema,
+    GetUsersRequestParams,
+    GetUsersRequestParamsSchema,
     GetUsersResponse,
     LoginRequest,
     LoginRequestSchema,
@@ -299,11 +318,15 @@ export {
     UpdateUserRequestParams,
     UpdateUserRequestParamsSchema,
     UpdateUserResponse,
+    // User types
     User,
     UserBase,
+    // User schemas
     UserBaseSchema,
     UserCreate,
     UserCreateSchema,
+    UserDocument,
+    UserFilterParams,
     UserSchema,
     UserUpdate,
     UserUpdateSchema,

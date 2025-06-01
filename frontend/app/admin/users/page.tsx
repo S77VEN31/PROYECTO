@@ -7,7 +7,7 @@ import { CreateUserDialog } from "@/components/admin/users/create-user-dialog";
 import { UserManagementTable } from "@/components/admin/users/user-management-table";
 import { UserStats } from "@/components/admin/users/user-stats";
 import { Button } from "@/components/ui/button";
-import { GetUsersRequest, User } from "colori-platform-shared";
+import { GetUsersRequestParams, User } from "colori-platform-shared";
 import { UserPlus, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -16,7 +16,7 @@ export default function UsersManagementPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [filters, setFilters] = useState<GetUsersRequest>({
+  const [filters, setFilters] = useState<GetUsersRequestParams>({
     page: 1,
     limit: 10,
   });
@@ -73,7 +73,7 @@ export default function UsersManagementPage() {
   /**
    * Handle filter changes
    */
-  const handleFiltersChange = (newFilters: GetUsersRequest) => {
+  const handleFiltersChange = (newFilters: GetUsersRequestParams) => {
     setFilters(newFilters);
   };
 
@@ -85,12 +85,17 @@ export default function UsersManagementPage() {
   // Calculate user statistics
   const userStats = {
     total: users.length,
-    admins: users.filter((user) => user.role === "admin").length,
-    managers: users.filter((user) => user.role === "manager").length,
-    chefs: users.filter((user) => user.role === "chef").length,
-    servers: users.filter((user) => user.role === "server").length,
-    cashiers: users.filter((user) => user.role === "cashier").length,
-    active: users.filter((user) => user.active).length,
+    admins: users.filter((user) => "role" in user && user.role === "admin")
+      .length,
+    managers: users.filter((user) => "role" in user && user.role === "manager")
+      .length,
+    chefs: users.filter((user) => "role" in user && user.role === "chef")
+      .length,
+    servers: users.filter((user) => "role" in user && user.role === "server")
+      .length,
+    cashiers: users.filter((user) => "role" in user && user.role === "cashier")
+      .length,
+    active: users.filter((user) => "active" in user && user.active).length,
   };
 
   return (

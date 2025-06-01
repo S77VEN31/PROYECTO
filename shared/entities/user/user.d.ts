@@ -2,7 +2,8 @@
  * Type declarations for User entities
  */
 
-import { EntityBase, EntityMetadata } from "@shared/entities";
+import { Image } from "@shared/common";
+import { ClientEntity, DatabaseEntity, EntityMetadata } from "@shared/entities";
 import { UserRole } from "@shared/enums";
 
 /**
@@ -25,33 +26,58 @@ export declare interface UserBase extends EntityMetadata {
 }
 
 /**
- * Complete user representation with unique identifier
+ * Complete user representation for client-side (API responses, frontend)
  * @interface User
- * @extends UserBase
+ * @extends ClientEntity<UserBase>
  * @property {string} id - Unique identifier for the user
  */
 export declare interface User
-  extends Omit<UserBase, "password">,
-    Pick<EntityBase, "id"> {}
+  extends ClientEntity<Omit<UserBase, "password">> {}
+
+/**
+ * User representation for database operations (backend)
+ * @interface UserDocument
+ * @extends DatabaseEntity<UserBase>
+ * @property {string} _id - MongoDB ObjectId as string
+ */
+export declare interface UserDocument extends DatabaseEntity<UserBase> {}
 
 /**
  * Input type for user creation operations
  * @type UserCreate
  */
-export declare type UserCreate = Omit<Partial<User>, "id"> &
-  Pick<EntityBase, "name" | "description"> & {
-    password: string;
-    firstName: string;
-    lastName?: string;
-    email: string;
-    role?: UserRole;
-  };
+export declare type UserCreate = {
+  // Required fields from EntityBase
+  name: string;
+  description: string;
+  // Required user-specific fields
+  firstName: string;
+  email: string;
+  password: string;
+  // Optional fields
+  lastName?: string;
+  role?: UserRole;
+  lastLogin?: string | null;
+  // Optional EntityBase fields
+  active?: boolean;
+  // Optional EntityMetadata fields
+  slug?: string;
+  searchTerm?: string;
+  backgroundImages?: Image[];
+};
 
 /**
  * Input type for user profile update operations
  * @type UserUpdate
  */
-export declare type UserUpdate = Omit<Partial<User>, "id">;
+export declare type UserUpdate = Partial<{
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: UserRole;
+  name: string;
+  description: string;
+}>;
 
 /**
  * @fileoverview User API request and response type definitions
@@ -81,7 +107,7 @@ export interface UserFilterParams extends PaginationParams, SearchableParams {
 }
 
 // GET /users
-export interface GetUsersRequest extends UserFilterParams {}
+export interface GetUsersRequestParams extends UserFilterParams {}
 
 export interface GetUsersResponse
   extends ApiResponse<PaginatedResponse<User>> {}
@@ -122,10 +148,3 @@ export interface LoginResponse {
 export interface LogoutResponse {
   success: boolean;
 }
-
-// Express compatible request parameter types (keeping for backward compatibility)
-export type GetUserRequestParams = IdParam;
-
-export type UpdateUserRequestParams = IdParam;
-
-export type DeleteUserRequestParams = IdParam;

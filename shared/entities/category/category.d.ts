@@ -2,7 +2,8 @@
  * Type declarations for Category entities
  */
 
-import { EntityBase, EntityMetadata } from "@shared/entities";
+import { Image } from "@shared/common";
+import { ClientEntity, DatabaseEntity, EntityMetadata } from "@shared/entities";
 import { CategoryVariant } from "@shared/enums";
 
 /**
@@ -22,90 +23,112 @@ export declare interface CategoryBase extends EntityMetadata {
 }
 
 /**
- * Complete category representation with unique identifier
+ * Complete category representation for client-side (API responses, frontend)
  * @interface Category
- * @extends CategoryBase
+ * @extends ClientEntity<CategoryBase>
  * @property {string} id - Unique identifier for the category
  */
-export declare interface Category extends CategoryBase {
-  id: string;
-}
+export declare interface Category extends ClientEntity<CategoryBase> {}
+
+/**
+ * Category representation for database operations (backend)
+ * @interface CategoryDocument
+ * @extends DatabaseEntity<CategoryBase>
+ * @property {string} _id - MongoDB ObjectId as string
+ */
+export declare interface CategoryDocument
+  extends DatabaseEntity<CategoryBase> {}
 
 /**
  * Input type for category creation operations
  * @type CategoryCreate
  */
-export declare type CategoryCreate = Omit<Partial<Category>, "id"> &
-  Pick<EntityBase, "name" | "description">;
+export declare type CategoryCreate = {
+  // Required fields from EntityBase
+  name: string;
+  description: string;
+  // Required category-specific fields
+  icon: string;
+  variant: CategoryVariant;
+  // Optional category-specific fields
+  displayOrder?: number;
+  products?: string[];
+  // Optional EntityBase fields
+  active?: boolean;
+  // Optional EntityMetadata fields
+  slug?: string;
+  searchTerm?: string;
+  backgroundImages?: Image[];
+};
 
 /**
  * Input type for category update operations
  * @type CategoryUpdate
  */
-export declare type CategoryUpdate = Omit<Partial<Category>, "id">;
+export declare type CategoryUpdate = Partial<{
+  name: string;
+  description: string;
+  icon: string;
+  displayOrder: number;
+  products: string[];
+  variant: CategoryVariant;
+}>;
 
 /**
  * @fileoverview Category API request and response type definitions
  */
 
-import { IdParam, PaginationParams } from "@shared/common";
-import { Category, CategoryCreate, CategoryUpdate } from "@shared/entities";
+import {
+  ApiResponse,
+  CreateResponse,
+  DeleteResponse,
+  GetResponse,
+  IdParam,
+  PaginatedResponse,
+  PaginationParams,
+  SearchableParams,
+  UpdateResponse,
+} from "@shared/common";
+
+/**
+ * Category filter parameters
+ * @interface CategoryFilterParams
+ * @extends PaginationParams
+ * @extends SearchableParams
+ * @property {string} [variant] - Filter by category variant
+ */
+export interface CategoryFilterParams
+  extends PaginationParams,
+    SearchableParams {
+  variant?: string;
+}
 
 // GET /categories
-export interface GetCategoriesRequest extends PaginationParams {
-  search?: string;
-}
+export interface GetCategoriesRequestParams extends CategoryFilterParams {}
 
-export interface GetCategoriesResponse {
-  categories: Category[];
-  total: number;
-  page: number;
-  limit: number;
-}
+export interface GetCategoriesResponse
+  extends ApiResponse<PaginatedResponse<Category>> {}
 
-// GET /categories/:id
-export interface GetCategoryRequest extends IdParam {}
+// GET /categories/:id - params only
+export interface GetCategoryRequestParams extends IdParam {}
 
-export interface GetCategoryResponse {
-  category: Category;
-}
+export interface GetCategoryResponse extends GetResponse<Category> {}
 
-// POST /categories
-export interface CreateCategoryRequest {
-  category: CategoryCreate;
-}
+// POST /categories - body only (category data without nesting)
+export interface CreateCategoryRequestBody extends CategoryCreate {}
 
-export interface CreateCategoryResponse {
-  id: string;
-  category: Category;
-}
+export interface CreateCategoryResponse
+  extends CreateResponse<CategoryCreate> {}
 
-// PUT /categories/:id
-export interface UpdateCategoryRequest extends IdParam {
-  category: CategoryUpdate;
-}
+// PUT /categories/:id - params + body
+export interface UpdateCategoryRequestParams extends IdParam {}
 
-export interface UpdateCategoryResponse {
-  updated: boolean;
-  category: Category;
-}
+export interface UpdateCategoryRequestBody extends CategoryUpdate {}
 
-// DELETE /categories/:id
-export interface DeleteCategoryRequest extends IdParam {}
+export interface UpdateCategoryResponse
+  extends UpdateResponse<CategoryUpdate> {}
 
-export interface DeleteCategoryResponse {
-  deleted: boolean;
-}
+// DELETE /categories/:id - params only
+export interface DeleteCategoryRequestParams extends IdParam {}
 
-// Express compatible request parameter types
-export type GetCategoryRequestParams = {
-  id: string;
-};
-
-export type UpdateCategoryRequestParams = {
-  id: string;
-};
-
-export type DeleteCategoryRequestParams = {
-  id: string;
-};
+export interface DeleteCategoryResponse extends DeleteResponse<Category> {}

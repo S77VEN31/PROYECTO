@@ -38,22 +38,25 @@ const newProductModel: ProductCreate = {
 /**
  * Example of a complete product model as stored in the database
  */
-const productModel: Product = {
+const productModel = {
   id: "prod-001",
-  slug: "espresso",
-  price: 3.5,
+  // EntityBase fields
   name: "Espresso",
   description: "Single shot of our signature espresso blend",
+  active: true,
+  createdAt: "2023-08-15T10:00:00Z",
+  updatedAt: "2023-08-15T10:00:00Z",
+  // EntityMetadata fields
+  slug: "espresso",
+  searchTerm: "espresso coffee shot hot",
+  // ProductBase specific fields
+  price: 3.5,
   longDescription:
     "Our signature espresso is crafted from a blend of ethically sourced beans, roasted to perfection to bring out rich chocolate and caramel notes.",
   tags: ["coffee", "espresso", "hot"],
   nutritionalInfo: nutritionalInfoModel,
   preparationTime: 3,
-  active: true,
-  createdAt: "2023-08-15T10:00:00Z",
-  updatedAt: "2023-08-15T10:00:00Z",
-  searchTerm: "espresso coffee shot hot",
-};
+} as Product;
 
 /**
  * Example of a product update model
@@ -78,3 +81,4 @@ export {
   productModel,
   productUpdateModel,
 };
+

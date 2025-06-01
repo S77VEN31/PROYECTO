@@ -3,21 +3,21 @@
  * Handles HTTP requests for promotion operations
  */
 
-import { Request, Response } from "express";
-import { PromotionService } from "../../services/entities/promotion.service";
 import {
-  CreatePromotionRequest,
+  CreatePromotionRequestBody,
   CreatePromotionResponse,
   DeletePromotionRequestParams,
   DeletePromotionResponse,
   GetPromotionRequestParams,
   GetPromotionResponse,
-  GetPromotionsRequest,
+  GetPromotionsRequestParams,
   GetPromotionsResponse,
-  UpdatePromotionRequest,
+  UpdatePromotionRequestBody,
   UpdatePromotionRequestParams,
   UpdatePromotionResponse,
 } from "colori-platform-shared";
+import { Request, Response } from "express";
+import { PromotionService } from "../../services/entities/promotion.service";
 
 /**
  * Promotion controller class
@@ -25,149 +25,153 @@ import {
 export class PromotionController {
   /**
    * Get all promotions with optional filtering
-   * @param req - Express request object
-   * @param res - Express response object
    */
-  static async getPromotions(
-    req: Request<{}, GetPromotionsResponse, {}, GetPromotionsRequest>,
-    res: Response<GetPromotionsResponse>
-  ): Promise<void> {
+  static async getPromotions(req: Request, res: Response): Promise<void> {
     try {
-      const filters = req.query;
-      const result = await PromotionService.getPromotions(filters);
-      res.status(200).json(result);
+      const filters = req.query as GetPromotionsRequestParams;
+      const result = await PromotionService.findAll(filters);
+
+      const response: GetPromotionsResponse = {
+        success: true,
+        data: result,
+      };
+
+      res.status(200).json(response);
     } catch (error) {
       console.error("Error getting promotions:", error);
-      res.status(500).json({
-        promotions: [],
-        total: 0,
-        page: 1,
-        limit: 10,
-      });
+      const response: GetPromotionsResponse = {
+        success: false,
+        error: "Failed to retrieve promotions",
+      };
+      res.status(500).json(response);
     }
   }
 
   /**
    * Get promotion by ID
-   * @param req - Express request object
-   * @param res - Express response object
    */
-  static async getPromotionById(
-    req: Request<GetPromotionRequestParams, GetPromotionResponse>,
-    res: Response<GetPromotionResponse>
-  ): Promise<void> {
+  static async getPromotionById(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
-      const promotion = await PromotionService.getPromotionById(id);
-      
+      const { id } = req.params as unknown as GetPromotionRequestParams;
+      const promotion = await PromotionService.findById(id);
+
       if (!promotion) {
-        res.status(404).json({
-          promotion: null as any,
-        });
+        const response: GetPromotionResponse = {
+          success: false,
+          error: "Promotion not found",
+        };
+        res.status(404).json(response);
         return;
       }
 
-      res.status(200).json({
-        promotion,
-      });
+      const response: GetPromotionResponse = {
+        success: true,
+        data: promotion,
+      };
+      res.status(200).json(response);
     } catch (error) {
       console.error("Error getting promotion by ID:", error);
-      res.status(500).json({
-        promotion: null as any,
-      });
+      const response: GetPromotionResponse = {
+        success: false,
+        error: "Failed to retrieve promotion",
+      };
+      res.status(500).json(response);
     }
   }
 
   /**
    * Create new promotion
-   * @param req - Express request object
-   * @param res - Express response object
    */
-  static async createPromotion(
-    req: Request<{}, CreatePromotionResponse, CreatePromotionRequest>,
-    res: Response<CreatePromotionResponse>
-  ): Promise<void> {
+  static async createPromotion(req: Request, res: Response): Promise<void> {
     try {
-      const promotionData = req.body.promotion;
-      const newPromotion = await PromotionService.createPromotion(promotionData);
-      
-      res.status(201).json({
+      const promotionData = req.body as CreatePromotionRequestBody;
+      const newPromotion = await PromotionService.create(promotionData);
+
+      const response: CreatePromotionResponse = {
+        success: true,
         id: newPromotion.id,
-        promotion: newPromotion,
-      });
+        data: promotionData,
+      };
+      res.status(201).json(response);
     } catch (error) {
       console.error("Error creating promotion:", error);
-      res.status(500).json({
+      const response: CreatePromotionResponse = {
+        success: false,
+        error: "Failed to create promotion",
         id: "",
-        promotion: null as any,
-      });
+      };
+      res.status(500).json(response);
     }
   }
 
   /**
    * Update existing promotion
-   * @param req - Express request object
-   * @param res - Express response object
    */
-  static async updatePromotion(
-    req: Request<UpdatePromotionRequestParams, UpdatePromotionResponse, UpdatePromotionRequest>,
-    res: Response<UpdatePromotionResponse>
-  ): Promise<void> {
+  static async updatePromotion(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
-      const updateData = req.body.promotion;
-      
-      const updatedPromotion = await PromotionService.updatePromotion(id, updateData);
-      
+      const { id } = req.params as unknown as UpdatePromotionRequestParams;
+      const updateData = req.body as UpdatePromotionRequestBody;
+
+      const updatedPromotion = await PromotionService.update(id, updateData);
+
       if (!updatedPromotion) {
-        res.status(404).json({
+        const response: UpdatePromotionResponse = {
+          success: false,
+          error: "Promotion not found",
           updated: false,
-          promotion: null as any,
-        });
+        };
+        res.status(404).json(response);
         return;
       }
 
-      res.status(200).json({
+      const response: UpdatePromotionResponse = {
+        success: true,
         updated: true,
-        promotion: updatedPromotion,
-      });
+        data: updateData,
+      };
+      res.status(200).json(response);
     } catch (error) {
       console.error("Error updating promotion:", error);
-      res.status(500).json({
+      const response: UpdatePromotionResponse = {
+        success: false,
+        error: "Failed to update promotion",
         updated: false,
-        promotion: null as any,
-      });
+      };
+      res.status(500).json(response);
     }
   }
 
   /**
    * Delete promotion by ID
-   * @param req - Express request object
-   * @param res - Express response object
    */
-  static async deletePromotion(
-    req: Request<DeletePromotionRequestParams, DeletePromotionResponse>,
-    res: Response<DeletePromotionResponse>
-  ): Promise<void> {
+  static async deletePromotion(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
-      const deleted = await PromotionService.deletePromotion(id);
-      
+      const { id } = req.params as unknown as DeletePromotionRequestParams;
+      const deleted = await PromotionService.delete(id);
+
       if (!deleted) {
-        res.status(404).json({
+        const response: DeletePromotionResponse = {
+          success: false,
+          error: "Promotion not found",
           deleted: false,
-        });
+        };
+        res.status(404).json(response);
         return;
       }
 
-      res.status(200).json({
+      const response: DeletePromotionResponse = {
+        success: true,
         deleted: true,
-      });
+      };
+      res.status(200).json(response);
     } catch (error) {
       console.error("Error deleting promotion:", error);
-      res.status(500).json({
+      const response: DeletePromotionResponse = {
+        success: false,
+        error: "Failed to delete promotion",
         deleted: false,
-      });
+      };
+      res.status(500).json(response);
     }
   }
 }

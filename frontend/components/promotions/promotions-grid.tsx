@@ -1,6 +1,6 @@
 "use client";
 
-import { Promotion } from "@/data/mock/promotions";
+import { Promotion, PromotionCreate } from "colori-platform-shared";
 import { PromotionCard } from "./promotion-card";
 
 interface PromotionsGridProps {
@@ -16,10 +16,11 @@ export function PromotionsGrid({
   const filteredPromotions = showInactive
     ? promotions
     : promotions.filter((promo) => {
+        const promotionData = promo as unknown as PromotionCreate;
         const now = new Date();
-        const startDate = new Date(promo.startDate);
-        const endDate = new Date(promo.endDate);
-        return now >= startDate && now <= endDate && promo.active;
+        const startDate = new Date(promotionData.startDate);
+        const endDate = new Date(promotionData.endDate);
+        return now >= startDate && now <= endDate && promotionData.active;
       });
 
   // Si no hay promociones para mostrar

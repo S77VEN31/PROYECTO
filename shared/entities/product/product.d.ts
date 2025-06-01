@@ -2,7 +2,8 @@
  * Type declarations for Product entities
  */
 
-import { EntityBase, EntityMetadata } from "@shared/entities";
+import { Image } from "@shared/common";
+import { ClientEntity, DatabaseEntity, EntityMetadata } from "@shared/entities";
 
 /**
  * Dietary and nutritional information for food products
@@ -40,94 +41,115 @@ export declare interface ProductBase extends EntityMetadata {
 }
 
 /**
- * Complete product representation with unique identifier
+ * Complete product representation for client-side (API responses, frontend)
  * @interface Product
- * @extends ProductBase
+ * @extends ClientEntity<ProductBase>
  * @property {string} id - Unique identifier for the product
  */
-export declare interface Product extends ProductBase {
-  id: string;
-}
+export declare interface Product extends ClientEntity<ProductBase> {}
+
+/**
+ * Product representation for database operations (backend)
+ * @interface ProductDocument
+ * @extends DatabaseEntity<ProductBase>
+ * @property {string} _id - MongoDB ObjectId as string
+ */
+export declare interface ProductDocument extends DatabaseEntity<ProductBase> {}
 
 /**
  * Input type for product creation operations
  * @type ProductCreate
  */
-export declare type ProductCreate = Omit<Partial<Product>, "id"> &
-  Pick<EntityBase, "name" | "description">;
+export declare type ProductCreate = {
+  // Required fields from EntityBase
+  name: string;
+  description: string;
+  // Required product-specific fields
+  price: number;
+  // Optional product-specific fields
+  longDescription?: string;
+  tags?: string[];
+  nutritionalInfo?: NutritionalInfo;
+  preparationTime?: number;
+  // Optional EntityBase fields
+  active?: boolean;
+  // Optional EntityMetadata fields
+  slug?: string;
+  searchTerm?: string;
+  backgroundImages?: Image[];
+};
 
 /**
  * Input type for product update operations
  * @type ProductUpdate
  */
-export declare type ProductUpdate = Omit<Partial<Product>, "id">;
+export declare type ProductUpdate = Partial<{
+  name: string;
+  description: string;
+  price: number;
+  longDescription: string;
+  tags: string[];
+  nutritionalInfo: NutritionalInfo;
+  preparationTime: number;
+}>;
 
 /**
  * @fileoverview Product API request and response type definitions
  */
 
-import { IdParam, PaginationParams } from "@shared/common";
-import { Product, ProductCreate, ProductUpdate } from "@shared/entities";
+import {
+  ApiResponse,
+  CreateResponse,
+  DeleteResponse,
+  GetResponse,
+  IdParam,
+  PaginatedResponse,
+  PaginationParams,
+  SearchableParams,
+  UpdateResponse,
+} from "@shared/common";
 
-// GET /products
-export interface GetProductsRequest extends PaginationParams {
+/**
+ * Product filter parameters
+ * @interface ProductFilterParams
+ * @extends PaginationParams
+ * @extends SearchableParams
+ * @property {string} [category] - Filter by category
+ * @property {string} [tag] - Filter by tag
+ * @property {number} [minPrice] - Minimum price filter
+ * @property {number} [maxPrice] - Maximum price filter
+ */
+export interface ProductFilterParams extends PaginationParams, SearchableParams {
   category?: string;
   tag?: string;
-  search?: string;
   minPrice?: number;
   maxPrice?: number;
 }
 
-export interface GetProductsResponse {
-  products: Product[];
-  total: number;
-  page: number;
-  limit: number;
-}
+// GET /products
+export interface GetProductsRequestParams extends ProductFilterParams {}
 
-// GET /products/:id
-export interface GetProductRequest extends IdParam {}
+export interface GetProductsResponse
+  extends ApiResponse<PaginatedResponse<Product>> {}
 
-export interface GetProductResponse {
-  product: Product;
-}
+// GET /products/:id - params only
+export interface GetProductRequestParams extends IdParam {}
 
-// POST /products
-export interface CreateProductRequest {
-  product: ProductCreate;
-}
+export interface GetProductResponse extends GetResponse<Product> {}
 
-export interface CreateProductResponse {
-  id: string;
-  product: Product;
-}
+// POST /products - body only (product data without nesting)
+export interface CreateProductRequestBody extends ProductCreate {}
 
-// PUT /products/:id
-export interface UpdateProductRequest extends IdParam {
-  product: ProductUpdate;
-}
+export interface CreateProductResponse extends CreateResponse<ProductCreate> {}
 
-export interface UpdateProductResponse {
-  updated: boolean;
-  product: Product;
-}
+// PUT /products/:id - params + body
+export interface UpdateProductRequestParams extends IdParam {}
 
-// DELETE /products/:id
-export interface DeleteProductRequest extends IdParam {}
+export interface UpdateProductRequestBody extends ProductUpdate {}
 
-export interface DeleteProductResponse {
-  deleted: boolean;
-}
+export interface UpdateProductResponse extends UpdateResponse<ProductUpdate> {}
 
-// Express compatible request parameter types
-export type GetProductRequestParams = {
-  id: string;
-};
+// DELETE /products/:id - params only
+export interface DeleteProductRequestParams extends IdParam {}
 
-export type UpdateProductRequestParams = {
-  id: string;
-};
-
-export type DeleteProductRequestParams = {
-  id: string;
-};
+export interface DeleteProductResponse extends DeleteResponse<Product> {}

@@ -2,14 +2,25 @@
  * Schemas for Product entities
  */
 
-import { ImageSchema, MongoIdSchema } from "@shared/common";
 import {
+  IdParamSchema,
+  ImageSchema,
+  PaginationParamsSchema,
+  SearchableParamsSchema,
+} from "@shared/common";
+import {
+  CreateProductRequestBody,
+  DeleteProductRequestParams,
   EntityMetadataSchema,
+  GetProductRequestParams,
+  GetProductsRequestParams,
   NutritionalInfo,
   Product,
   ProductBase,
   ProductCreate,
   ProductUpdate,
+  UpdateProductRequestBody,
+  UpdateProductRequestParams,
 } from "@shared/entities";
 import { z } from "zod";
 
@@ -39,7 +50,7 @@ export const ProductBaseSchema = EntityMetadataSchema.extend({
  * Schema for complete product representation
  */
 export const ProductSchema = ProductBaseSchema.extend({
-  id: MongoIdSchema,
+  id: z.string().min(1),
 }) satisfies z.ZodType<Product>;
 
 /**
@@ -55,54 +66,55 @@ export const ProductCreateSchema = z.object({
   preparationTime: z.number().nonnegative().optional(),
   slug: z.string().optional(),
   backgroundImages: z.array(ImageSchema).optional(),
+  active: z.boolean().optional(),
 }) satisfies z.ZodType<ProductCreate>;
 
 /**
  * Schema for product updates
  */
-export const ProductUpdateSchema = ProductBaseSchema.omit({
-  id: true,
-}).partial() satisfies z.ZodType<ProductUpdate>;
+export const ProductUpdateSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  description: z.string().min(1).optional(),
+  price: z.number().positive().optional(),
+  longDescription: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  nutritionalInfo: NutritionalInfoSchema.optional(),
+  preparationTime: z.number().nonnegative().optional(),
+  slug: z.string().optional(),
+  backgroundImages: z.array(ImageSchema).optional(),
+  active: z.boolean().optional(),
+}) satisfies z.ZodType<ProductUpdate>;
 
 /**
  * Product request validation schemas
  */
 
-export const GetProductRequestSchema = z.object({
-  id: MongoIdSchema,
-});
+// GET /products - validate query parameters
+export const GetProductsRequestParamsSchema = SearchableParamsSchema.merge(
+  PaginationParamsSchema
+).extend({
+  category: z.string().optional(),
+  tag: z.string().optional(),
+  minPrice: z.number().optional(),
+  maxPrice: z.number().optional(),
+}) satisfies z.ZodType<GetProductsRequestParams>;
 
-export const CreateProductRequestSchema = z.object({
-  product: z.object({
-    name: z.string().min(2).max(100),
-    description: z.string().min(1),
-    price: z.number().positive(),
-    longDescription: z.string().optional(),
-    tags: z.array(z.string()).optional(),
-    nutritionalInfo: NutritionalInfoSchema.optional(),
-    category: MongoIdSchema.optional(),
-    preparationTime: z.number().int().positive().optional(),
-    images: z.array(z.string().url()).optional(),
-    active: z.boolean().optional().default(true),
-  }),
-});
+// GET /products/:id - validate params
+export const GetProductRequestParamsSchema =
+  IdParamSchema satisfies z.ZodType<GetProductRequestParams>;
 
-export const UpdateProductRequestSchema = z.object({
-  id: MongoIdSchema,
-  product: z.object({
-    name: z.string().min(2).max(100).optional(),
-    description: z.string().min(1).optional(),
-    price: z.number().positive().optional(),
-    longDescription: z.string().optional(),
-    tags: z.array(z.string()).optional(),
-    nutritionalInfo: NutritionalInfoSchema.optional(),
-    category: MongoIdSchema.optional(),
-    preparationTime: z.number().int().positive().optional(),
-    images: z.array(z.string().url()).optional(),
-    active: z.boolean().optional(),
-  }),
-});
+// POST /products - validate body (product data without nesting)
+export const CreateProductRequestBodySchema =
+  ProductCreateSchema satisfies z.ZodType<CreateProductRequestBody>;
 
-export const DeleteProductRequestSchema = z.object({
-  id: MongoIdSchema,
-});
+// PUT /products/:id - validate params
+export const UpdateProductRequestParamsSchema =
+  IdParamSchema satisfies z.ZodType<UpdateProductRequestParams>;
+
+// PUT /products/:id - validate body
+export const UpdateProductRequestBodySchema =
+  ProductUpdateSchema satisfies z.ZodType<UpdateProductRequestBody>;
+
+// DELETE /products/:id - validate params
+export const DeleteProductRequestParamsSchema =
+  IdParamSchema satisfies z.ZodType<DeleteProductRequestParams>;

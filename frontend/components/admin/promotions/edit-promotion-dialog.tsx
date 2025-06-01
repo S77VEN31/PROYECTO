@@ -1,7 +1,17 @@
 "use client";
 
+import { CategoryApiService } from "@/api/entities/category.api";
+import { ProductApiService } from "@/api/entities/product.api";
 import { PromotionApiService } from "@/api/entities/promotion.api";
 import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Dialog,
   DialogContent,
@@ -20,36 +30,32 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Category,
+  Product,
   Promotion,
+  PromotionCreate,
   PromotionType,
-  UpdatePromotionRequest,
+  PromotionUpdate,
+  PromotionUpdateSchema,
+  UpdatePromotionRequestBody,
 } from "colori-platform-shared";
+import { Check, ChevronsUpDown, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-
-// Simple form data type
-interface EditPromotionFormData {
-  name: string;
-  description: string;
-  type: PromotionType;
-  startDate: string;
-  endDate: string;
-  code?: string;
-  discountValue?: number;
-  discountPercent?: number;
-  minimumPurchase?: number;
-  usageLimit?: number;
-  active: boolean;
-}
 
 /**
  * Edit promotion dialog props
@@ -73,8 +79,15 @@ export function EditPromotionDialog({
   onPromotionUpdated,
 }: EditPromotionDialogProps): React.JSX.Element | null {
   const [isLoading, setIsLoading] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [productSelectorOpen, setProductSelectorOpen] = useState(false);
+  const [categorySelectorOpen, setCategorySelectorOpen] = useState(false);
 
-  const form = useForm<EditPromotionFormData>({
+  const form = useForm<PromotionUpdate>({
+    resolver: zodResolver(PromotionUpdateSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -86,29 +99,75 @@ export function EditPromotionDialog({
       discountPercent: undefined,
       minimumPurchase: undefined,
       usageLimit: undefined,
-      active: true,
+      applicableProducts: [],
+      applicableCategories: [],
+      slug: "",
+      searchTerm: "",
     },
   });
+
+  // Load products when dialog opens
+  useEffect(() => {
+    if (open) {
+      const loadProducts = async () => {
+        try {
+          setLoadingProducts(true);
+          const response = await ProductApiService.getProducts({});
+          setProducts(response?.data || []);
+        } catch (error) {
+          console.error("Error loading products:", error);
+        } finally {
+          setLoadingProducts(false);
+        }
+      };
+
+      loadProducts();
+    }
+  }, [open]);
+
+  // Load categories when dialog opens
+  useEffect(() => {
+    if (open) {
+      const loadCategories = async () => {
+        try {
+          setLoadingCategories(true);
+          const response = await CategoryApiService.getCategories({});
+          setCategories(response?.data || []);
+        } catch (error) {
+          console.error("Error loading categories:", error);
+        } finally {
+          setLoadingCategories(false);
+        }
+      };
+
+      loadCategories();
+    }
+  }, [open]);
 
   // Update form data when promotion changes
   useEffect(() => {
     if (promotion) {
+      // Cast to PromotionCreate to access the properties we need for the form
+      const promotionData = promotion as unknown as PromotionCreate;
       form.reset({
-        name: promotion.name || "",
-        description: promotion.description || "",
-        type: promotion.type,
-        startDate: promotion.startDate
-          ? new Date(promotion.startDate).toISOString().slice(0, 16)
+        name: promotionData.name || "",
+        description: promotionData.description || "",
+        type: promotionData.type,
+        startDate: promotionData.startDate
+          ? new Date(promotionData.startDate).toISOString().slice(0, 16)
           : "",
-        endDate: promotion.endDate
-          ? new Date(promotion.endDate).toISOString().slice(0, 16)
+        endDate: promotionData.endDate
+          ? new Date(promotionData.endDate).toISOString().slice(0, 16)
           : "",
-        code: promotion.code || "",
-        discountValue: promotion.discountValue || undefined,
-        discountPercent: promotion.discountPercent || undefined,
-        minimumPurchase: promotion.minimumPurchase || undefined,
-        usageLimit: promotion.usageLimit || undefined,
-        active: promotion.active ?? true,
+        code: promotionData.code || "",
+        discountValue: promotionData.discountValue || undefined,
+        discountPercent: promotionData.discountPercent || undefined,
+        minimumPurchase: promotionData.minimumPurchase || undefined,
+        usageLimit: promotionData.usageLimit || undefined,
+        applicableProducts: promotionData.applicableProducts || [],
+        applicableCategories: promotionData.applicableCategories || [],
+        slug: promotionData.slug || "",
+        searchTerm: promotionData.searchTerm || "",
       });
     }
   }, [promotion, form]);
@@ -116,7 +175,7 @@ export function EditPromotionDialog({
   /**
    * Handle form submission
    */
-  const onSubmit = async (data: EditPromotionFormData) => {
+  const onSubmit = async (data: PromotionUpdate) => {
     if (!promotion) return;
 
     setIsLoading(true);
@@ -134,32 +193,27 @@ export function EditPromotionDialog({
       }
 
       // Validate dates
-      const startDate = new Date(data.startDate);
-      const endDate = new Date(data.endDate);
+      if (data.startDate && data.endDate) {
+        const startDate = new Date(data.startDate);
+        const endDate = new Date(data.endDate);
 
-      if (endDate <= startDate) {
-        form.setError("endDate", {
-          message: "La fecha de fin debe ser posterior a la fecha de inicio",
-        });
-        setIsLoading(false);
-        return;
+        if (endDate <= startDate) {
+          form.setError("endDate", {
+            message: "La fecha de fin debe ser posterior a la fecha de inicio",
+          });
+          setIsLoading(false);
+          return;
+        }
       }
 
-      const updateData: UpdatePromotionRequest = {
-        id: promotion.id,
-        promotion: {
-          name: data.name,
-          description: data.description,
-          type: data.type,
-          startDate: new Date(data.startDate).toISOString(),
-          endDate: new Date(data.endDate).toISOString(),
-          code: data.code || undefined,
-          discountValue: data.discountValue || undefined,
-          discountPercent: data.discountPercent || undefined,
-          minimumPurchase: data.minimumPurchase || undefined,
-          usageLimit: data.usageLimit || undefined,
-          active: data.active,
-        },
+      const updateData: UpdatePromotionRequestBody = {
+        ...data,
+        startDate: data.startDate
+          ? new Date(data.startDate).toISOString()
+          : undefined,
+        endDate: data.endDate
+          ? new Date(data.endDate).toISOString()
+          : undefined,
       };
 
       const updatedPromotion = await PromotionApiService.updatePromotion(
@@ -208,7 +262,8 @@ export function EditPromotionDialog({
         <DialogHeader>
           <DialogTitle>Editar Promoción</DialogTitle>
           <DialogDescription>
-            Modifica la información de la promoción &quot;{promotion.name}
+            Modifica la información de la promoción &quot;
+            {(promotion as unknown as PromotionCreate).name}
             &quot;.
           </DialogDescription>
         </DialogHeader>
@@ -291,6 +346,51 @@ export function EditPromotionDialog({
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URL Amigable (Slug)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="URL amigable para la promoción"
+                        {...field}
+                        className="font-mono text-sm"
+                      />
+                    </FormControl>
+                    <div className="text-xs text-muted-foreground">
+                      Se usa para crear URLs amigables. Puedes editarlo
+                      manualmente.
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="searchTerm"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Términos de Búsqueda Adicionales (Opcional)
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ej: oferta, rebaja, especial"
+                        {...field}
+                      />
+                    </FormControl>
+                    <div className="text-xs text-muted-foreground">
+                      Palabras clave adicionales para mejorar la búsqueda de
+                      esta promoción.
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             {/* Date Range */}
@@ -348,7 +448,7 @@ export function EditPromotionDialog({
                             step="0.01"
                             min="0"
                             placeholder="0.00"
-                            {...field}
+                            value={field.value || ""}
                             onChange={(e) =>
                               field.onChange(
                                 e.target.value
@@ -375,7 +475,7 @@ export function EditPromotionDialog({
                             min="0"
                             max="100"
                             placeholder="0"
-                            {...field}
+                            value={field.value || ""}
                             onChange={(e) =>
                               field.onChange(
                                 e.target.value
@@ -396,7 +496,6 @@ export function EditPromotionDialog({
             {/* Additional Settings */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Configuración Adicional</h3>
-
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -410,7 +509,7 @@ export function EditPromotionDialog({
                           step="0.01"
                           min="0"
                           placeholder="0.00"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(
                               e.target.value
@@ -436,7 +535,7 @@ export function EditPromotionDialog({
                           type="number"
                           min="1"
                           placeholder="Sin límite"
-                          {...field}
+                          value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(
                               e.target.value
@@ -451,26 +550,269 @@ export function EditPromotionDialog({
                   )}
                 />
               </div>
-
+              {/* Productos Aplicables */}
               <FormField
                 control={form.control}
-                name="active"
+                name="applicableProducts"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">
-                        Promoción Activa
-                      </FormLabel>
-                      <div className="text-sm text-muted-foreground">
-                        La promoción estará disponible para los clientes
-                      </div>
+                  <FormItem>
+                    <FormLabel>Productos Aplicables (Opcional)</FormLabel>
+                    <div className="text-sm text-muted-foreground mb-3">
+                      Selecciona los productos a los que se aplicará esta
+                      promoción. Si no seleccionas ninguno, se aplicará a todos
+                      los productos.
                     </div>
                     <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Popover
+                        open={productSelectorOpen}
+                        onOpenChange={setProductSelectorOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={productSelectorOpen}
+                            className="w-full justify-between h-auto min-h-[40px] p-2"
+                          >
+                            <div className="flex flex-wrap gap-1 flex-1">
+                              {field.value && field.value.length > 0 ? (
+                                field.value.map((productId) => {
+                                  const product = products.find(
+                                    (p) => p.id === productId
+                                  );
+                                  const productWithProps =
+                                    product as Product & {
+                                      name: string;
+                                      price: number;
+                                    };
+                                  return productWithProps ? (
+                                    <div
+                                      key={productId}
+                                      className="bg-primary text-primary-foreground px-2 py-1 rounded-md text-xs flex items-center gap-1"
+                                    >
+                                      {productWithProps.name}
+                                      <X
+                                        className="h-3 w-3 cursor-pointer hover:opacity-70"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          field.onChange(
+                                            field.value?.filter(
+                                              (id) => id !== productId
+                                            ) || []
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  ) : null;
+                                })
+                              ) : (
+                                <span className="text-muted-foreground">
+                                  Seleccionar productos...
+                                </span>
+                              )}
+                            </div>
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0" align="start">
+                          <Command>
+                            <CommandInput placeholder="Buscar productos..." />
+                            <CommandEmpty>
+                              {loadingProducts
+                                ? "Cargando productos..."
+                                : "No se encontraron productos."}
+                            </CommandEmpty>
+                            <CommandList>
+                              <CommandGroup className="max-h-64 overflow-auto">
+                                {products.map((product) => {
+                                  const productWithProps =
+                                    product as Product & {
+                                      name: string;
+                                      price: number;
+                                    };
+                                  const isSelected =
+                                    field.value?.includes(product.id) || false;
+                                  return (
+                                    <CommandItem
+                                      key={product.id}
+                                      value={`${productWithProps.name} ${productWithProps.price}`}
+                                      onSelect={() => {
+                                        const currentProducts =
+                                          field.value || [];
+                                        if (isSelected) {
+                                          field.onChange(
+                                            currentProducts.filter(
+                                              (id) => id !== product.id
+                                            )
+                                          );
+                                        } else {
+                                          field.onChange([
+                                            ...currentProducts,
+                                            product.id,
+                                          ]);
+                                        }
+                                      }}
+                                    >
+                                      <Check
+                                        className={`mr-2 h-4 w-4 ${
+                                          isSelected
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        }`}
+                                      />
+                                      <div className="flex-1">
+                                        <div className="font-medium">
+                                          {productWithProps.name}
+                                        </div>
+                                        <div className="text-sm text-muted-foreground">
+                                          €{productWithProps.price.toFixed(2)}
+                                        </div>
+                                      </div>
+                                    </CommandItem>
+                                  );
+                                })}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Categorías Aplicables */}
+              <FormField
+                control={form.control}
+                name="applicableCategories"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Categorías Aplicables (Opcional)</FormLabel>
+                    <div className="text-sm text-muted-foreground mb-3">
+                      Selecciona las categorías a las que se aplicará esta
+                      promoción. Si no seleccionas ninguna, se aplicará a todas
+                      las categorías.
+                    </div>
+                    <FormControl>
+                      <Popover
+                        open={categorySelectorOpen}
+                        onOpenChange={setCategorySelectorOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={categorySelectorOpen}
+                            className="w-full justify-between h-auto min-h-[40px] p-2"
+                          >
+                            <div className="flex flex-wrap gap-1 flex-1">
+                              {field.value && field.value.length > 0 ? (
+                                field.value.map((categoryId) => {
+                                  const category = categories.find(
+                                    (c) => c.id === categoryId
+                                  );
+                                  const categoryWithProps =
+                                    category as Category & {
+                                      name: string;
+                                      icon: string;
+                                    };
+                                  return categoryWithProps ? (
+                                    <div
+                                      key={categoryId}
+                                      className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs flex items-center gap-1"
+                                    >
+                                      {categoryWithProps.name}
+                                      <X
+                                        className="h-3 w-3 cursor-pointer hover:opacity-70"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          field.onChange(
+                                            field.value?.filter(
+                                              (id) => id !== categoryId
+                                            ) || []
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  ) : null;
+                                })
+                              ) : (
+                                <span className="text-muted-foreground">
+                                  Seleccionar categorías...
+                                </span>
+                              )}
+                            </div>
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0" align="start">
+                          <Command>
+                            <CommandInput placeholder="Buscar categorías..." />
+                            <CommandEmpty>
+                              {loadingCategories
+                                ? "Cargando categorías..."
+                                : "No se encontraron categorías."}
+                            </CommandEmpty>
+                            <CommandList>
+                              <CommandGroup className="max-h-64 overflow-auto">
+                                {categories.map((category) => {
+                                  const categoryWithProps =
+                                    category as Category & {
+                                      name: string;
+                                      icon: string;
+                                      displayOrder: number;
+                                    };
+                                  const isSelected =
+                                    field.value?.includes(category.id) || false;
+                                  return (
+                                    <CommandItem
+                                      key={category.id}
+                                      value={`${categoryWithProps.name} ${categoryWithProps.icon}`}
+                                      onSelect={() => {
+                                        const currentCategories =
+                                          field.value || [];
+                                        if (isSelected) {
+                                          field.onChange(
+                                            currentCategories.filter(
+                                              (id) => id !== category.id
+                                            )
+                                          );
+                                        } else {
+                                          field.onChange([
+                                            ...currentCategories,
+                                            category.id,
+                                          ]);
+                                        }
+                                      }}
+                                    >
+                                      <Check
+                                        className={`mr-2 h-4 w-4 ${
+                                          isSelected
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        }`}
+                                      />
+                                      <div className="flex-1">
+                                        <div className="font-medium flex items-center gap-2">
+                                          <span>{categoryWithProps.icon}</span>
+                                          {categoryWithProps.name}
+                                        </div>
+                                        <div className="text-sm text-muted-foreground">
+                                          Orden:{" "}
+                                          {categoryWithProps.displayOrder}
+                                        </div>
+                                      </div>
+                                    </CommandItem>
+                                  );
+                                })}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

@@ -5,16 +5,16 @@
 
 import { AxiosError } from 'axios';
 import {
-  CreateProductRequest,
+  CreateProductRequestBody,
   CreateProductResponse,
   DeleteProductRequestParams,
   DeleteProductResponse,
   GetProductRequestParams,
   GetProductResponse,
-  GetProductsRequest,
+  GetProductsRequestParams,
   GetProductsResponse,
   Product,
-  UpdateProductRequest,
+  UpdateProductRequestBody,
   UpdateProductRequestParams,
   UpdateProductResponse,
 } from "colori-platform-shared";
@@ -30,19 +30,21 @@ export class ProductApiService {
    * @returns Promise with paginated product list
    */
   static async getProducts(
-    filterParams: GetProductsRequest = {}
-  ): Promise<GetProductsResponse> {
+    filterParams: GetProductsRequestParams = {}
+  ): Promise<GetProductsResponse["data"]> {
     try {
       const response = await apiClient.get<GetProductsResponse>("/products", {
         params: filterParams,
       });
 
-      return response.data;
+      if (response.data.success && response.data.data) {
+        return response.data.data;
+      }
+
+      throw new Error(response.data.error || "Failed to fetch products");
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
-      throw new Error(
-        axiosError.message || "Failed to fetch products"
-      );
+      throw new Error(axiosError.message || "Failed to fetch products");
     }
   }
 
@@ -51,18 +53,22 @@ export class ProductApiService {
    * @param params - Product request parameters
    * @returns Promise with product data
    */
-  static async getProductById(params: GetProductRequestParams): Promise<Product> {
+  static async getProductById(
+    params: GetProductRequestParams
+  ): Promise<Product> {
     try {
       const response = await apiClient.get<GetProductResponse>(
         `/products/${params.id}`
       );
 
-      return response.data.product;
+      if (response.data.success && response.data.data) {
+        return response.data.data;
+      }
+
+      throw new Error(response.data.error || "Failed to fetch product");
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
-      throw new Error(
-        axiosError.message || "Failed to fetch product"
-      );
+      throw new Error(axiosError.message || "Failed to fetch product");
     }
   }
 
@@ -71,24 +77,24 @@ export class ProductApiService {
    * @param productData - Product creation data
    * @returns Promise with created product
    */
-  static async createProduct(productData: CreateProductRequest): Promise<Product> {
+  static async createProduct(
+    productData: CreateProductRequestBody
+  ): Promise<Product> {
     try {
       const response = await apiClient.post<CreateProductResponse>(
         "/products",
         productData
       );
 
-      if (response.data.product) {
-        // Return the product directly from the response
-        return response.data.product;
+      if (response.data.success && response.data.id) {
+        // Fetch the created product to return the complete Product object
+        return await this.getProductById({ id: response.data.id });
       }
 
-      throw new Error("Failed to create product");
+      throw new Error(response.data.error || "Failed to create product");
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
-      throw new Error(
-        axiosError.message || "Failed to create product"
-      );
+      throw new Error(axiosError.message || "Failed to create product");
     }
   }
 
@@ -100,7 +106,7 @@ export class ProductApiService {
    */
   static async updateProduct(
     params: UpdateProductRequestParams,
-    productData: UpdateProductRequest
+    productData: UpdateProductRequestBody
   ): Promise<Product> {
     try {
       const response = await apiClient.put<UpdateProductResponse>(
@@ -108,17 +114,15 @@ export class ProductApiService {
         productData
       );
 
-      if (response.data.updated) {
+      if (response.data.success && response.data.updated) {
         // For updates, we need to fetch the updated product since the response doesn't include it
         return await this.getProductById({ id: params.id });
       }
 
-      throw new Error("Failed to update product");
+      throw new Error(response.data.error || "Failed to update product");
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
-      throw new Error(
-        axiosError.message || "Failed to update product"
-      );
+      throw new Error(axiosError.message || "Failed to update product");
     }
   }
 
@@ -127,14 +131,16 @@ export class ProductApiService {
    * @param params - Product request parameters
    * @returns Promise with deletion confirmation
    */
-  static async deleteProduct(params: DeleteProductRequestParams): Promise<boolean> {
+  static async deleteProduct(
+    params: DeleteProductRequestParams
+  ): Promise<boolean> {
     try {
       const response = await apiClient.delete<DeleteProductResponse>(
         `/products/${params.id}`
       );
 
-      // Handle successful response - backend returns { deleted: true }
-      if (response.data.deleted !== undefined) {
+      // Handle successful response - backend returns { success: true, deleted: true }
+      if (response.data.success && response.data.deleted !== undefined) {
         return response.data.deleted;
       }
 
@@ -143,7 +149,7 @@ export class ProductApiService {
         return true;
       }
 
-      throw new Error("Failed to delete product");
+      throw new Error(response.data.error || "Failed to delete product");
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
 
@@ -163,9 +169,7 @@ export class ProductApiService {
         return true;
       }
 
-      throw new Error(
-        axiosError.message || "Failed to delete product"
-      );
+      throw new Error(axiosError.message || "Failed to delete product");
     }
   }
 } 

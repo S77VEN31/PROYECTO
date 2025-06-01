@@ -1,12 +1,34 @@
 import { ApiError } from "@/middlewares";
 import { ProductModel } from "@models";
 import {
-  GetProductsRequest,
-  GetProductsResponse,
+  GetProductsRequestParams,
+  PaginatedResponse,
   Product,
   ProductCreate,
   ProductUpdate,
 } from "colori-platform-shared";
+
+/**
+ * Transform MongoDB document to Product type
+ */
+function transformToProduct(doc: any): Product {
+  return {
+    id: doc._id?.toString() || doc.id,
+    name: doc.name,
+    description: doc.description,
+    slug: doc.slug,
+    price: doc.price,
+    longDescription: doc.longDescription,
+    tags: doc.tags || [],
+    nutritionalInfo: doc.nutritionalInfo,
+    preparationTime: doc.preparationTime,
+    active: doc.active ?? true,
+    createdAt: doc.createdAt,
+    updatedAt: doc.updatedAt,
+    searchTerm: doc.searchTerm,
+    backgroundImages: doc.backgroundImages || [],
+  } as any as Product;
+}
 
 /**
  * Product service implementation
@@ -17,8 +39,8 @@ export class ProductService {
    * Find all products with optional filtering and pagination
    */
   static async findAll(
-    options: GetProductsRequest
-  ): Promise<GetProductsResponse> {
+    options: GetProductsRequestParams
+  ): Promise<PaginatedResponse<Product>> {
     const {
       page = 1,
       limit = 10,
@@ -30,49 +52,45 @@ export class ProductService {
     } = options;
 
     // Build filter query
-    const filter: any = {};
-    
+    const query: any = {};
+
     if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
       ];
     }
-    
+
     if (category) {
-      filter.category = category;
+      query.category = category;
     }
-    
+
     if (tag) {
-      filter.tags = { $in: [tag] };
+      query.tags = { $in: [tag] };
     }
-    
+
     if (minPrice !== undefined || maxPrice !== undefined) {
-      filter.price = {};
-      if (minPrice !== undefined) filter.price.$gte = minPrice;
-      if (maxPrice !== undefined) filter.price.$lte = maxPrice;
+      query.price = {};
+      if (minPrice !== undefined) query.price.$gte = minPrice;
+      if (maxPrice !== undefined) query.price.$lte = maxPrice;
     }
 
     const skip = (page - 1) * limit;
-    
+
     const [products, total] = await Promise.all([
-      ProductModel.find(filter).skip(skip).limit(limit).lean(),
-      ProductModel.countDocuments(filter)
+      ProductModel.find(query).skip(skip).limit(limit).lean(),
+      ProductModel.countDocuments(query),
     ]);
 
     // Transform MongoDB documents to Product objects
-    const transformedProducts = products.map(product => ({
-      ...product,
-      id: product._id.toString(),
-      _id: undefined,
-      __v: undefined,
-    })) as unknown as Product[];
+    const transformedProducts = products.map(transformToProduct);
 
     return {
-      products: transformedProducts,
+      data: transformedProducts,
       total,
       page,
       limit,
+      pages: Math.ceil(total / limit),
     };
   }
 
@@ -83,14 +101,8 @@ export class ProductService {
     try {
       const product = await ProductModel.findById(id).lean();
       if (!product) return null;
-      
-      // Transform MongoDB document to Product object
-      return {
-        ...product,
-        id: product._id.toString(),
-        _id: undefined,
-        __v: undefined,
-      } as unknown as Product;
+
+      return transformToProduct(product);
     } catch (error) {
       return null;
     }
@@ -114,14 +126,8 @@ export class ProductService {
       // Create product in database
       const product = await ProductModel.create(data);
       const productObj = product.toObject();
-      
-      // Transform MongoDB document to Product object
-      return {
-        ...productObj,
-        id: productObj._id.toString(),
-        _id: undefined,
-        __v: undefined,
-      } as unknown as Product;
+
+      return transformToProduct(productObj);
     } catch (error: any) {
       if (error instanceof ApiError) {
         throw error;
@@ -147,16 +153,10 @@ export class ProductService {
       // Update product fields
       Object.assign(product, data);
       await product.save();
-      
+
       const productObj = product.toObject();
-      
-      // Transform MongoDB document to Product object
-      return {
-        ...productObj,
-        id: productObj._id.toString(),
-        _id: undefined,
-        __v: undefined,
-      } as unknown as Product;
+
+      return transformToProduct(productObj);
     } catch (error: any) {
       if (error instanceof ApiError) {
         throw error;
