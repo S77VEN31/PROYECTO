@@ -1,44 +1,14 @@
 "use client";
 
+import { ProductsGrid } from "@/components/product/products-grid";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { mockCategories, mockProducts } from "@/data/mock";
-import { getVariantIconClass } from "@/lib/utils";
-import { Category } from "@/types/category";
-import { Product } from "@/types/products";
+import { CategoryApiService } from "@/api/entities/category.api";
+import { ProductApiService } from "@/api/entities/product.api";
+import { Category, Product } from "colori-platform-shared";
 import { ChevronLeft, Coffee } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useMemo } from "react";
-
-// Función para generar una URL de imagen confiable de Unsplash según el producto
-const getProductImageUrl = (product: Product, category?: Category): string => {
-  if (product.imageSrc && product.imageSrc.startsWith("http")) {
-    return product.imageSrc;
-  }
-
-  // Palabras clave basadas en el nombre del producto
-  const nameKeywords = product.name.toLowerCase().replace(/\s+/g, "-");
-
-  // Obtener el término de búsqueda de la categoría
-  const categoryTerm = category?.searchTerm || "food";
-
-  // URL completa de Unsplash con parámetros específicos para imágenes de mayor calidad
-  return `https://source.unsplash.com/featured/800x600/?${categoryTerm},${nameKeywords},food`;
-};
-
-// Función para convertir slugs a categoría
-const findCategoryBySlug = (slug: string): Category | undefined => {
-  return mockCategories.find((cat) => cat.slug === slug);
-};
+import { use, useEffect, useState } from "react";
 
 export default function CategoryPage({
   params,
@@ -46,94 +16,98 @@ export default function CategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const router = useRouter();
-
-  // Manejar los parámetros de forma segura usando React.use()
   const unwrappedParams = use(params);
   const categorySlug = unwrappedParams.category;
 
-  // Buscar la categoría por slug
-  const currentCategory = useMemo(() => {
-    if (!categorySlug) return undefined;
-    return findCategoryBySlug(categorySlug);
-  }, [categorySlug]);
+  const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
+  const [categoryProducts, setCategoryProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Para depuración: log cuando la categoría no se encuentra
   useEffect(() => {
-    if (categorySlug && !currentCategory) {
-      console.warn(`Categoría no encontrada para slug: "${categorySlug}"`);
-      console.warn(
-        "Categorías disponibles:",
-        mockCategories.map((c) => c.slug)
-      );
-    }
-  }, [categorySlug, currentCategory]);
+    const fetchCategoryAndProducts = async () => {
+      if (!categorySlug) return;
 
-  // Filtrar productos por categoría
-  const categoryProducts = useMemo(() => {
-    if (!currentCategory) return [];
+      try {
+        setLoading(true);
+        setError(null);
 
-    // Filtrar los productos del array mockProducts por categoría
-    return mockProducts.filter((product) => {
-      // Determinar si el producto pertenece a esta categoría
-      if (!product.categories || !product.categories.length) return false;
+        // Primero obtener todas las categorías para encontrar la que coincida con el slug
+        const categoriesResponse = await CategoryApiService.getCategories({
+          page: 1,
+          limit: 100,
+        });
 
-      return (
-        product.categories.some(
-          (cat) =>
-            (typeof cat === "object" &&
-              cat !== null &&
-              cat.id === currentCategory.id) ||
-            (typeof cat === "string" &&
-              (cat === currentCategory.id || cat === currentCategory.name))
-        ) && product.available
-      );
-    });
-  }, [currentCategory]);
+        if (!categoriesResponse || !categoriesResponse.data) {
+          throw new Error("No se pudieron cargar las categorías");
+        }
 
-  // Si no encuentra la categoría, redirigir a la página principal
-  if (!currentCategory) {
-    return (
-      <div className="container mx-auto py-8 px-4 max-w-7xl">
-        <h1 className="text-3xl font-bold mb-8 text-center">
-          Categoría no encontrada
-        </h1>
-        <p className="text-center mb-4 text-muted-foreground">
-          No se pudo encontrar la categoría &quot;{categorySlug}&quot;. Por
-          favor, elige otra categoría.
-        </p>
-        <div className="text-center">
-          <Button onClick={() => router.push("/client")}>
-            Volver al menú principal
-          </Button>
-        </div>
-      </div>
-    );
-  }
+        // Buscar la categoría por slug
+        const category = categoriesResponse.data.find((cat) => cat.slug === categorySlug);
 
-  if (categoryProducts.length === 0) {
-    return (
-      <div className="container mx-auto py-8 px-4 max-w-7xl">
-        <h1 className="text-3xl font-bold mb-8 text-center">
-          No hay productos disponibles en esta categoría
-        </h1>
-        <p className="text-center mb-4 text-muted-foreground">
-          La categoría &quot;{currentCategory.name}&quot; está vacía o los
-          productos no están disponibles.
-        </p>
-        <div className="text-center">
-          <Button onClick={() => router.push("/client")}>
-            Volver al menú principal
-          </Button>
-        </div>
-      </div>
-    );
-  }
+        if (!category) {
+          throw new Error(`Categoría "${categorySlug}" no encontrada`);
+        }
 
-  const IconComponent = currentCategory.icon || Coffee;
+        setCurrentCategory(category);
+
+        // Obtener productos de la categoría
+        const productsResponse = await ProductApiService.getProducts({
+          page: 1,
+          limit: 50,
+          category: category.id, // Filtrar por ID de categoría
+        });
+
+        if (productsResponse && productsResponse.data) {
+          setCategoryProducts(productsResponse.data);
+        } else {
+          setCategoryProducts([]);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Error al cargar la categoría");
+        console.error("Error fetching category and products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategoryAndProducts();
+  }, [categorySlug]);
 
   const handleSelectProduct = (product: Product) => {
     router.push(`/client/product/${product.id}`);
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto py-8 px-4 max-w-7xl">
+        <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rojo mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Cargando categoría...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !currentCategory) {
+    return (
+      <div className="container mx-auto py-8 px-4 max-w-7xl">
+        <h1 className="text-3xl font-bold mb-8 text-center">
+          {error || "Categoría no encontrada"}
+        </h1>
+        <p className="text-center mb-4 text-muted-foreground">
+          {error || `No se pudo encontrar la categoría "${categorySlug}".`}
+        </p>
+        <div className="text-center">
+          <Button onClick={() => router.push("/client")}>
+            Volver al menú principal
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-7xl">
@@ -149,9 +123,7 @@ export default function CategoryPage({
         </div>
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <IconComponent
-              className={getVariantIconClass(currentCategory.variant, "md")}
-            />
+            <Coffee className="h-12 w-12 text-rojo" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight">
             {currentCategory.name}
@@ -159,68 +131,21 @@ export default function CategoryPage({
           <p className="text-muted-foreground mt-2">
             {currentCategory.description}
           </p>
+          {categoryProducts.length > 0 && (
+            <p className="text-sm text-muted-foreground mt-1">
+              {categoryProducts.length} productos disponibles
+            </p>
+          )}
         </div>
       </div>
 
-      <div className="w-full relative my-8">
-        <div className="relative">
-          <Carousel
-            className="w-full"
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-          >
-            <CarouselContent>
-              {categoryProducts.map((product) => (
-                <CarouselItem
-                  key={product.id}
-                  className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
-                >
-                  <div className="p-1">
-                    <Card
-                      className="overflow-hidden cursor-pointer transition-all hover:shadow-md"
-                      onClick={() => handleSelectProduct(product)}
-                    >
-                      <div className="relative aspect-square">
-                        <Image
-                          src={
-                            product.imageSrc ||
-                            getProductImageUrl(product, currentCategory)
-                          }
-                          alt={product.name}
-                          fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          className="object-cover"
-                        />
-                      </div>
-                      <CardContent className="p-4">
-                        <h3 className="font-medium mb-1">{product.name}</h3>
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-                          {product.description}
-                        </p>
-                        <div className="font-semibold">
-                          ${product.price.toFixed(2)}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div className="absolute -left-4 top-1/2 -translate-y-1/2 hidden md:block">
-              <CarouselPrevious />
-            </div>
-            <div className="absolute -right-4 top-1/2 -translate-y-1/2 hidden md:block">
-              <CarouselNext />
-            </div>
-            <div className="flex justify-center gap-2 mt-4 md:hidden">
-              <CarouselPrevious />
-              <CarouselNext />
-            </div>
-          </Carousel>
-        </div>
-      </div>
+      {/* Grid de productos */}
+      <ProductsGrid 
+        products={categoryProducts}
+        onSelectProduct={handleSelectProduct}
+        showInactive={false}
+      />
     </div>
   );
 }
+

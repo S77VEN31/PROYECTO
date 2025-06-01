@@ -11,14 +11,11 @@ import {
 import { cn } from "@/lib/utils";
 import {
   BarChart3,
-  ClipboardList,
   FolderOpen,
   LogOut,
   Menu,
   Package,
   Percent,
-  Settings,
-  ShoppingCart,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -75,8 +72,9 @@ export function AdminMobileNav() {
             <span className="text-lg text-muted-foreground">Admin</span>
           </SheetTitle>
         </SheetHeader>
-        <div className="py-4 px-3">
-          <nav>
+        
+        <div className="flex flex-col h-full">
+          <nav className="flex-1 p-4">
             <ul className="space-y-2">
               <li>
                 <MobileLink
@@ -112,47 +110,15 @@ export function AdminMobileNav() {
               </li>
               <li>
                 <MobileLink
-                  href="/admin/orders"
-                  label="Pedidos"
-                  icon={<ShoppingCart className="h-4 w-4" />}
-                  onClose={() => {}}
-                />
-              </li>
-              <li>
-                <MobileLink
-                  href="/admin/inventory"
-                  label="Inventario"
-                  icon={<Package className="h-4 w-4" />}
-                  onClose={() => {}}
-                />
-              </li>
-              <li>
-                <MobileLink
                   href="/admin/promotions"
                   label="Promociones"
                   icon={<Percent className="h-4 w-4" />}
                   onClose={() => {}}
                 />
               </li>
-              <li>
-                <MobileLink
-                  href="/admin/reports"
-                  label="Informes"
-                  icon={<ClipboardList className="h-4 w-4" />}
-                  onClose={() => {}}
-                />
-              </li>
-              <li>
-                <MobileLink
-                  href="/admin/settings"
-                  label="Configuración"
-                  icon={<Settings className="h-4 w-4" />}
-                  onClose={() => {}}
-                />
-              </li>
             </ul>
           </nav>
-          <div className="mt-6 pt-6 border-t border-border">
+          <div className="mt-6 pt-6 border-t border-border p-4">
             <Button variant="default" className="w-full">
               <LogOut className="h-4 w-4 mr-2 text-primary-foreground" />
               Cerrar Sesión

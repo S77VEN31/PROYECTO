@@ -4,6 +4,7 @@
  */
 
 import {
+  GetProductsRequestParams,
   NutritionalInfo,
   Product,
   ProductCreate,
@@ -74,7 +75,42 @@ const minimalProductModel: ProductCreate = {
   price: 2.5,
 };
 
+/**
+ * Example of filtering products by category
+ * This will return all products that belong to the specified category
+ */
+const getProductsByCategoryExample: GetProductsRequestParams = {
+  category: "cat-001", // Category ID
+  page: 1,
+  limit: 20,
+};
+
+/**
+ * Example of filtering products with multiple parameters
+ * This combines category filtering with other filters
+ */
+const getProductsWithFiltersExample: GetProductsRequestParams = {
+  category: "cat-001", // Category ID
+  search: "coffee",
+  minPrice: 2.0,
+  maxPrice: 10.0,
+  tag: "hot",
+  page: 1,
+  limit: 10,
+};
+
+/**
+ * Example of getting all products without category filter
+ */
+const getAllProductsExample: GetProductsRequestParams = {
+  page: 1,
+  limit: 50,
+};
+
 export {
+  getAllProductsExample,
+  getProductsByCategoryExample,
+  getProductsWithFiltersExample,
   minimalProductModel,
   newProductModel,
   nutritionalInfoModel,

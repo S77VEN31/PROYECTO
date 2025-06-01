@@ -93,29 +93,37 @@ export { Image, ImageSchema };
 import { SeoMetadata } from "./metadata/metadata.d";
 import { SeoMetadataSchema } from "./metadata/metadata.schema";
 
-    // Re-export metadata types
-    export { SeoMetadata, SeoMetadataSchema };
+// Re-export metadata types
+export { SeoMetadata, SeoMetadataSchema };
 
-    /**
-     * Timestamp types and schemas
-     */
-    import {
-      CompletableTimestamp,
-      TimeStamps,
-      TimestampField,
-    } from "./timestamp/timestamp.d";
+/**
+ * Timestamp types and schemas
+ */
+import {
+  CompletableTimestamp,
+  TimeStamps,
+  TimestampField,
+} from "./timestamp/timestamp.d";
 
-    import {
-      CompletableTimestampSchema,
-      TimeStampsSchema,
-    } from "./timestamp/timestamp.schema";
+import {
+  CompletableTimestampSchema,
+  TimeStampsSchema,
+} from "./timestamp/timestamp.schema";
 
-    // Re-export timestamp types
-    export {
-      CompletableTimestamp,
-      CompletableTimestampSchema,
-      TimeStamps,
-      TimeStampsSchema,
-      TimestampField,
-    };
+// Re-export timestamp types
+export {
+  CompletableTimestamp,
+  CompletableTimestampSchema,
+  TimeStamps,
+  TimeStampsSchema,
+  TimestampField,
+};
+
+/**
+ * Type utilities
+ */
+import {} from "./type-utils";
+
+// Re-export type utilities
+// No utility types to export currently
 

@@ -45,8 +45,35 @@ export declare interface ProductBase extends EntityMetadata {
  * @interface Product
  * @extends ClientEntity<ProductBase>
  * @property {string} id - Unique identifier for the product
+ * @property {string} name - Name of the product
+ * @property {string} description - Description of the product
+ * @property {boolean} [active] - Whether the product is active
+ * @property {string} slug - URL-friendly identifier
+ * @property {string} [searchTerm] - Additional search keywords
+ * @property {Image[]} [backgroundImages] - Background images for the product
+ * @property {number} price - Product price
+ * @property {string} [longDescription] - Detailed product description
+ * @property {string[]} [tags] - Categorization tags
+ * @property {NutritionalInfo} [nutritionalInfo] - Nutritional information
+ * @property {number} [preparationTime] - Preparation time in minutes
  */
-export declare interface Product extends ClientEntity<ProductBase> {}
+export declare interface Product extends ClientEntity<ProductBase> {
+  // Explicit declaration of inherited properties for better type resolution
+  // From EntityBase
+  name: string;
+  description: string;
+  active?: boolean;
+  // From EntityMetadata
+  slug: string;
+  searchTerm?: string;
+  backgroundImages?: Image[];
+  // From ProductBase
+  price: number;
+  longDescription?: string;
+  tags?: string[];
+  nutritionalInfo?: NutritionalInfo;
+  preparationTime?: number;
+}
 
 /**
  * Product representation for database operations (backend)

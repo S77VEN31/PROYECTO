@@ -27,8 +27,33 @@ export declare interface CategoryBase extends EntityMetadata {
  * @interface Category
  * @extends ClientEntity<CategoryBase>
  * @property {string} id - Unique identifier for the category
+ * @property {string} name - Name of the category
+ * @property {string} description - Description of the category
+ * @property {boolean} [active] - Whether the category is active
+ * @property {string} slug - URL-friendly identifier
+ * @property {string} [searchTerm] - Additional search keywords
+ * @property {Image[]} [backgroundImages] - Background images for the category
+ * @property {string} icon - Icon identifier or path
+ * @property {number} displayOrder - Display order in listings
+ * @property {string[]} products - Product IDs associated with this category
+ * @property {CategoryVariant} variant - Visual styling variant
  */
-export declare interface Category extends ClientEntity<CategoryBase> {}
+export declare interface Category extends ClientEntity<CategoryBase> {
+  // Explicit declaration of inherited properties for better type resolution
+  // From EntityBase
+  name: string;
+  description: string;
+  active?: boolean;
+  // From EntityMetadata
+  slug: string;
+  searchTerm?: string;
+  backgroundImages?: Image[];
+  // From CategoryBase
+  icon: string;
+  displayOrder: number;
+  products: string[];
+  variant: CategoryVariant;
+}
 
 /**
  * Category representation for database operations (backend)
