@@ -180,6 +180,7 @@ export class UserService {
       if (data.lastName !== undefined) updateData.lastName = data.lastName;
       if (data.email !== undefined) updateData.email = data.email;
       if (data.role !== undefined) updateData.role = data.role;
+      if (data.active !== undefined) updateData.active = data.active;
 
       // Update the user and return the updated document
       const updatedUser = await UserModel.findByIdAndUpdate(
