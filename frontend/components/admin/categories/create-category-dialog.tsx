@@ -6,7 +6,16 @@
 "use client";
 
 import { CategoryApiService } from "@/api/entities/category.api";
+import { ProductApiService } from "@/api/entities/product.api";
 import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +34,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -33,8 +47,9 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Category, CategoryVariant } from "colori-platform-shared";
-import { useState } from "react";
+import { Category, CategoryVariant, Product } from "colori-platform-shared";
+import { Check, ChevronsUpDown, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 // Simple form data type
@@ -45,6 +60,7 @@ interface CreateCategoryFormData {
   variant: CategoryVariant;
   displayOrder: number;
   active: boolean;
+  products: string[];
 }
 
 /**
@@ -67,6 +83,9 @@ export function CreateCategoryDialog({
   onCategoryCreated,
 }: CreateCategoryDialogProps): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [productSelectorOpen, setProductSelectorOpen] = useState(false);
 
   const form = useForm<CreateCategoryFormData>({
     defaultValues: {
@@ -76,8 +95,28 @@ export function CreateCategoryDialog({
       variant: CategoryVariant.DEFAULT,
       displayOrder: 0,
       active: true,
+      products: [],
     },
   });
+
+  // Load products when dialog opens
+  useEffect(() => {
+    if (open) {
+      const loadProducts = async () => {
+        try {
+          setLoadingProducts(true);
+          const response = await ProductApiService.getProducts({});
+          setProducts(response?.data || []);
+        } catch (error) {
+          console.error("Error loading products:", error);
+        } finally {
+          setLoadingProducts(false);
+        }
+      };
+
+      loadProducts();
+    }
+  }, [open]);
 
   /**
    * Handle form submission
@@ -92,6 +131,7 @@ export function CreateCategoryDialog({
         variant: data.variant,
         displayOrder: data.displayOrder,
         active: data.active,
+        products: data.products,
       };
 
       const newCategory = await CategoryApiService.createCategory(categoryData);
@@ -168,10 +208,7 @@ export function CreateCategoryDialog({
                   <FormItem>
                     <FormLabel>Icono</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Nombre del icono (ej: coffee, utensils)"
-                        {...field}
-                      />
+                      <Input placeholder="Nombre del icono" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -183,7 +220,7 @@ export function CreateCategoryDialog({
                 name="variant"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Variante de Color</FormLabel>
+                    <FormLabel>Variante</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -194,24 +231,11 @@ export function CreateCategoryDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={CategoryVariant.DEFAULT}>
-                          Por Defecto
-                        </SelectItem>
-                        <SelectItem value={CategoryVariant.COFFEE}>
-                          Café
-                        </SelectItem>
-                        <SelectItem value={CategoryVariant.ORANGE}>
-                          Naranja
-                        </SelectItem>
-                        <SelectItem value={CategoryVariant.PINK}>
-                          Rosa
-                        </SelectItem>
-                        <SelectItem value={CategoryVariant.SKYBLUE}>
-                          Azul Cielo
-                        </SelectItem>
-                        <SelectItem value={CategoryVariant.RED}>
-                          Rojo
-                        </SelectItem>
+                        {Object.values(CategoryVariant).map((variant) => (
+                          <SelectItem key={variant} value={variant}>
+                            {variant}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -228,9 +252,14 @@ export function CreateCategoryDialog({
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         placeholder="0"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value ? parseInt(e.target.value) : 0
+                          )
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -244,11 +273,9 @@ export function CreateCategoryDialog({
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">
-                        Categoría Activa
-                      </FormLabel>
+                      <FormLabel className="text-base">Activa</FormLabel>
                       <div className="text-sm text-muted-foreground">
-                        La categoría estará disponible en el menú
+                        La categoría estará visible en el menú
                       </div>
                     </div>
                     <FormControl>
@@ -257,6 +284,139 @@ export function CreateCategoryDialog({
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Productos Aplicables */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Productos</h3>
+              <FormField
+                control={form.control}
+                name="products"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Productos en esta Categoría</FormLabel>
+                    <div className="text-sm text-muted-foreground mb-3">
+                      Selecciona los productos que pertenecen a esta categoría.
+                    </div>
+                    <FormControl>
+                      <Popover
+                        open={productSelectorOpen}
+                        onOpenChange={setProductSelectorOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={productSelectorOpen}
+                            className="w-full justify-between h-auto min-h-[40px] p-2"
+                          >
+                            <div className="flex flex-wrap gap-1 flex-1">
+                              {field.value && field.value.length > 0 ? (
+                                field.value.map((productId) => {
+                                  const product = products.find(
+                                    (p) => p.id === productId
+                                  );
+                                  const productWithProps =
+                                    product as Product & {
+                                      name: string;
+                                      price: number;
+                                    };
+                                  return productWithProps ? (
+                                    <div
+                                      key={productId}
+                                      className="bg-primary text-primary-foreground px-2 py-1 rounded-md text-xs flex items-center gap-1"
+                                    >
+                                      {productWithProps.name}
+                                      <X
+                                        className="h-3 w-3 cursor-pointer hover:opacity-70"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          field.onChange(
+                                            field.value?.filter(
+                                              (id) => id !== productId
+                                            ) || []
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  ) : null;
+                                })
+                              ) : (
+                                <span className="text-muted-foreground">
+                                  Seleccionar productos...
+                                </span>
+                              )}
+                            </div>
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0" align="start">
+                          <Command>
+                            <CommandInput placeholder="Buscar productos..." />
+                            <CommandEmpty>
+                              {loadingProducts
+                                ? "Cargando productos..."
+                                : "No se encontraron productos."}
+                            </CommandEmpty>
+                            <CommandList>
+                              <CommandGroup className="max-h-64 overflow-auto">
+                                {products.map((product) => {
+                                  const productWithProps =
+                                    product as Product & {
+                                      name: string;
+                                      price: number;
+                                    };
+                                  const isSelected =
+                                    field.value?.includes(product.id) || false;
+                                  return (
+                                    <CommandItem
+                                      key={product.id}
+                                      value={`${productWithProps.name} ${productWithProps.price}`}
+                                      onSelect={() => {
+                                        const currentProducts =
+                                          field.value || [];
+                                        if (isSelected) {
+                                          field.onChange(
+                                            currentProducts.filter(
+                                              (id) => id !== product.id
+                                            )
+                                          );
+                                        } else {
+                                          field.onChange([
+                                            ...currentProducts,
+                                            product.id,
+                                          ]);
+                                        }
+                                      }}
+                                    >
+                                      <Check
+                                        className={`mr-2 h-4 w-4 ${
+                                          isSelected
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        }`}
+                                      />
+                                      <div className="flex-1">
+                                        <div className="font-medium">
+                                          {productWithProps.name}
+                                        </div>
+                                        <div className="text-sm text-muted-foreground">
+                                          €{productWithProps.price.toFixed(2)}
+                                        </div>
+                                      </div>
+                                    </CommandItem>
+                                  );
+                                })}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -272,7 +432,7 @@ export function CreateCategoryDialog({
                 Cancelar
               </Button>
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Creando..." : "Crear Categoría"}
+                {isLoading ? "Guardando..." : "Guardar Categoría"}
               </Button>
             </DialogFooter>
           </form>

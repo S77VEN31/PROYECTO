@@ -5,13 +5,10 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import {
   BarChart3,
-  ClipboardList,
   FolderOpen,
   LogOut,
   Package,
   Percent,
-  Settings,
-  ShoppingCart,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -95,37 +92,9 @@ export function AdminSidebar() {
           </li>
           <li>
             <SidebarLink
-              href="/admin/orders"
-              label="Pedidos"
-              icon={<ShoppingCart className="h-4 w-4" />}
-            />
-          </li>
-          <li>
-            <SidebarLink
-              href="/admin/inventory"
-              label="Inventario"
-              icon={<Package className="h-4 w-4" />}
-            />
-          </li>
-          <li>
-            <SidebarLink
               href="/admin/promotions"
               label="Promociones"
               icon={<Percent className="h-4 w-4" />}
-            />
-          </li>
-          <li>
-            <SidebarLink
-              href="/admin/reports"
-              label="Informes"
-              icon={<ClipboardList className="h-4 w-4" />}
-            />
-          </li>
-          <li>
-            <SidebarLink
-              href="/admin/settings"
-              label="Configuración"
-              icon={<Settings className="h-4 w-4" />}
             />
           </li>
         </ul>

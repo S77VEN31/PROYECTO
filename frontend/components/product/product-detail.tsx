@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Product } from "@/types/products";
+import { Product } from "colori-platform-shared";
 import {
   ArrowLeft,
   Clock,
@@ -47,6 +47,15 @@ export function ProductDetail({
     onAddToCart(product.id, quantity);
   };
 
+  // Get the primary image or first image from backgroundImages
+  const productImage =
+    product.backgroundImages?.find((img) => img.isPrimary)?.src ||
+    product.backgroundImages?.[0]?.src ||
+    "/logo.jpg";
+
+  // Check if product is available (active)
+  const isAvailable = product.active ?? true;
+
   return (
     <Card className="overflow-hidden border shadow-lg">
       <div className="grid grid-cols-1 md:grid-cols-2">
@@ -64,7 +73,7 @@ export function ProductDetail({
           )}
           <div className="absolute inset-0">
             <Image
-              src={product.imageSrc}
+              src={productImage}
               alt={product.name}
               fill
               className="object-cover"
@@ -72,14 +81,7 @@ export function ProductDetail({
               priority
             />
           </div>
-          {product.isPromo && (
-            <div className="absolute top-4 right-4">
-              <Badge variant="naranja" className="px-3 py-1 text-sm">
-                Promoción
-              </Badge>
-            </div>
-          )}
-          {!product.available && (
+          {!isAvailable && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
               <Badge variant="destructive" className="px-4 py-2 text-base">
                 No Disponible
@@ -110,15 +112,8 @@ export function ProductDetail({
             <div className="flex justify-between items-start">
               <div>
                 <Badge variant="outline" className="mb-2">
-                  {Array.isArray(product.categories) &&
-                  product.categories.length > 0
-                    ? product.categories
-                        .map((cat) =>
-                          typeof cat === "object" && cat !== null
-                            ? cat.name
-                            : String(cat)
-                        )
-                        .join(", ")
+                  {product.tags && product.tags.length > 0
+                    ? product.tags.join(", ")
                     : "Sin categoría"}
                 </Badge>
                 <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
@@ -259,10 +254,10 @@ export function ProductDetail({
                 size="lg"
                 className="w-1/2"
                 onClick={handleAddToCart}
-                disabled={!product.available}
+                disabled={!isAvailable}
               >
                 <ShoppingCart className="mr-2 h-4 w-4" />
-                {product.available ? "Añadir al pedido" : "No disponible"}
+                {isAvailable ? "Añadir al pedido" : "No disponible"}
               </Button>
             </div>
           </div>

@@ -37,13 +37,16 @@ export class ProductApiService {
         params: filterParams,
       });
 
+      // Handle the nested response structure from backend
       if (response.data.success && response.data.data) {
+        // The backend returns { success: true, data: { data: [...], total, page, limit, pages } }
         return response.data.data;
       }
 
       throw new Error(response.data.error || "Failed to fetch products");
     } catch (error: unknown) {
       const axiosError = error as AxiosError;
+      console.error("Error fetching products:", axiosError);
       throw new Error(axiosError.message || "Failed to fetch products");
     }
   }

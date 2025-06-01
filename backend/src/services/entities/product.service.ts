@@ -1,5 +1,6 @@
 import { ApiError } from "@/middlewares";
 import { ProductModel } from "@models";
+import CategoryModel from "@/models/entities/category.model";
 import {
   GetProductsRequestParams,
   PaginatedResponse,
@@ -61,8 +62,34 @@ export class ProductService {
       ];
     }
 
+    // Handle category filtering by finding products in category's product list
     if (category) {
-      query.category = category;
+      try {
+        // Find the category and get its product IDs
+        const categoryDoc = await CategoryModel.findById(category).lean();
+        if (categoryDoc && categoryDoc.products && categoryDoc.products.length > 0) {
+          // Filter products by IDs that are in the category's product list
+          query._id = { $in: categoryDoc.products };
+        } else {
+          // If category doesn't exist or has no products, return empty result
+          return {
+            data: [],
+            total: 0,
+            page,
+            limit,
+            pages: 0,
+          };
+        }
+      } catch (error) {
+        // If category ID is invalid, return empty result
+        return {
+          data: [],
+          total: 0,
+          page,
+          limit,
+          pages: 0,
+        };
+      }
     }
 
     if (tag) {

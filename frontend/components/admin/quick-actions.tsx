@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { BookOpenText, ClipboardList, ShoppingCart } from "lucide-react";
+import { BookOpenText } from "lucide-react";
 import Link from "next/link";
 
 export function QuickActions() {
@@ -11,18 +11,6 @@ export function QuickActions() {
       href: "/admin/products",
       variant: "default" as const,
       icon: <BookOpenText className="h-5 w-5 mr-2" />,
-    },
-    {
-      label: "Ver Pedidos",
-      href: "/admin/orders",
-      variant: "secondary" as const,
-      icon: <ShoppingCart className="h-5 w-5 mr-2" />,
-    },
-    {
-      label: "Generar Informes",
-      href: "/admin/reports",
-      variant: "naranja" as const,
-      icon: <ClipboardList className="h-5 w-5 mr-2" />,
     },
   ];
 

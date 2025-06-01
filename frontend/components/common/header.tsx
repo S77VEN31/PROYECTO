@@ -36,33 +36,7 @@ export function Header({ variant, cartCount = 0 }: HeaderProps) {
   const getNavLinks = (): NavLink[] => {
     switch (variant) {
       case "admin":
-        return [
-          {
-            href: "/admin/settings",
-            icon: (
-              <Settings
-                className={`h-4 w-4 ${
-                  pathname.includes("/admin/settings") ? "text-primary" : ""
-                }`}
-              />
-            ),
-            label: "Configuración",
-            isActive: pathname.includes("/admin/settings"),
-            showBadge: pathname.includes("/admin/settings"),
-          },
-          {
-            href: "/admin",
-            icon: (
-              <BarChart3
-                className={`h-4 w-4 ${
-                  pathname === "/admin" ? "text-primary" : ""
-                }`}
-              />
-            ),
-            label: "Dashboard",
-            isActive: pathname === "/admin",
-          },
-        ];
+        return [];
       case "kitchen":
         return [
           {
