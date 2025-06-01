@@ -229,18 +229,25 @@ export function UserManagementTable({
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
-                    <div className="flex items-center justify-center">
-                      <RefreshCw className="h-4 w-4 animate-spin mr-2 text-primary" />
-                      Cargando usuarios...
+                    <div className="flex items-center justify-center gap-2">
+                      <RefreshCw className="h-4 w-4 animate-spin text-primary" />
+                      <span>Cargando usuarios...</span>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : users.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
-                    <p className="text-muted-foreground">
-                      No se encontraron usuarios
-                    </p>
+                    <div className="text-muted-foreground">
+                      <p className="text-lg font-medium mb-2">
+                        No se encontraron usuarios
+                      </p>
+                      <p className="text-sm">
+                        {filters.search || filters.role
+                          ? "Intenta ajustar los filtros de búsqueda"
+                          : "Comienza creando tu primer usuario"}
+                      </p>
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : (

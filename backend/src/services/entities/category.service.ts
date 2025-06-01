@@ -4,6 +4,7 @@
  */
 
 import CategoryModel from "@/models/entities/category.model";
+import { PromotionModel } from "@models";
 import {
   Category,
   CategoryVariant,
@@ -212,14 +213,72 @@ export class CategoryService {
   }
 
   /**
-   * Delete a category by ID
+   * Remove category references from promotions (public utility method)
+   * @param categoryId - Category ID to remove from references
+   * @returns Promise<void>
+   * @throws Error if cleanup fails
+   */
+  static async cleanupCategoryReferences(categoryId: string): Promise<void> {
+    try {
+      await this.removeCategoryReferences(categoryId);
+    } catch (error: any) {
+      throw new Error(
+        `Failed to cleanup category references: ${error.message}`
+      );
+    }
+  }
+
+  /**
+   * Remove category references from promotions
+   * @param categoryId - Category ID to remove from references
+   * @param session - Optional MongoDB session for transaction support
+   * @returns Promise<void>
+   * @private
+   */
+  private static async removeCategoryReferences(
+    categoryId: string,
+    session?: any
+  ): Promise<void> {
+    const updateOptions = session ? { session } : {};
+
+    // Remove category ID from all promotions that reference it
+    await PromotionModel.updateMany(
+      { applicableCategories: categoryId },
+      { $pull: { applicableCategories: categoryId } },
+      updateOptions
+    );
+  }
+
+  /**
+   * Delete a category by ID and remove its references from promotions
    * @param params - Category ID parameters
    * @returns True if deleted, false otherwise
+   * @throws Error if category not found or deletion fails
    */
   static async delete(params: DeleteCategoryRequestParams): Promise<boolean> {
     try {
-      const result = await CategoryModel.findByIdAndDelete(params.id);
-      return !!result;
+      const category = await CategoryModel.findById(params.id);
+
+      if (!category) {
+        throw new Error("Category not found");
+      }
+
+      // Start a transaction to ensure data consistency
+      const session = await CategoryModel.startSession();
+
+      try {
+        await session.withTransaction(async () => {
+          // Delete the category
+          await CategoryModel.deleteOne({ _id: params.id }).session(session);
+
+          // Remove category references from promotions
+          await this.removeCategoryReferences(params.id, session);
+        });
+
+        return true;
+      } finally {
+        await session.endSession();
+      }
     } catch (error: any) {
       throw new Error(`Failed to delete category: ${error.message}`);
     }

@@ -18,9 +18,9 @@ import { useState } from "react";
  * Delete promotion dialog props
  */
 interface DeletePromotionDialogProps {
+  promotion: Promotion | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  promotion: Promotion | null;
   onPromotionDeleted: (promotionId: string) => void;
 }
 
@@ -30,19 +30,22 @@ interface DeletePromotionDialogProps {
  * @returns JSX element
  */
 export function DeletePromotionDialog({
+  promotion,
   open,
   onOpenChange,
-  promotion,
   onPromotionDeleted,
 }: DeletePromotionDialogProps): React.JSX.Element | null {
   const [isLoading, setIsLoading] = useState(false);
+
+  // Early return if promotion is null to prevent errors
+  if (!promotion) {
+    return null;
+  }
 
   /**
    * Handle promotion deletion
    */
   const handleDelete = async () => {
-    if (!promotion) return;
-
     setIsLoading(true);
     try {
       await PromotionApiService.deletePromotion({ id: promotion.id });
@@ -63,15 +66,13 @@ export function DeletePromotionDialog({
     onOpenChange(false);
   };
 
-  if (!promotion) return null;
-
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
-              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
               <DialogTitle>Eliminar Promoción</DialogTitle>

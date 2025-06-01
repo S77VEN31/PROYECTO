@@ -23,7 +23,7 @@ import { useState } from "react";
  * Delete user dialog props
  */
 interface DeleteUserDialogProps {
-  user: User;
+  user: User | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onUserDeleted: (userId: string) => void;
@@ -39,8 +39,13 @@ export function DeleteUserDialog({
   open,
   onOpenChange,
   onUserDeleted,
-}: DeleteUserDialogProps): React.JSX.Element {
+}: DeleteUserDialogProps): React.JSX.Element | null {
   const [isLoading, setIsLoading] = useState(false);
+
+  // Early return if user is null to prevent errors
+  if (!user) {
+    return null;
+  }
 
   /**
    * Handle user deletion
@@ -48,8 +53,8 @@ export function DeleteUserDialog({
   const handleDelete = async () => {
     setIsLoading(true);
     try {
-      await UserApiService.deleteUser({ id: user.id as string });
-      onUserDeleted(user.id as string);
+      await UserApiService.deleteUser({ id: user.id });
+      onUserDeleted(user.id);
       onOpenChange(false);
     } catch (error) {
       console.error("Error deleting user:", error);
@@ -71,8 +76,8 @@ export function DeleteUserDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-              <AlertTriangle className="h-5 w-5 text-primary" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
               <DialogTitle>Eliminar Usuario</DialogTitle>
@@ -92,7 +97,8 @@ export function DeleteUserDialog({
             ({user.email})?
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Se perderán todos los datos asociados a este usuario.
+            Se perderán todos los datos asociados a este usuario, incluyendo
+            historial de pedidos y configuraciones.
           </p>
         </div>
 

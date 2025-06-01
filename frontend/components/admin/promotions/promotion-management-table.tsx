@@ -333,7 +333,7 @@ export function PromotionManagementTable({
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={14} className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center py-8">
                     <div className="flex items-center justify-center gap-2">
                       <RefreshCw className="h-4 w-4 animate-spin text-primary" />
                       <span>Cargando promociones...</span>
@@ -342,7 +342,7 @@ export function PromotionManagementTable({
                 </TableRow>
               ) : promotions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={14} className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center py-8">
                     <div className="text-muted-foreground">
                       <p className="text-lg font-medium mb-2">
                         No se encontraron promociones

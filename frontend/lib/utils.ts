@@ -413,3 +413,156 @@ export function getStatCardColorClass(
     statsColorConfig.primary
   );
 }
+
+/**
+ * Delete dialog styling configuration
+ * Provides consistent styling for all delete confirmation dialogs
+ * Uses cancellation colors (#EF4444) that match cancelled/expired promotions for consistency
+ */
+export const deleteDialogConfig = {
+  // Icon container styling using cancellation color from theme
+  iconContainer: "flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-cancellation-bg)] dark:bg-[var(--color-cancellation-bg-dark)]",
+  
+  // Icon styling using cancellation color from theme
+  icon: "h-5 w-5 text-[var(--color-cancellation)]",
+  
+  // Content container styling
+  content: "py-4",
+  
+  // Main text styling
+  mainText: "text-sm text-muted-foreground",
+  
+  // Highlighted entity name styling
+  entityName: "font-medium text-foreground",
+  
+  // Secondary description text styling
+  secondaryText: "mt-2 text-sm text-muted-foreground",
+  
+  // Alternative: Using Tailwind's destructive classes (automatically uses our custom colors)
+  iconContainerTailwind: "flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10",
+  iconTailwind: "h-5 w-5 text-destructive",
+};
+
+/**
+ * Cancellation/Destructive action styling utilities
+ * Centralized functions for consistent cancellation UI across the app
+ */
+export const cancellationStyles = {
+  // Background colors for cancellation contexts
+  backgroundLight: "bg-[var(--color-cancellation-bg)]",
+  backgroundDark: "dark:bg-[var(--color-cancellation-bg-dark)]",
+  background: "bg-[var(--color-cancellation-bg)] dark:bg-[var(--color-cancellation-bg-dark)]",
+  
+  // Text colors for cancellation contexts
+  text: "text-[var(--color-cancellation)]",
+  textOnBackground: "text-[var(--color-cancellation-foreground)]", // White text for red backgrounds
+  
+  // Combined background with opacity for subtle effects
+  backgroundSubtle: "bg-[var(--color-cancellation)]/10",
+  
+  // Border colors for cancellation contexts
+  border: "border-[var(--color-cancellation)]/20",
+  borderHover: "hover:border-[var(--color-cancellation)]/50",
+  
+  // Full button styling (red background with white text)
+  button: "bg-[var(--color-cancellation)] text-[var(--color-cancellation-foreground)]",
+  buttonHover: "hover:bg-[var(--color-cancellation)]/90",
+};
+
+/**
+ * Get standardized cancellation background class
+ * @param subtle - Whether to use subtle (10% opacity) background
+ * @returns CSS classes for cancellation background
+ */
+export function getCancellationBackgroundClass(subtle: boolean = false): string {
+  return subtle 
+    ? cancellationStyles.backgroundSubtle 
+    : cancellationStyles.background;
+}
+
+/**
+ * Get standardized cancellation text color class
+ * @param onBackground - Whether text is on a red background (uses white text)
+ * @returns CSS classes for cancellation text color
+ */
+export function getCancellationTextClass(onBackground: boolean = false): string {
+  return onBackground 
+    ? cancellationStyles.textOnBackground 
+    : cancellationStyles.text;
+}
+
+/**
+ * Get standardized cancellation border class
+ * @param withHover - Whether to include hover effect
+ * @returns CSS classes for cancellation border
+ */
+export function getCancellationBorderClass(withHover: boolean = false): string {
+  return withHover 
+    ? `${cancellationStyles.border} ${cancellationStyles.borderHover}`
+    : cancellationStyles.border;
+}
+
+/**
+ * Get standardized delete dialog icon container classes
+ * @param useTailwind - Whether to use Tailwind destructive classes (default: false, uses custom CSS variables)
+ * @returns CSS classes for the icon container
+ */
+export function getDeleteDialogIconContainerClass(useTailwind: boolean = false): string {
+  return useTailwind 
+    ? deleteDialogConfig.iconContainerTailwind 
+    : deleteDialogConfig.iconContainer;
+}
+
+/**
+ * Get standardized delete dialog icon classes
+ * @param useTailwind - Whether to use Tailwind destructive classes (default: false, uses custom CSS variables)
+ * @returns CSS classes for the icon
+ */
+export function getDeleteDialogIconClass(useTailwind: boolean = false): string {
+  return useTailwind 
+    ? deleteDialogConfig.iconTailwind 
+    : deleteDialogConfig.icon;
+}
+
+/**
+ * Get standardized delete dialog content classes
+ * @returns CSS classes for the content container
+ */
+export function getDeleteDialogContentClass(): string {
+  return deleteDialogConfig.content;
+}
+
+/**
+ * Get standardized delete dialog main text classes
+ * @returns CSS classes for the main text
+ */
+export function getDeleteDialogMainTextClass(): string {
+  return deleteDialogConfig.mainText;
+}
+
+/**
+ * Get standardized delete dialog entity name classes
+ * @returns CSS classes for the entity name highlight
+ */
+export function getDeleteDialogEntityNameClass(): string {
+  return deleteDialogConfig.entityName;
+}
+
+/**
+ * Get standardized delete dialog secondary text classes
+ * @returns CSS classes for the secondary description text
+ */
+export function getDeleteDialogSecondaryTextClass(): string {
+  return deleteDialogConfig.secondaryText;
+}
+
+/**
+ * Get standardized cancellation button classes (red background with white text)
+ * @param withHover - Whether to include hover effect
+ * @returns CSS classes for cancellation button
+ */
+export function getCancellationButtonClass(withHover: boolean = true): string {
+  return withHover 
+    ? `${cancellationStyles.button} ${cancellationStyles.buttonHover}`
+    : cancellationStyles.button;
+}

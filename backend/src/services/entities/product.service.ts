@@ -1,6 +1,6 @@
 import { ApiError } from "@/middlewares";
 import CategoryModel from "@/models/entities/category.model";
-import { ProductModel } from "@models";
+import { ProductModel, PromotionModel } from "@models";
 import {
   GetProductsRequestParams,
   PaginatedResponse,
@@ -224,7 +224,55 @@ export class ProductService {
   }
 
   /**
-   * Delete a product by ID
+   * Remove product references from categories and promotions (public utility method)
+   * @param productId - Product ID to remove from references
+   * @returns Promise<void>
+   * @throws ApiError if cleanup fails
+   */
+  static async cleanupProductReferences(productId: string): Promise<void> {
+    try {
+      await this.removeProductReferences(productId);
+    } catch (error: any) {
+      throw new ApiError(
+        500,
+        `Failed to cleanup product references: ${error.message}`
+      );
+    }
+  }
+
+  /**
+   * Remove product references from categories and promotions
+   * @param productId - Product ID to remove from references
+   * @param session - Optional MongoDB session for transaction support
+   * @returns Promise<void>
+   * @private
+   */
+  private static async removeProductReferences(
+    productId: string,
+    session?: any
+  ): Promise<void> {
+    const updateOptions = session ? { session } : {};
+
+    // Remove product ID from all categories that reference it
+    await CategoryModel.updateMany(
+      { products: productId },
+      { $pull: { products: productId } },
+      updateOptions
+    );
+
+    // Remove product ID from all promotions that reference it
+    await PromotionModel.updateMany(
+      { applicableProducts: productId },
+      { $pull: { applicableProducts: productId } },
+      updateOptions
+    );
+  }
+
+  /**
+   * Delete a product by ID and remove its references from categories and promotions
+   * @param id - Product ID to delete
+   * @returns Promise<boolean> - True if deletion was successful
+   * @throws ApiError if product not found or deletion fails
    */
   static async delete(id: string): Promise<boolean> {
     try {
@@ -234,8 +282,22 @@ export class ProductService {
         throw new ApiError(404, "Product not found");
       }
 
-      await ProductModel.deleteOne({ _id: id });
-      return true;
+      // Start a transaction to ensure data consistency
+      const session = await ProductModel.startSession();
+
+      try {
+        await session.withTransaction(async () => {
+          // Delete the product
+          await ProductModel.deleteOne({ _id: id }).session(session);
+
+          // Remove product references from categories and promotions
+          await this.removeProductReferences(id, session);
+        });
+
+        return true;
+      } finally {
+        await session.endSession();
+      }
     } catch (error: any) {
       if (error instanceof ApiError) {
         throw error;

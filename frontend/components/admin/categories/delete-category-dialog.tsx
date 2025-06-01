@@ -1,6 +1,6 @@
 /**
  * Delete Category Dialog Component
- * Modal dialog for confirming category deletion
+ * Confirmation dialog for deleting categories
  */
 
 "use client";
@@ -23,9 +23,9 @@ import { useState } from "react";
  * Delete category dialog props
  */
 interface DeleteCategoryDialogProps {
+  category: Category | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  category: Category | null;
   onCategoryDeleted: (categoryId: string) => void;
 }
 
@@ -35,19 +35,22 @@ interface DeleteCategoryDialogProps {
  * @returns JSX element
  */
 export function DeleteCategoryDialog({
+  category,
   open,
   onOpenChange,
-  category,
   onCategoryDeleted,
 }: DeleteCategoryDialogProps): React.JSX.Element | null {
   const [isLoading, setIsLoading] = useState(false);
+
+  // Early return if category is null to prevent errors
+  if (!category) {
+    return null;
+  }
 
   /**
    * Handle category deletion
    */
   const handleDelete = async () => {
-    if (!category) return;
-
     setIsLoading(true);
     try {
       await CategoryApiService.deleteCategory({ id: category.id });
@@ -68,15 +71,13 @@ export function DeleteCategoryDialog({
     onOpenChange(false);
   };
 
-  if (!category) return null;
-
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-              <AlertTriangle className="h-5 w-5 text-primary" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
               <DialogTitle>Eliminar Categoría</DialogTitle>
@@ -94,7 +95,8 @@ export function DeleteCategoryDialog({
             ?
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Se perderán todos los datos asociados a esta categoría.
+            Se perderán todos los datos asociados a esta categoría, incluyendo
+            productos asociados y configuraciones.
           </p>
         </div>
 
@@ -113,7 +115,7 @@ export function DeleteCategoryDialog({
             onClick={handleDelete}
             disabled={isLoading}
           >
-            {isLoading ? "Eliminando..." : "Eliminar"}
+            {isLoading ? "Eliminando..." : "Eliminar Categoría"}
           </Button>
         </DialogFooter>
       </DialogContent>

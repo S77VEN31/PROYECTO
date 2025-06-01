@@ -10,6 +10,12 @@
   --color-orange: #F2B988;
   --color-red: #F29991;
   --color-pink: #F2D0D0;
+  
+  /* Cancellation/Destructive Action Colors - Same as cancelled status */
+  --color-cancellation: #EF4444;
+  --color-cancellation-foreground: #FFFFFF;
+  --color-cancellation-bg: #FEF2F2;
+  --color-cancellation-bg-dark: #450A0A;
 }
 
 @theme inline {
@@ -33,7 +39,8 @@
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
-  --color-destructive: var(--destructive);
+  --color-destructive: var(--color-cancellation);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -90,9 +97,10 @@
   --accent: var(--color-coffee);
   --accent-foreground: #FFFFFF;
   
-  /* Destructive = Red */
-  --destructive: var(--color-red);
+  /* Destructive = Cancellation Color */
+  --destructive: var(--color-cancellation);
   --destructive-foreground: #FFFFFF;
+  --destructive-bg: var(--color-cancellation-bg);
   
   /* Border, Input, Ring */
   --border: #E0E0E0;
@@ -123,7 +131,7 @@
   --status-inprogress-foreground: #FFFFFF;
   --status-completed: #10B981;
   --status-completed-foreground: #FFFFFF;
-  --status-cancelled: #EF4444;
+  --status-cancelled: var(--color-cancellation);
   --status-cancelled-foreground: #FFFFFF;
 }
 
@@ -157,9 +165,10 @@
   --accent: var(--color-coffee);
   --accent-foreground: #FFFFFF;
   
-  /* Destructive = Red (same as light mode) */
-  --destructive: var(--color-red);
+  /* Destructive = Cancellation Color */
+  --destructive: var(--color-cancellation);
   --destructive-foreground: #FFFFFF;
+  --destructive-bg: var(--color-cancellation-bg-dark);
   
   /* Border, Input, Ring */
   --border: #2A2A2A;
@@ -190,8 +199,8 @@
   --status-inprogress-foreground: #000000;
   --status-completed: #34D399;
   --status-completed-foreground: #000000;
-  --status-cancelled: #F87171;
-  --status-cancelled-foreground: #000000;
+  --status-cancelled: var(--color-cancellation);
+  --status-cancelled-foreground: #FFFFFF;
 }
 
 @layer base {

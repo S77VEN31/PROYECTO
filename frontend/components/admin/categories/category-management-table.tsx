@@ -237,7 +237,7 @@ export function CategoryManagementTable({
                   <TableCell colSpan={6} className="text-center py-8">
                     <div className="flex items-center justify-center gap-2">
                       <RefreshCw className="h-4 w-4 animate-spin text-primary" />
-                      Cargando categorías...
+                      <span>Cargando categorías...</span>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -245,7 +245,14 @@ export function CategoryManagementTable({
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
                     <div className="text-muted-foreground">
-                      No se encontraron categorías
+                      <p className="text-lg font-medium mb-2">
+                        No se encontraron categorías
+                      </p>
+                      <p className="text-sm">
+                        {filters.search || filters.variant
+                          ? "Intenta ajustar los filtros de búsqueda"
+                          : "Comienza creando tu primera categoría"}
+                      </p>
                     </div>
                   </TableCell>
                 </TableRow>

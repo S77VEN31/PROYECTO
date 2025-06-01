@@ -23,7 +23,7 @@ import { useState } from "react";
  * Delete product dialog props
  */
 interface DeleteProductDialogProps {
-  product: Product;
+  product: Product | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onProductDeleted: (productId: string) => void;
@@ -39,8 +39,13 @@ export function DeleteProductDialog({
   open,
   onOpenChange,
   onProductDeleted,
-}: DeleteProductDialogProps): React.JSX.Element {
+}: DeleteProductDialogProps): React.JSX.Element | null {
   const [isLoading, setIsLoading] = useState(false);
+
+  // Early return if product is null to prevent errors
+  if (!product) {
+    return null;
+  }
 
   /**
    * Handle product deletion
@@ -48,8 +53,8 @@ export function DeleteProductDialog({
   const handleDelete = async () => {
     setIsLoading(true);
     try {
-      await ProductApiService.deleteProduct({ id: product.id as string });
-      onProductDeleted(product.id as string);
+      await ProductApiService.deleteProduct({ id: product.id });
+      onProductDeleted(product.id);
       onOpenChange(false);
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -71,8 +76,8 @@ export function DeleteProductDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-              <AlertTriangle className="h-5 w-5 text-primary" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
               <DialogTitle>Eliminar Producto</DialogTitle>
