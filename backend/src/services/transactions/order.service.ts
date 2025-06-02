@@ -73,6 +73,37 @@ export class OrderService {
   }
 
   /**
+   * Generate a sequential order number for today
+   * Finds the highest order number for the current day and increments it
+   * 
+   * @returns Promise<number> - Next order number for today
+   */
+  static async generateOrderNumber(): Promise<number> {
+    // Get today's date at midnight
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Find orders created today
+    const todayOrders = await OrderModel.find({
+      createdAt: { $gte: today }
+    }).sort({ createdAt: -1 }).exec();
+    
+    // If no orders today, start with 1
+    if (todayOrders.length === 0) {
+      return 1;
+    }
+    
+    // Find the highest reference number (which should be the last created order)
+    // If reference exists and is a number, use it, otherwise count orders + 1
+    const lastOrder = todayOrders[0];
+    if (lastOrder.reference && /^\d+$/.test(lastOrder.reference)) {
+      return parseInt(lastOrder.reference) + 1;
+    }
+    
+    return todayOrders.length + 1;
+  }
+
+  /**
    * Create a new order
    *
    * @param orderData - Order creation data
@@ -82,6 +113,9 @@ export class OrderService {
   static async createOrder(
     orderData: OrderCreate
   ): Promise<CreateOrderResponse> {
+    // Generate order number
+    const orderNumber = await this.generateOrderNumber();
+    
     // Set default values
     const orderToCreate = {
       customerName: orderData.customerName,
@@ -93,7 +127,7 @@ export class OrderService {
       total: orderData.total || 0,
       tip: orderData.tip || null,
       paymentMethod: orderData.paymentMethod || null,
-      reference: orderData.reference,
+      reference: orderNumber.toString(), // Set the order number as reference
       createdBy: orderData.createdBy,
       updatedBy: orderData.updatedBy,
       completedBy: orderData.completedBy,

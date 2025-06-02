@@ -40,6 +40,7 @@ export default function CheckoutPage() {
   const { cart, summary, clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [orderNumber, setOrderNumber] = useState<string | null>(null);
 
   // Inicializar formulario con validación
   const form = useForm<CheckoutFormData>({
@@ -62,6 +63,7 @@ export default function CheckoutPage() {
       return;
     }
 
+    console.log("Procediendo al checkout con el carrito:", cart);
     setIsSubmitting(true);
 
     try {
@@ -76,8 +78,19 @@ export default function CheckoutPage() {
       );
 
       if (response && response.id) {
-        // Guardar el ID de la orden y limpiar el carrito
+        // Guardar el ID de la orden y el número de orden (reference)
         setOrderId(response.id);
+        
+        // Verificar si la propiedad order y reference existen antes de usarlas
+        let orderRef = "0";
+        if (response.order && response.order.reference) {
+          orderRef = response.order.reference;
+        } else {
+          // Usar los primeros 6 caracteres del ID como fallback
+          orderRef = response.id.substring(0, 6);
+        }
+        
+        setOrderNumber(orderRef);
         clearCart();
         toast.success("¡Pedido realizado con éxito!");
       } else {
@@ -111,7 +124,7 @@ export default function CheckoutPage() {
           <CardContent className="space-y-6">
             <div className="bg-primary/10 border border-primary/10 rounded-lg p-4 text-center">
               <h2 className="text-lg font-medium mb-1">Número de Orden</h2>
-              <p className="text-3xl font-bold text-primary">{orderId}</p>
+              <p className="text-3xl font-bold text-primary">{orderNumber}</p>
             </div>
 
             <div className="space-y-4">

@@ -116,11 +116,21 @@ export const createOrder = async (
       createdBy: creatorId,
     });
 
+    // Asegurar que el objeto Order tenga la propiedad reference
+    const orderResponse = {
+      ...result,
+      order: {
+        ...result.order,
+        // Asegurar que reference existe, si no, usar id como fallback
+        reference: result.order.reference || result.id.toString(),
+      }
+    };
+
     return res.status(201).json({
       success: true,
-      id: result.id,
-      data: result.order,
-    } as ApiResponse<typeof result.order> & CreateResponse);
+      id: orderResponse.id,
+      order: orderResponse.order,
+    } as ApiResponse<typeof orderResponse.order> & CreateResponse);
   } catch (error: any) {
     return res.status(500).json({
       success: false,

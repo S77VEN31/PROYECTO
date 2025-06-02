@@ -63,6 +63,11 @@ export function ProductDetail({
     onAddToCart(product.id, quantity);
   };
 
+  // Función para formatear el precio en colones
+  const formatPrice = (price: number) => {
+    return `₡${price.toFixed(0)}`;
+  };
+
   // Get the primary image or first image from backgroundImages
   const productImage =
     product.backgroundImages?.find((img) => img.isPrimary)?.src ||
@@ -150,7 +155,7 @@ export function ProductDetail({
                 )}
               >
                 <span className="text-2xl font-bold">
-                  €{product.price.toFixed(2)}
+                  {formatPrice(product.price)}
                 </span>
               </div>
             </div>
@@ -366,7 +371,7 @@ export function ProductDetail({
               )}
             >
               <div className="font-bold text-lg">
-                Total: €{(product.price * quantity).toFixed(2)}
+                Total: {formatPrice(product.price * quantity)}
               </div>
               <Button
                 className={cn(
@@ -380,7 +385,7 @@ export function ProductDetail({
                 disabled={!isAvailable}
               >
                 <ShoppingCart className="mr-2 h-5 w-5" />
-                {isAvailable ? "Añadir al pedido" : "No disponible"}
+                {isAvailable ? "Añadir al carrito" : "No disponible"}
               </Button>
             </div>
           </div>

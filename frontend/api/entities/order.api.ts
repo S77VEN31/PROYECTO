@@ -57,21 +57,16 @@ export class OrderApiService {
 
   /**
    * Create a new order
-   * @param orderData Order data to create
+   * @param orderData Order data
    * @returns Promise with created order
    */
   static async createOrder(
     orderData: OrderCreate
   ): Promise<CreateOrderResponse | null> {
     try {
-      const payload: CreateOrderRequest = {
+      const response = await apiClient.post<CreateOrderResponse>("/orders", {
         order: orderData,
-      };
-
-      const response = await apiClient.post<CreateOrderResponse>(
-        "/orders",
-        payload
-      );
+      });
       return response.data;
     } catch (error) {
       console.error("Error creating order:", error);
@@ -82,25 +77,21 @@ export class OrderApiService {
   /**
    * Update an existing order
    * @param id Order ID
-   * @param updateData Order data to update
+   * @param orderData Updated order data
    * @returns Promise with updated order
    */
-  static async updateOrderStatus(
+  static async updateOrder(
     id: string,
-    status: OrderStatus
-  ): Promise<Order | null> {
+    orderData: OrderUpdate
+  ): Promise<UpdateOrderResponse | null> {
     try {
-      const updateData: OrderUpdate = { status };
-      const payload: UpdateOrderRequest = {
-        id,
-        order: updateData,
-      };
-
       const response = await apiClient.put<UpdateOrderResponse>(
         `/orders/${id}`,
-        payload
+        {
+          order: orderData,
+        }
       );
-      return response.data.order;
+      return response.data;
     } catch (error) {
       console.error(`Error updating order ${id}:`, error);
       return null;
@@ -108,12 +99,18 @@ export class OrderApiService {
   }
 
   /**
-   * Cancel an order
+   * Delete an order
    * @param id Order ID
-   * @returns Promise with cancelled order
+   * @returns Promise with delete status
    */
-  static async cancelOrder(id: string): Promise<Order | null> {
-    return this.updateOrderStatus(id, OrderStatus.CANCELLED);
+  static async deleteOrder(id: string): Promise<boolean> {
+    try {
+      await apiClient.delete(`/orders/${id}`);
+      return true;
+    } catch (error) {
+      console.error(`Error deleting order ${id}:`, error);
+      return false;
+    }
   }
 
   /**
@@ -156,7 +153,12 @@ export class OrderApiService {
       };
 
       // Create the order
-      return await this.createOrder(orderData);
+      const response = await this.createOrder(orderData);
+      
+      // Agregar log para depuración
+      console.log("Respuesta de createOrder:", JSON.stringify(response, null, 2));
+      
+      return response;
     } catch (error) {
       console.error("Error creating order from cart:", error);
       return null;
