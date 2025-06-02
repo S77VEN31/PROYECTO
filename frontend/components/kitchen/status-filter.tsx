@@ -64,20 +64,6 @@ export function StatusFilter({
       },
     },
     {
-      id: "pending",
-      variant: "pending",
-      icon: Clock3,
-      label: "Pendientes",
-      count: pendingCount,
-      config: {
-        buttonVariant: "pending",
-        iconClass:
-          "text-[var(--status-pending)] group-hover:text-white dark:group-hover:text-black",
-        activeIconClass: "text-white dark:text-black",
-        ...(config.pending || {}),
-      },
-    },
-    {
       id: "in-progress",
       variant: "in-progress",
       icon: Loader2,
@@ -89,6 +75,20 @@ export function StatusFilter({
           "text-[var(--status-inprogress)] group-hover:text-white dark:group-hover:text-black animate-spin",
         activeIconClass: "text-white dark:text-black animate-spin",
         ...(config.inProgress || {}),
+      },
+    },
+    {
+      id: "pending",
+      variant: "pending",
+      icon: Clock3,
+      label: "Pendientes",
+      count: pendingCount,
+      config: {
+        buttonVariant: "pending",
+        iconClass:
+          "text-[var(--status-pending)] group-hover:text-white dark:group-hover:text-black",
+        activeIconClass: "text-white dark:text-black",
+        ...(config.pending || {}),
       },
     },
     {

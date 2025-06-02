@@ -81,10 +81,40 @@ export default function KitchenDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Filtrar las órdenes según el estado seleccionado
-  const filteredOrders = statusFilter
-    ? orders.filter((order) => order.status === statusFilter)
-    : orders;
+  // Filtrar y ordenar las órdenes según el estado seleccionado y prioridad
+  const filteredOrders = (() => {
+    // Si hay un filtro de estado, solo mostrar órdenes con ese estado
+    const filtered = statusFilter
+      ? orders.filter((order) => order.status === statusFilter)
+      : orders;
+    
+    // Ordenar según prioridad: primero en preparación, luego pendientes, finalmente completadas
+    return [...filtered].sort((a, b) => {
+      // Definir prioridad para cada estado
+      const getPriority = (status: string): number => {
+        switch (status) {
+          case "in-progress": return 1; // Prioridad más alta
+          case "pending": return 2;
+          case "completed": return 3; // Prioridad más baja
+          default: return 4;
+        }
+      };
+      
+      // Comparar prioridades
+      const priorityA = getPriority(a.status);
+      const priorityB = getPriority(b.status);
+      
+      // Ordenar por prioridad (ascendente)
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+      
+      // Si tienen la misma prioridad, ordenar por fecha (más recientes primero)
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA;
+    });
+  })();
 
   // Contar órdenes por estado para los filtros y estadísticas
   const pendingCount = orders.filter(
