@@ -117,15 +117,20 @@ export function AuthProvider({
   const logout = async (): Promise<void> => {
     setIsLoading(true);
     try {
+      console.log("Ejecutando API logout...");
       await AuthApiService.logout();
+      console.log("API logout exitoso");
       setUser(null);
       router.push("/login");
     } catch (error) {
       console.error("Logout error:", error);
       // Still clear local state even if API call fails
       setUser(null);
+      // Forzar limpieza de datos para asegurar desconexión completa
+      AuthApiService.forceLogout();
       router.push("/login");
     } finally {
+      // Asegurar que el estado de carga se actualice siempre
       setIsLoading(false);
     }
   };

@@ -53,6 +53,7 @@ export default function LoginPage() {
 
       // Get user data from context after successful login
       const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
+      console.log("Usuario autenticado:", userData);
 
       // Redirect based on user role
       switch (userData.role) {
@@ -60,6 +61,7 @@ export default function LoginPage() {
           router.push("/admin");
           break;
         case "chef":
+          console.log("Redirigiendo a usuario chef a /kitchen");
           router.push("/kitchen");
           break;
         case "manager":
@@ -110,7 +112,7 @@ export default function LoginPage() {
                   type="email"
                   autoComplete="email"
                   placeholder="Correo electrónico"
-                  variant="cafe"
+                  variant="default"
                   {...register("email")}
                 />
                 {errors.email && (
@@ -126,7 +128,7 @@ export default function LoginPage() {
                   type="password"
                   autoComplete="current-password"
                   placeholder="Contraseña"
-                  variant="cafe"
+                  variant="default"
                   {...register("password")}
                 />
                 {errors.password && (
@@ -151,7 +153,7 @@ export default function LoginPage() {
             <div className="space-y-3">
               <Button
                 type="submit"
-                variant="cafe"
+                variant="default"
                 className="w-full"
                 disabled={isLoading}
               >

@@ -118,9 +118,13 @@ export function Header({ variant, cartCount = 0 }: HeaderProps) {
    */
   const handleLogout = async () => {
     try {
+      console.log("Iniciando cierre de sesión...");
       await logout();
+      // No es necesario redirigir aquí, el AuthContext ya lo hace
     } catch (error) {
       console.error("Logout failed:", error);
+      // Mostrar algún mensaje de error al usuario (opcional)
+      alert("Error al cerrar sesión. Por favor, intenta de nuevo.");
     }
   };
 
