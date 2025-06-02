@@ -18,6 +18,7 @@ import {
   getCartSummaryCardClass,
   getTotalContainerClass,
 } from "@/lib/utils";
+import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
 interface CartSummaryProps {
@@ -81,27 +82,43 @@ export function CartSummary({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-3">
-          {summaryItems.map((item, index) => (
-            <div key={index} className="flex justify-between items-center">
-              <span className="text-muted-foreground font-medium">
-                {item.label}
-              </span>
-              <span className="font-semibold text-foreground">
-                ₡{item.value.toFixed(0)}
+        {isEmpty ? (
+          <div className="py-8 text-center space-y-4">
+            <div className="flex justify-center">
+              <ShoppingBag className="h-12 w-12 text-muted-foreground/50" />
+            </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground">Tu carrito está vacío</p>
+              <p className="text-sm text-muted-foreground/80">
+                Agrega productos para realizar un pedido
+              </p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-3">
+              {summaryItems.map((item, index) => (
+                <div key={index} className="flex justify-between items-center">
+                  <span className="text-muted-foreground font-medium">
+                    {item.label}
+                  </span>
+                  <span className="font-semibold text-foreground">
+                    ₡{item.value.toFixed(0)}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <Separator className="my-4" />
+
+            <div className={getTotalContainerClass()}>
+              <span className="font-bold text-lg text-foreground">Total</span>
+              <span className="font-bold text-xl text-primary">
+                ₡{summary.total.toFixed(0)}
               </span>
             </div>
-          ))}
-        </div>
-
-        <Separator className="my-4" />
-
-        <div className={getTotalContainerClass()}>
-          <span className="font-bold text-lg text-foreground">Total</span>
-          <span className="font-bold text-xl text-primary">
-            ₡{summary.total.toFixed(0)}
-          </span>
-        </div>
+          </>
+        )}
       </CardContent>
       <CardFooter className="pt-4">
         {actionHref ? (
@@ -111,7 +128,7 @@ export function CartSummary({
             asChild
             onClick={handleAction}
           >
-            <Link href={actionHref}>{actionLabel}</Link>
+            <Link href={isEmpty ? "#" : actionHref}>{actionLabel}</Link>
           </Button>
         ) : (
           <Button

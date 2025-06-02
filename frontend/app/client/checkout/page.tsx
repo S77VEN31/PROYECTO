@@ -26,7 +26,7 @@ import { CategoryVariant } from "colori-platform-shared";
 import { Check, CreditCard, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -84,9 +84,16 @@ export default function CheckoutPage() {
     },
   });
 
-  // Si el carrito está vacío, redirigir al menú
+  // Verificar si el carrito está vacío y redireccionar al cargar la página
+  useEffect(() => {
+    if (cart.items.length === 0 && !orderId) {
+      toast.error("No hay productos en el carrito");
+      router.push("/client/cart");
+    }
+  }, [cart.items.length, orderId, router]);
+
+  // Mostrar componente vacío durante la redirección
   if (cart.items.length === 0 && !orderId) {
-    router.push("/client");
     return null;
   }
 
@@ -94,6 +101,7 @@ export default function CheckoutPage() {
   const onSubmit = async (data: CheckoutFormData) => {
     if (cart.items.length === 0) {
       toast.error("El carrito está vacío");
+      router.push("/client/cart");
       return;
     }
 
