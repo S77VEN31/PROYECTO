@@ -1001,3 +1001,48 @@ export function getSpecialInstructionsClass(): string {
 export function getPromotionBadgeClass(): string {
   return cartComponentStyles.promotionBadge;
 }
+
+/**
+ * Obtiene clases de color para íconos de tarjetas de categoría
+ * Mantiene los colores originales en ambos modos (sin texto blanco en modo oscuro)
+ * @param variant La variante de color a usar
+ * @returns Clase CSS solo para el color del ícono de categoría
+ */
+export function getCategoryIconColorClass(
+  variant: CategoryVariant | string
+): string {
+  const categoryIconColors: Record<string, string> = {
+    [CategoryVariant.COFFEE]: "text-[var(--color-coffee)]",
+    [CategoryVariant.SKYBLUE]: "text-[var(--color-skyblue)]",
+    [CategoryVariant.ORANGE]: "text-[var(--color-orange)]",
+    [CategoryVariant.RED]: "text-[var(--color-red)]",
+    [CategoryVariant.PINK]: "text-[var(--color-pink)]",
+    [CategoryVariant.DEFAULT]: "text-primary",
+  };
+
+  return (
+    categoryIconColors[variant as CategoryVariant] ||
+    categoryIconColors[CategoryVariant.DEFAULT]
+  );
+}
+
+/**
+ * Obtiene la clase de color para un ícono de categoría basado en la variante
+ * @param variant La variante de color a usar
+ * @param size Tamaño del ícono (por defecto 'md')
+ * @returns Clase CSS para el ícono de categoría con color y tamaño
+ */
+export function getCategoryIconClass(
+  variant: CategoryVariant | string,
+  size: "sm" | "md" | "lg" = "md"
+): string {
+  const sizeClasses = {
+    sm: "h-6 w-6",
+    md: "h-8 w-8",
+    lg: "h-10 w-10",
+  };
+
+  const variantColor = getCategoryIconColorClass(variant);
+
+  return `${sizeClasses[size]} ${variantColor}`;
+}

@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/card";
 import {
   getButtonVariantFromCategory,
+  getCategoryIconClass,
   getVariantBorderStyle,
-  getVariantIconClass,
 } from "@/lib/utils";
 import { Category } from "colori-platform-shared";
 import {
@@ -73,7 +73,7 @@ export function CategoryCard({ category, href }: CategoryCardProps) {
     >
       <CardContent className="pt-6 relative z-10">
         <div className="mb-4 flex items-center justify-center">
-          <IconComponent className={getVariantIconClass(variant, "lg")} />
+          <IconComponent className={getCategoryIconClass(variant, "lg")} />
         </div>
         <CardTitle className="text-xl font-bold text-center">{name}</CardTitle>
         <CardDescription className="text-center mt-2">

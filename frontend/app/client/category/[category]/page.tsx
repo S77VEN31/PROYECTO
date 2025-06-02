@@ -7,9 +7,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   cn,
   getCategoryFromProduct,
+  getCategoryIconClass,
   getVariantBackgroundClass,
   getVariantBorderStyle,
-  getVariantIconClass,
 } from "@/lib/utils";
 import { Category, CategoryVariant, Product } from "colori-platform-shared";
 import { AlertCircle, Coffee, Package } from "lucide-react";
@@ -57,7 +57,7 @@ function ProductsGrid({
             )}
           >
             <Package
-              className={cn(getVariantIconClass(categoryVariant, "lg"))}
+              className={cn(getCategoryIconClass(categoryVariant, "lg"))}
             />
           </div>
           <h3 className="text-lg font-semibold text-foreground mb-2">
@@ -113,7 +113,7 @@ function CategoryHeader({
         >
           <IconComponent
             className={cn(
-              getVariantIconClass(category.variant as CategoryVariant, "lg")
+              getCategoryIconClass(category.variant as CategoryVariant, "lg")
             )}
           />
         </div>
