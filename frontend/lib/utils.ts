@@ -159,13 +159,13 @@ export const variantConfig = {
   // Variantes para badges/etiquetas (consistentes en ambos modos)
   badgeVariants: {
     [CategoryVariant.COFFEE]:
-      "bg-[var(--color-coffee)] text-white hover:bg-[var(--color-coffee)]/90 transition-colors",
+      "bg-[var(--color-coffee)] !text-white hover:bg-[var(--color-coffee)]/90 hover:!text-white transition-colors",
     [CategoryVariant.SKYBLUE]:
       "bg-[var(--color-skyblue)] text-black hover:bg-[var(--color-skyblue)]/90 transition-colors",
     [CategoryVariant.ORANGE]:
       "bg-[var(--color-orange)] text-black hover:bg-[var(--color-orange)]/90 transition-colors",
     [CategoryVariant.RED]:
-      "bg-[var(--color-red)] text-white hover:bg-[var(--color-red)]/90 transition-colors",
+      "bg-[var(--color-red)] text-black hover:bg-[var(--color-red)]/90 transition-colors",
     [CategoryVariant.PINK]:
       "bg-[var(--color-pink)] text-black hover:bg-[var(--color-pink)]/90 transition-colors",
     [CategoryVariant.DEFAULT]:
@@ -711,8 +711,8 @@ export function getAllergenBadgeClass(): string {
 export function getVariantTagClass(variant: CategoryVariant | string): string {
   const tagClasses: Record<string, string> = {
     [CategoryVariant.COFFEE]:
-      "bg-[var(--color-coffee)]/40 text-black " +
-      "dark:bg-[var(--color-coffee)]/20 dark:text-[var(--color-coffee)] dark:border-[var(--color-coffee)]/30 " +
+      "bg-[var(--color-coffee)]/40 text-[var(--color-coffee)] " +
+      "dark:bg-[var(--color-coffee)]/20 dark:!text-white dark:border-[var(--color-coffee)]/30 " +
       "hover:bg-[var(--color-coffee)]/50 dark:hover:bg-[var(--color-coffee)]/30 transition-colors",
     [CategoryVariant.SKYBLUE]:
       "bg-[var(--color-skyblue)]/40 text-black " +
@@ -754,8 +754,8 @@ export function getVariantNutritionalClass(
 ): string {
   const nutritionalClasses: Record<string, string> = {
     [CategoryVariant.COFFEE]:
-      "bg-[var(--color-coffee)]/30 text-black " +
-      "dark:bg-[var(--color-coffee)]/15 dark:text-[var(--color-coffee)] dark:border-[var(--color-coffee)]/25 " +
+      "bg-[var(--color-coffee)]/30 text-[var(--color-coffee)] " +
+      "dark:bg-[var(--color-coffee)]/15 dark:!text-white dark:border-[var(--color-coffee)]/25 " +
       "hover:bg-[var(--color-coffee)]/40 dark:hover:bg-[var(--color-coffee)]/25 transition-colors",
     [CategoryVariant.SKYBLUE]:
       "bg-[var(--color-skyblue)]/30 text-black " +

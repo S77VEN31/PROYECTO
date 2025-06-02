@@ -26,7 +26,7 @@ const buttonVariants = cva(
           "bg-[var(--color-skyblue)] text-black hover:bg-[var(--color-skyblue)]/90",
         orange:
           "bg-[var(--color-orange)] text-black hover:bg-[var(--color-orange)]/90",
-        red: "bg-[var(--color-red)] text-white hover:bg-[var(--color-red)]/90",
+        red: "bg-[var(--color-red)] text-black hover:bg-[var(--color-red)]/90",
         pink: "bg-[var(--color-pink)] text-black hover:bg-[var(--color-pink)]/90",
 
         /* Status variants */

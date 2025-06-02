@@ -27,7 +27,7 @@ import {
   Clock,
   Droplets,
   Info,
-  ShoppingCart,
+  Plus,
   Tag,
   Utensils,
   Wheat,
@@ -295,11 +295,11 @@ export function ProductCard({
         )}
       </CardContent>
 
-      <CardFooter className="p-4 pt-0 flex flex-col gap-2">
+      <CardFooter className="p-4 pt-0 flex gap-2">
         {onSelect ? (
           <Button
             className={cn(
-              "w-full font-medium shadow-sm",
+              "flex-1 font-medium shadow-sm",
               getVariantBadgeClass(effectiveVariant),
               "hover:opacity-90 transition-all duration-200",
               !isActive() && "opacity-50 cursor-not-allowed"
@@ -314,7 +314,7 @@ export function ProductCard({
         ) : (
           <Button
             className={cn(
-              "w-full font-medium shadow-sm",
+              "flex-1 font-medium shadow-sm",
               getVariantBadgeClass(effectiveVariant),
               "hover:opacity-90 transition-all duration-200",
               !isActive() && "opacity-50 cursor-not-allowed"
@@ -336,15 +336,26 @@ export function ProductCard({
             )}
           </Button>
         )}
-        
-        {isActive() && <AddToCartButton product={product} />}
+
+        {isActive() && (
+          <AddToCartButton
+            product={product}
+            effectiveVariant={effectiveVariant}
+          />
+        )}
       </CardFooter>
     </Card>
   );
 }
 
 // Componente de botón Agregar al Carrito
-function AddToCartButton({ product }: { product: Product }) {
+function AddToCartButton({
+  product,
+  effectiveVariant,
+}: {
+  product: Product;
+  effectiveVariant: CategoryVariant;
+}) {
   const { addToCart } = useCart();
 
   const handleAddToCart = () => {
@@ -353,14 +364,17 @@ function AddToCartButton({ product }: { product: Product }) {
   };
 
   return (
-    <Button 
-      variant="outline" 
-      size="sm" 
-      className="w-full"
+    <Button
+      size="sm"
+      className={cn(
+        "h-9 w-9 p-0 font-medium shadow-sm",
+        getVariantBadgeClass(effectiveVariant),
+        "hover:opacity-90 transition-all duration-200"
+      )}
       onClick={handleAddToCart}
     >
-      <ShoppingCart className="mr-2 h-4 w-4" />
-      Agregar al carrito
+      <Plus className="h-4 w-4" />
+      <span className="sr-only">Agregar {product.name} al carrito</span>
     </Button>
   );
 }
