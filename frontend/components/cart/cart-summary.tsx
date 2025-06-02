@@ -9,7 +9,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { CartItem, CartSummary as CartSummaryType } from "@/contexts/CartContext";
+import {
+  CartItem,
+  CartSummary as CartSummaryType,
+} from "@/contexts/CartContext";
+import {
+  getActionButtonClass,
+  getCartSummaryCardClass,
+  getTotalContainerClass,
+} from "@/lib/utils";
 import Link from "next/link";
 
 interface CartSummaryProps {
@@ -66,29 +74,39 @@ export function CartSummary({
   };
 
   return (
-    <Card className="bg-card border-border shadow-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl">{title}</CardTitle>
+    <Card className={getCartSummaryCardClass()}>
+      <CardHeader className="pb-4">
+        <CardTitle className="text-xl font-bold text-foreground">
+          {title}
+        </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <div className="space-y-3">
           {summaryItems.map((item, index) => (
-            <div key={index} className="flex justify-between">
-              <span className="text-muted-foreground">{item.label}</span>
-              <span>₡{item.value.toFixed(0)}</span>
+            <div key={index} className="flex justify-between items-center">
+              <span className="text-muted-foreground font-medium">
+                {item.label}
+              </span>
+              <span className="font-semibold text-foreground">
+                ₡{item.value.toFixed(0)}
+              </span>
             </div>
           ))}
-          <Separator className="my-2" />
-          <div className="flex justify-between font-medium text-lg">
-            <span>Total</span>
-            <span>₡{summary.total.toFixed(0)}</span>
-          </div>
+        </div>
+
+        <Separator className="my-4" />
+
+        <div className={getTotalContainerClass()}>
+          <span className="font-bold text-lg text-foreground">Total</span>
+          <span className="font-bold text-xl text-primary">
+            ₡{summary.total.toFixed(0)}
+          </span>
         </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="pt-4">
         {actionHref ? (
           <Button
-            className="w-full"
+            className={getActionButtonClass(isEmpty)}
             disabled={isEmpty}
             asChild
             onClick={handleAction}
@@ -96,7 +114,11 @@ export function CartSummary({
             <Link href={actionHref}>{actionLabel}</Link>
           </Button>
         ) : (
-          <Button className="w-full" disabled={isEmpty} onClick={handleAction}>
+          <Button
+            className={getActionButtonClass(isEmpty)}
+            disabled={isEmpty}
+            onClick={handleAction}
+          >
             {actionLabel}
           </Button>
         )}

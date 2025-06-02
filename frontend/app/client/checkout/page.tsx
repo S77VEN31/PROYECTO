@@ -1,6 +1,7 @@
 "use client";
 
 import { OrderApiService } from "@/api/entities/order.api";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,8 +20,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/contexts/CartContext";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Loader2 } from "lucide-react";
+import { CategoryVariant } from "colori-platform-shared";
+import { Check, CreditCard, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -34,6 +37,37 @@ const checkoutSchema = z.object({
 });
 
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
+
+// Componente de header consistente con otras páginas
+function CheckoutHeader() {
+  return (
+    <div className="text-center space-y-4">
+      {/* Ícono de checkout con estilo consistente */}
+      <div className="flex justify-center">
+        <div
+          className={cn(
+            "flex h-16 w-16 items-center justify-center rounded-full border-2",
+            "bg-primary/10 border-primary/20",
+            "transition-all duration-200 hover:shadow-md hover:scale-[1.02]",
+            "hover:bg-primary/15 hover:border-primary/30"
+          )}
+        >
+          <CreditCard className="h-10 w-10 text-primary" />
+        </div>
+      </div>
+
+      {/* Título y descripción */}
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          Finalizar Pedido
+        </h1>
+        <p className="text-muted-foreground max-w-2xl mx-auto">
+          Completa tu información para confirmar el pedido
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -80,7 +114,7 @@ export default function CheckoutPage() {
       if (response && response.id) {
         // Guardar el ID de la orden y el número de orden (reference)
         setOrderId(response.id);
-        
+
         // Verificar si la propiedad order y reference existen antes de usarlas
         let orderRef = "0";
         if (response.order && response.order.reference) {
@@ -89,7 +123,7 @@ export default function CheckoutPage() {
           // Usar los primeros 6 caracteres del ID como fallback
           orderRef = response.id.substring(0, 6);
         }
-        
+
         setOrderNumber(orderRef);
         clearCart();
         toast.success("¡Pedido realizado con éxito!");
@@ -98,7 +132,9 @@ export default function CheckoutPage() {
       }
     } catch (error) {
       console.error("Error al crear la orden:", error);
-      toast.error("Error al procesar el pedido. Por favor, inténtalo de nuevo.");
+      toast.error(
+        "Error al procesar el pedido. Por favor, inténtalo de nuevo."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -106,69 +142,128 @@ export default function CheckoutPage() {
 
   // Si la orden ya fue creada, mostrar confirmación
   if (orderId) {
+    const breadcrumbItems = [
+      {
+        label: "Inicio",
+        href: "/client",
+      },
+      {
+        label: "Carrito",
+        href: "/client/cart",
+      },
+      {
+        label: "Confirmación",
+        isActive: true,
+      },
+    ];
+
     return (
-      <div className="container mx-auto p-4 max-w-7xl">
-        <Card className="max-w-md mx-auto">
-          <CardHeader className="text-center space-y-2">
-            <div className="mx-auto bg-primary/10 p-3 rounded-full w-16 h-16 flex items-center justify-center">
-              <Check className="h-8 w-8 text-primary" />
+      <div className="container mx-auto py-6 md:py-10 px-4 max-w-7xl space-y-6">
+        {/* Breadcrumb consistente */}
+        <Breadcrumb
+          items={breadcrumbItems}
+          categoryVariant={CategoryVariant.DEFAULT}
+        />
+
+        {/* Header de confirmación */}
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <div
+              className={cn(
+                "flex h-16 w-16 items-center justify-center rounded-full border-2",
+                "bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800"
+              )}
+            >
+              <Check className="h-10 w-10 text-green-600 dark:text-green-400" />
             </div>
-            <CardTitle className="text-2xl font-bold">
+          </div>
+
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
               ¡Pedido Confirmado!
-            </CardTitle>
-            <p className="text-muted-foreground">
+            </h1>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
               Tu pedido ha sido enviado a cocina
             </p>
-          </CardHeader>
+          </div>
+        </div>
 
-          <CardContent className="space-y-6">
-            <div className="bg-primary/10 border border-primary/10 rounded-lg p-4 text-center">
-              <h2 className="text-lg font-medium mb-1">Número de Orden</h2>
-              <p className="text-3xl font-bold text-primary">{orderNumber}</p>
-            </div>
-
-            <div className="space-y-4">
-              <div className="border-b pb-4 border-border">
-                <h3 className="font-medium mb-1">
-                  Tiempo Estimado de Preparación
-                </h3>
-                <p className="text-foreground">15-20 minutos</p>
+        {/* Contenido de confirmación */}
+        <div className="max-w-md mx-auto">
+          <Card className="border-2 shadow-lg">
+            <CardContent className="pt-6 space-y-6">
+              <div className="bg-primary/10 border border-primary/10 rounded-lg p-4 text-center">
+                <h2 className="text-lg font-medium mb-1">Número de Orden</h2>
+                <p className="text-3xl font-bold text-primary">{orderNumber}</p>
               </div>
 
-              <div>
-                <h3 className="font-medium mb-1">Instrucciones</h3>
-                <p className="text-muted-foreground">
-                  Tu orden será preparada y te notificaremos cuando esté lista.
-                  Por favor, recoge tu pedido en el mostrador mostrando el número
-                  de orden.
-                </p>
-              </div>
-            </div>
-          </CardContent>
+              <div className="space-y-4">
+                <div className="border-b pb-4 border-border">
+                  <h3 className="font-medium mb-1">
+                    Tiempo Estimado de Preparación
+                  </h3>
+                  <p className="text-foreground">15-20 minutos</p>
+                </div>
 
-          <CardFooter className="flex justify-center">
-            <Button variant="default" className="w-full sm:w-auto" asChild>
-              <Link href="/client">Volver al Menú</Link>
-            </Button>
-          </CardFooter>
-        </Card>
+                <div>
+                  <h3 className="font-medium mb-1">Instrucciones</h3>
+                  <p className="text-muted-foreground">
+                    Tu orden será preparada y te notificaremos cuando esté
+                    lista. Por favor, recoge tu pedido en el mostrador mostrando
+                    el número de orden.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+
+            <CardFooter className="flex justify-center">
+              <Button variant="default" className="w-full" asChild>
+                <Link href="/client">Volver al Menú</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     );
   }
 
+  // Preparar items del breadcrumb
+  const breadcrumbItems = [
+    {
+      label: "Inicio",
+      href: "/client",
+    },
+    {
+      label: "Carrito",
+      href: "/client/cart",
+    },
+    {
+      label: "Checkout",
+      isActive: true,
+    },
+  ];
+
   // Mostrar formulario de checkout
   return (
-    <div className="container mx-auto p-4 max-w-7xl">
-      <div className="max-w-md mx-auto">
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          Finalizar Pedido
-        </h1>
+    <div className="container mx-auto py-6 md:py-10 px-4 max-w-7xl space-y-6">
+      {/* Breadcrumb consistente */}
+      <Breadcrumb
+        items={breadcrumbItems}
+        categoryVariant={CategoryVariant.DEFAULT}
+      />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Información del Pedido</CardTitle>
+      {/* Header de checkout con estilo consistente */}
+      <CheckoutHeader />
+
+      {/* Formulario de checkout */}
+      <div className="max-w-md mx-auto">
+        <Card className="border-2 shadow-lg transition-all duration-300 hover:shadow-xl bg-card">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl font-bold text-foreground">
+              Información del Pedido
+            </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-6">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -179,12 +274,15 @@ export default function CheckoutPage() {
                   name="customerName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nombre</FormLabel>
+                      <FormLabel className="font-medium text-foreground">
+                        Nombre
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Ingresa tu nombre"
                           {...field}
                           disabled={isSubmitting}
+                          className="border-2 focus:border-primary/50"
                         />
                       </FormControl>
                       <FormMessage />
@@ -192,25 +290,43 @@ export default function CheckoutPage() {
                   )}
                 />
 
-                <div className="bg-muted p-4 rounded-md space-y-2">
-                  <div className="flex justify-between">
-                    <span>Subtotal:</span>
-                    <span>₡{summary.subtotal.toFixed(0)}</span>
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-foreground">
+                    Resumen del Pedido
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground font-medium">
+                        Subtotal:
+                      </span>
+                      <span className="font-semibold text-foreground">
+                        ₡{summary.subtotal.toFixed(0)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground font-medium">
+                        Impuesto (16%):
+                      </span>
+                      <span className="font-semibold text-foreground">
+                        ₡{(summary.tax || 0).toFixed(0)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Impuesto (16%):</span>
-                    <span>₡{(summary.tax || 0).toFixed(0)}</span>
-                  </div>
-                  <div className="flex justify-between font-medium">
-                    <span>Total:</span>
-                    <span>₡{summary.total.toFixed(0)}</span>
+
+                  <div className="flex justify-between items-center p-3 rounded-lg bg-primary/10 border border-primary/20">
+                    <span className="font-bold text-lg text-foreground">
+                      Total:
+                    </span>
+                    <span className="font-bold text-xl text-primary">
+                      ₡{summary.total.toFixed(0)}
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex justify-between space-x-4">
+                <div className="flex justify-between space-x-4 pt-4">
                   <Button
                     variant="outline"
-                    className="w-1/2"
+                    className="w-1/2 h-12 font-medium border-2"
                     onClick={() => router.push("/client/cart")}
                     type="button"
                     disabled={isSubmitting}
@@ -219,7 +335,7 @@ export default function CheckoutPage() {
                   </Button>
                   <Button
                     type="submit"
-                    className="w-1/2"
+                    className="w-1/2 h-12 font-semibold bg-primary hover:bg-primary/90 transition-all duration-200 shadow-md hover:shadow-lg"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

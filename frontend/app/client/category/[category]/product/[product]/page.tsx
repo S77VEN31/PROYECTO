@@ -5,18 +5,12 @@ import { ProductApiService } from "@/api/entities/product.api";
 import { ProductDetail } from "@/components/product/product-detail";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Card, CardContent } from "@/components/ui/card";
+import { useCart } from "@/contexts/CartContext";
 import { Category, CategoryVariant, Product } from "colori-platform-shared";
 import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
-
-// In a real application, instead of this mock implementation:
-// 1. You would typically import a useCart hook or useContext(CartContext)
-// 2. Then destructure: const { addToCart } = useCart();
-// This ensures type safety and proper cart functionality
-const addToCart = (productId: string, quantity: number) => {
-  console.log("Adding to cart:", { productId, quantity });
-};
+import { toast } from "sonner";
 
 interface ProductPageProps {
   params: Promise<{
@@ -62,6 +56,7 @@ function ErrorState({ title, message }: { title: string; message: string }) {
 
 export default function CategoryProductPage({ params }: ProductPageProps) {
   const router = useRouter();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
@@ -123,11 +118,11 @@ export default function CategoryProductPage({ params }: ProductPageProps) {
     fetchData();
   }, [productSlug, categorySlug]);
 
-  // Manejar la adición al carrito - matches CartContextType.addToCart signature
+  // Manejar la adición al carrito - uses the actual CartContext addToCart
   const handleAddToCart = (id: string, quantity: number) => {
     if (product) {
-      // Directly pass the parameters as expected by CartContextType
-      addToCart(id, quantity);
+      addToCart(product, quantity);
+      toast.success(`${product.name} agregado al carrito`);
     }
   };
 

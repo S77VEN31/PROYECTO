@@ -138,7 +138,7 @@ export const variantConfig = {
     [CategoryVariant.ORANGE]: "text-[var(--color-orange)]",
     [CategoryVariant.RED]: "text-[var(--color-red)]",
     [CategoryVariant.PINK]: "text-[var(--color-pink)]",
-    [CategoryVariant.DEFAULT]: "text-muted-foreground",
+    [CategoryVariant.DEFAULT]: "text-primary",
   },
 
   // Estilos de borde para tarjetas por variante (consistentes en ambos modos)
@@ -153,8 +153,7 @@ export const variantConfig = {
       "border-[var(--color-red)]/20 hover:border-[var(--color-red)]/50",
     [CategoryVariant.PINK]:
       "border-[var(--color-pink)]/20 hover:border-[var(--color-pink)]/50",
-    [CategoryVariant.DEFAULT]:
-      "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600",
+    [CategoryVariant.DEFAULT]: "border-primary/20 hover:border-primary/50",
   },
 
   // Variantes para badges/etiquetas (consistentes en ambos modos)
@@ -170,7 +169,7 @@ export const variantConfig = {
     [CategoryVariant.PINK]:
       "bg-[var(--color-pink)] text-black hover:bg-[var(--color-pink)]/90 transition-colors",
     [CategoryVariant.DEFAULT]:
-      "bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors",
+      "bg-primary text-primary-foreground hover:bg-primary/90 transition-colors",
   },
 };
 
@@ -252,8 +251,8 @@ export function getVariantBackgroundClass(
 ): string {
   const opacityMap = {
     light: "/10",
-    medium: "/20", 
-    strong: "/30"
+    medium: "/20",
+    strong: "/30",
   };
 
   const opacityLevel = opacityMap[opacity];
@@ -264,7 +263,9 @@ export function getVariantBackgroundClass(
     [CategoryVariant.ORANGE]: `bg-[var(--color-orange)]${opacityLevel}`,
     [CategoryVariant.RED]: `bg-[var(--color-red)]${opacityLevel}`,
     [CategoryVariant.PINK]: `bg-[var(--color-pink)]${opacityLevel}`,
-    [CategoryVariant.DEFAULT]: `bg-muted${opacityLevel === "/10" ? "/50" : opacityLevel === "/20" ? "/70" : ""}`,
+    [CategoryVariant.DEFAULT]: `bg-muted${
+      opacityLevel === "/10" ? "/50" : opacityLevel === "/20" ? "/70" : ""
+    }`,
   };
 
   return (
@@ -286,7 +287,7 @@ export function getVariantBorderClass(
   const styleMap = {
     subtle: "/10",
     normal: "/20",
-    strong: "/40"
+    strong: "/40",
   };
 
   const opacity = styleMap[style];
@@ -536,25 +537,27 @@ export function getStatCardColorClass(
  */
 export const deleteDialogConfig = {
   // Icon container styling using cancellation color from theme
-  iconContainer: "flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-cancellation-bg)] dark:bg-[var(--color-cancellation-bg-dark)]",
-  
+  iconContainer:
+    "flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-cancellation-bg)] dark:bg-[var(--color-cancellation-bg-dark)]",
+
   // Icon styling using cancellation color from theme
   icon: "h-5 w-5 text-[var(--color-cancellation)]",
-  
+
   // Content container styling
   content: "py-4",
-  
+
   // Main text styling
   mainText: "text-sm text-muted-foreground",
-  
+
   // Highlighted entity name styling
   entityName: "font-medium text-foreground",
-  
+
   // Secondary description text styling
   secondaryText: "mt-2 text-sm text-muted-foreground",
-  
+
   // Alternative: Using Tailwind's destructive classes (automatically uses our custom colors)
-  iconContainerTailwind: "flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10",
+  iconContainerTailwind:
+    "flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10",
   iconTailwind: "h-5 w-5 text-destructive",
 };
 
@@ -566,21 +569,23 @@ export const cancellationStyles = {
   // Background colors for cancellation contexts
   backgroundLight: "bg-[var(--color-cancellation-bg)]",
   backgroundDark: "dark:bg-[var(--color-cancellation-bg-dark)]",
-  background: "bg-[var(--color-cancellation-bg)] dark:bg-[var(--color-cancellation-bg-dark)]",
-  
+  background:
+    "bg-[var(--color-cancellation-bg)] dark:bg-[var(--color-cancellation-bg-dark)]",
+
   // Text colors for cancellation contexts
   text: "text-[var(--color-cancellation)]",
   textOnBackground: "text-[var(--color-cancellation-foreground)]", // White text for red backgrounds
-  
+
   // Combined background with opacity for subtle effects
   backgroundSubtle: "bg-[var(--color-cancellation)]/10",
-  
+
   // Border colors for cancellation contexts
   border: "border-[var(--color-cancellation)]/20",
   borderHover: "hover:border-[var(--color-cancellation)]/50",
-  
+
   // Full button styling (red background with white text)
-  button: "bg-[var(--color-cancellation)] text-[var(--color-cancellation-foreground)]",
+  button:
+    "bg-[var(--color-cancellation)] text-[var(--color-cancellation-foreground)]",
   buttonHover: "hover:bg-[var(--color-cancellation)]/90",
 };
 
@@ -589,9 +594,11 @@ export const cancellationStyles = {
  * @param subtle - Whether to use subtle (10% opacity) background
  * @returns CSS classes for cancellation background
  */
-export function getCancellationBackgroundClass(subtle: boolean = false): string {
-  return subtle 
-    ? cancellationStyles.backgroundSubtle 
+export function getCancellationBackgroundClass(
+  subtle: boolean = false
+): string {
+  return subtle
+    ? cancellationStyles.backgroundSubtle
     : cancellationStyles.background;
 }
 
@@ -600,9 +607,11 @@ export function getCancellationBackgroundClass(subtle: boolean = false): string 
  * @param onBackground - Whether text is on a red background (uses white text)
  * @returns CSS classes for cancellation text color
  */
-export function getCancellationTextClass(onBackground: boolean = false): string {
-  return onBackground 
-    ? cancellationStyles.textOnBackground 
+export function getCancellationTextClass(
+  onBackground: boolean = false
+): string {
+  return onBackground
+    ? cancellationStyles.textOnBackground
     : cancellationStyles.text;
 }
 
@@ -612,7 +621,7 @@ export function getCancellationTextClass(onBackground: boolean = false): string 
  * @returns CSS classes for cancellation border
  */
 export function getCancellationBorderClass(withHover: boolean = false): string {
-  return withHover 
+  return withHover
     ? `${cancellationStyles.border} ${cancellationStyles.borderHover}`
     : cancellationStyles.border;
 }
@@ -622,9 +631,11 @@ export function getCancellationBorderClass(withHover: boolean = false): string {
  * @param useTailwind - Whether to use Tailwind destructive classes (default: false, uses custom CSS variables)
  * @returns CSS classes for the icon container
  */
-export function getDeleteDialogIconContainerClass(useTailwind: boolean = false): string {
-  return useTailwind 
-    ? deleteDialogConfig.iconContainerTailwind 
+export function getDeleteDialogIconContainerClass(
+  useTailwind: boolean = false
+): string {
+  return useTailwind
+    ? deleteDialogConfig.iconContainerTailwind
     : deleteDialogConfig.iconContainer;
 }
 
@@ -634,8 +645,8 @@ export function getDeleteDialogIconContainerClass(useTailwind: boolean = false):
  * @returns CSS classes for the icon
  */
 export function getDeleteDialogIconClass(useTailwind: boolean = false): string {
-  return useTailwind 
-    ? deleteDialogConfig.iconTailwind 
+  return useTailwind
+    ? deleteDialogConfig.iconTailwind
     : deleteDialogConfig.icon;
 }
 
@@ -677,7 +688,7 @@ export function getDeleteDialogSecondaryTextClass(): string {
  * @returns CSS classes for cancellation button
  */
 export function getCancellationButtonClass(withHover: boolean = true): string {
-  return withHover 
+  return withHover
     ? `${cancellationStyles.button} ${cancellationStyles.buttonHover}`
     : cancellationStyles.button;
 }
@@ -697,32 +708,30 @@ export function getAllergenBadgeClass(): string {
  * @param variant La variante de color a usar
  * @returns Clase CSS para tags con estilos adaptativos
  */
-export function getVariantTagClass(
-  variant: CategoryVariant | string
-): string {
+export function getVariantTagClass(variant: CategoryVariant | string): string {
   const tagClasses: Record<string, string> = {
-    [CategoryVariant.COFFEE]: 
+    [CategoryVariant.COFFEE]:
       "bg-[var(--color-coffee)]/40 text-black " +
       "dark:bg-[var(--color-coffee)]/20 dark:text-[var(--color-coffee)] dark:border-[var(--color-coffee)]/30 " +
       "hover:bg-[var(--color-coffee)]/50 dark:hover:bg-[var(--color-coffee)]/30 transition-colors",
-    [CategoryVariant.SKYBLUE]: 
+    [CategoryVariant.SKYBLUE]:
       "bg-[var(--color-skyblue)]/40 text-black " +
       "dark:bg-[var(--color-skyblue)]/20 dark:text-[var(--color-skyblue)] dark:border-[var(--color-skyblue)]/30 " +
       "hover:bg-[var(--color-skyblue)]/50 dark:hover:bg-[var(--color-skyblue)]/30 transition-colors",
-    [CategoryVariant.ORANGE]: 
+    [CategoryVariant.ORANGE]:
       "bg-[var(--color-orange)]/40 text-black " +
       "dark:bg-[var(--color-orange)]/20 dark:text-[var(--color-orange)] dark:border-[var(--color-orange)]/30 " +
       "hover:bg-[var(--color-orange)]/50 dark:hover:bg-[var(--color-orange)]/30 transition-colors",
-    [CategoryVariant.RED]: 
+    [CategoryVariant.RED]:
       "bg-[var(--color-red)]/40 text-black " +
       "dark:bg-[var(--color-red)]/20 dark:text-[var(--color-red)] dark:border-[var(--color-red)]/30 " +
       "hover:bg-[var(--color-red)]/50 dark:hover:bg-[var(--color-red)]/30 transition-colors",
-    [CategoryVariant.PINK]: 
+    [CategoryVariant.PINK]:
       "bg-[var(--color-pink)]/40 text-black " +
       "dark:bg-[var(--color-pink)]/20 dark:text-[var(--color-pink)] dark:border-[var(--color-pink)]/30 " +
       "hover:bg-[var(--color-pink)]/50 dark:hover:bg-[var(--color-pink)]/35 transition-all duration-200 " +
       "hover:shadow-sm hover:scale-[1.02]",
-    [CategoryVariant.DEFAULT]: 
+    [CategoryVariant.DEFAULT]:
       "bg-muted/50 text-muted-foreground dark:border-muted-foreground/20 " +
       "hover:bg-muted/70 transition-colors",
   };
@@ -744,28 +753,28 @@ export function getVariantNutritionalClass(
   variant: CategoryVariant | string
 ): string {
   const nutritionalClasses: Record<string, string> = {
-    [CategoryVariant.COFFEE]: 
+    [CategoryVariant.COFFEE]:
       "bg-[var(--color-coffee)]/30 text-black " +
       "dark:bg-[var(--color-coffee)]/15 dark:text-[var(--color-coffee)] dark:border-[var(--color-coffee)]/25 " +
       "hover:bg-[var(--color-coffee)]/40 dark:hover:bg-[var(--color-coffee)]/25 transition-colors",
-    [CategoryVariant.SKYBLUE]: 
+    [CategoryVariant.SKYBLUE]:
       "bg-[var(--color-skyblue)]/30 text-black " +
       "dark:bg-[var(--color-skyblue)]/15 dark:text-[var(--color-skyblue)] dark:border-[var(--color-skyblue)]/25 " +
       "hover:bg-[var(--color-skyblue)]/40 dark:hover:bg-[var(--color-skyblue)]/25 transition-colors",
-    [CategoryVariant.ORANGE]: 
+    [CategoryVariant.ORANGE]:
       "bg-[var(--color-orange)]/30 text-black " +
       "dark:bg-[var(--color-orange)]/15 dark:text-[var(--color-orange)] dark:border-[var(--color-orange)]/25 " +
       "hover:bg-[var(--color-orange)]/40 dark:hover:bg-[var(--color-orange)]/25 transition-colors",
-    [CategoryVariant.RED]: 
+    [CategoryVariant.RED]:
       "bg-[var(--color-red)]/30 text-black " +
       "dark:bg-[var(--color-red)]/15 dark:text-[var(--color-red)] dark:border-[var(--color-red)]/25 " +
       "hover:bg-[var(--color-red)]/40 dark:hover:bg-[var(--color-red)]/25 transition-colors",
-    [CategoryVariant.PINK]: 
+    [CategoryVariant.PINK]:
       "bg-[var(--color-pink)]/30 text-black " +
       "dark:bg-[var(--color-pink)]/15 dark:text-[var(--color-pink)] dark:border-[var(--color-pink)]/25 " +
       "hover:bg-[var(--color-pink)]/40 dark:hover:bg-[var(--color-pink)]/30 transition-all duration-200 " +
       "hover:shadow-md hover:scale-[1.02]",
-    [CategoryVariant.DEFAULT]: 
+    [CategoryVariant.DEFAULT]:
       "bg-muted/30 text-muted-foreground dark:border-muted-foreground/20 " +
       "hover:bg-muted/50 transition-colors",
   };
@@ -774,4 +783,221 @@ export function getVariantNutritionalClass(
     nutritionalClasses[variant as CategoryVariant] ||
     nutritionalClasses[CategoryVariant.DEFAULT]
   );
+}
+
+/**
+ * Get standardized cart component styling classes
+ * Provides consistent styling across all cart-related components
+ */
+export const cartComponentStyles = {
+  // Card container styling for cart items and summary
+  card: "border-2 shadow-lg transition-all duration-300 hover:shadow-xl bg-card",
+
+  // Cart item card specific styling with enhanced hover effects
+  itemCard:
+    "border-2 shadow-lg transition-all duration-300 hover:shadow-xl hover:border-primary/20 hover:scale-[1.01] bg-card group",
+
+  // Cart summary card specific styling
+  summaryCard:
+    "border-2 shadow-lg transition-all duration-300 hover:shadow-xl bg-card",
+
+  // Product image container with hover effects
+  imageContainer:
+    "relative h-24 w-24 overflow-hidden rounded-lg flex-shrink-0 border-2 border-muted transition-all duration-200 hover:border-primary/30 hover:shadow-md",
+
+  // Product image with hover effects
+  productImage:
+    "object-cover transition-transform duration-300 group-hover:scale-105",
+
+  // Product name with hover effects
+  productName:
+    "font-semibold text-lg text-foreground truncate transition-colors duration-200 group-hover:text-primary",
+
+  // Product price with hover effects
+  productPrice:
+    "text-sm text-muted-foreground transition-colors duration-200 group-hover:text-foreground",
+
+  // Total price with hover effects
+  totalPrice:
+    "text-xl font-bold text-foreground transition-all duration-200 group-hover:text-primary group-hover:scale-105",
+
+  // Quantity control container
+  quantityControl:
+    "flex items-center border-2 border-muted rounded-lg bg-background shadow-sm transition-all duration-200 hover:border-primary/30 hover:shadow-md",
+
+  // Quantity display with hover effects
+  quantityDisplay:
+    "w-12 text-center font-semibold text-foreground border-x border-muted transition-colors duration-200 group-hover:text-primary",
+
+  // Quantity button styling
+  quantityButton:
+    "hover:bg-primary/10 hover:text-primary transition-all duration-200 hover:scale-105",
+
+  // Remove button styling with enhanced hover effects
+  removeButton:
+    "h-10 px-3 border-2 text-destructive border-destructive/20 hover:border-destructive/40 hover:scale-105 transition-all duration-200 hover:shadow-md",
+
+  // Total display container
+  totalContainer:
+    "flex justify-between items-center p-3 rounded-lg bg-primary/10 border border-primary/20 transition-all duration-200 hover:bg-primary/15 hover:border-primary/30 hover:shadow-md",
+
+  // Action button styling
+  actionButton:
+    "w-full h-12 font-semibold text-base bg-primary hover:bg-primary/90 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-[1.02]",
+
+  // Special instructions styling with hover effects
+  specialInstructions:
+    "text-xs text-muted-foreground mt-1 italic bg-muted/50 px-2 py-1 rounded transition-all duration-200 hover:bg-muted/70 hover:text-foreground",
+
+  // Promotion badge styling with hover effects
+  promotionBadge:
+    "inline-block text-xs text-primary-foreground bg-primary px-3 py-1 rounded-full font-medium shadow-sm transition-all duration-200 hover:bg-primary/90 hover:shadow-md hover:scale-105",
+
+  // Controls container with hover effects
+  controlsContainer:
+    "flex items-center gap-3 transition-all duration-200 group-hover:scale-[1.02]",
+};
+
+/**
+ * Get product image container styling classes with hover effects
+ * @returns CSS classes for product image containers
+ */
+export function getProductImageContainerClass(): string {
+  return cartComponentStyles.imageContainer;
+}
+
+/**
+ * Get product image styling classes with hover effects
+ * @returns CSS classes for product images
+ */
+export function getProductImageClass(): string {
+  return cartComponentStyles.productImage;
+}
+
+/**
+ * Get product name styling classes with hover effects
+ * @returns CSS classes for product names
+ */
+export function getProductNameClass(): string {
+  return cartComponentStyles.productName;
+}
+
+/**
+ * Get product price styling classes with hover effects
+ * @returns CSS classes for product prices
+ */
+export function getProductPriceClass(): string {
+  return cartComponentStyles.productPrice;
+}
+
+/**
+ * Get total price styling classes with hover effects
+ * @returns CSS classes for total prices
+ */
+export function getTotalPriceClass(): string {
+  return cartComponentStyles.totalPrice;
+}
+
+/**
+ * Get quantity display styling classes with hover effects
+ * @returns CSS classes for quantity display
+ */
+export function getQuantityDisplayClass(): string {
+  return cartComponentStyles.quantityDisplay;
+}
+
+/**
+ * Get controls container styling classes with hover effects
+ * @returns CSS classes for controls containers
+ */
+export function getControlsContainerClass(): string {
+  return cartComponentStyles.controlsContainer;
+}
+
+/**
+ * Get cart item card styling classes
+ * @returns CSS classes for cart item cards
+ */
+export function getCartItemCardClass(): string {
+  return cartComponentStyles.itemCard;
+}
+
+/**
+ * Get cart summary card styling classes
+ * @returns CSS classes for cart summary cards
+ */
+export function getCartSummaryCardClass(): string {
+  return cartComponentStyles.summaryCard;
+}
+
+/**
+ * Get quantity control container styling classes
+ * @returns CSS classes for quantity control containers
+ */
+export function getQuantityControlClass(): string {
+  return cartComponentStyles.quantityControl;
+}
+
+/**
+ * Get quantity button styling classes
+ * @param position - Button position ('left' | 'right')
+ * @param disabled - Whether the button is disabled
+ * @returns CSS classes for quantity buttons
+ */
+export function getQuantityButtonClass(
+  position: "left" | "right",
+  disabled: boolean = false
+): string {
+  const baseClasses = `h-10 w-10 ${cartComponentStyles.quantityButton}`;
+  const positionClasses =
+    position === "left"
+      ? "rounded-l-lg rounded-r-none"
+      : "rounded-r-lg rounded-l-none";
+  const disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "";
+
+  return cn(baseClasses, positionClasses, disabledClasses);
+}
+
+/**
+ * Get remove button styling classes
+ * @returns CSS classes for remove buttons
+ */
+export function getRemoveButtonClass(): string {
+  return cartComponentStyles.removeButton;
+}
+
+/**
+ * Get total display container styling classes
+ * @returns CSS classes for total display containers
+ */
+export function getTotalContainerClass(): string {
+  return cartComponentStyles.totalContainer;
+}
+
+/**
+ * Get action button styling classes
+ * @param disabled - Whether the button is disabled
+ * @returns CSS classes for action buttons
+ */
+export function getActionButtonClass(disabled: boolean = false): string {
+  const baseClasses = cartComponentStyles.actionButton;
+  const disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "";
+
+  return cn(baseClasses, disabledClasses);
+}
+
+/**
+ * Get special instructions styling classes
+ * @returns CSS classes for special instructions text
+ */
+export function getSpecialInstructionsClass(): string {
+  return cartComponentStyles.specialInstructions;
+}
+
+/**
+ * Get promotion badge styling classes
+ * @returns CSS classes for promotion badges
+ */
+export function getPromotionBadgeClass(): string {
+  return cartComponentStyles.promotionBadge;
 }

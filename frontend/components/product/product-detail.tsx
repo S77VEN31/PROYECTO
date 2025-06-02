@@ -10,6 +10,7 @@ import {
   getCategoryFromProduct,
   getVariantBadgeClass,
   getVariantBorderClass,
+  getVariantIconColorClass,
   getVariantNutritionalClass,
   getVariantTagClass,
 } from "@/lib/utils";
@@ -18,7 +19,6 @@ import {
   AlertTriangle,
   Clock,
   Droplets,
-  Heart,
   MinusCircle,
   PlusCircle,
   ShoppingCart,
@@ -33,8 +33,6 @@ import { useState } from "react";
 interface ProductDetailProps {
   product: Product;
   onAddToCart: (id: string, quantity: number) => void;
-  onFavorite?: (id: string) => void;
-  isFavorite?: boolean;
   currentCategory?: string;
   categoryVariant?: CategoryVariant;
 }
@@ -42,8 +40,6 @@ interface ProductDetailProps {
 export function ProductDetail({
   product,
   onAddToCart,
-  onFavorite,
-  isFavorite = false,
   currentCategory,
   categoryVariant = CategoryVariant.DEFAULT,
 }: ProductDetailProps) {
@@ -77,7 +73,7 @@ export function ProductDetail({
   // Check if product is available (active)
   const isAvailable = product.active ?? true;
 
-  // Obtener información de la categoría para estilos consistentes
+  // Obtener información de la categoría para estilos consistentes usando utils
   const categoryData = getCategoryFromProduct(product.id);
   const effectiveVariant = categoryVariant || categoryData.variant;
 
@@ -111,23 +107,6 @@ export function ProductDetail({
               </Badge>
             </div>
           )}
-          {onFavorite && (
-            <Button
-              variant="outline"
-              size="icon"
-              className="absolute top-4 right-4 bg-background/90 hover:bg-background shadow-md border-2"
-              onClick={() => onFavorite(product.id)}
-            >
-              <Heart
-                className={cn(
-                  "h-5 w-5",
-                  isFavorite
-                    ? "fill-red-500 text-red-500"
-                    : "text-muted-foreground"
-                )}
-              />
-            </Button>
-          )}
         </div>
 
         {/* Detalles del producto */}
@@ -142,7 +121,7 @@ export function ProductDetail({
                     getVariantBadgeClass(effectiveVariant)
                   )}
                 >
-                  {currentCategory || "Sin categoría"}
+                  {currentCategory || categoryData.name || "Sin categoría"}
                 </div>
                 <h1 className="text-3xl font-bold mb-2 text-foreground">
                   {product.name}
@@ -169,7 +148,12 @@ export function ProductDetail({
                     getVariantTagClass(effectiveVariant)
                   )}
                 >
-                  <Clock className="h-3 w-3" />
+                  <Clock
+                    className={cn(
+                      "h-3 w-3",
+                      getVariantIconColorClass(effectiveVariant)
+                    )}
+                  />
                 </div>
                 <span>
                   Tiempo de preparación: {product.preparationTime} minutos
@@ -199,7 +183,7 @@ export function ProductDetail({
             </div>
           </div>
 
-          {/* Información nutricional mejorada */}
+          {/* Información nutricional mejorada usando utils */}
           {product.nutritionalInfo && (
             <div>
               <h3 className="font-semibold mb-4 text-foreground">
@@ -213,7 +197,12 @@ export function ProductDetail({
                       getVariantNutritionalClass(effectiveVariant)
                     )}
                   >
-                    <Zap className="h-5 w-5 mx-auto mb-1" />
+                    <Zap
+                      className={cn(
+                        "h-5 w-5 mx-auto mb-1",
+                        getVariantIconColorClass(effectiveVariant)
+                      )}
+                    />
                     <p className="text-lg font-bold">
                       {product.nutritionalInfo.calories}
                     </p>
@@ -227,7 +216,12 @@ export function ProductDetail({
                       getVariantNutritionalClass(effectiveVariant)
                     )}
                   >
-                    <Utensils className="h-5 w-5 mx-auto mb-1" />
+                    <Utensils
+                      className={cn(
+                        "h-5 w-5 mx-auto mb-1",
+                        getVariantIconColorClass(effectiveVariant)
+                      )}
+                    />
                     <p className="text-lg font-bold">
                       {product.nutritionalInfo.protein}g
                     </p>
@@ -241,7 +235,12 @@ export function ProductDetail({
                       getVariantNutritionalClass(effectiveVariant)
                     )}
                   >
-                    <Wheat className="h-5 w-5 mx-auto mb-1" />
+                    <Wheat
+                      className={cn(
+                        "h-5 w-5 mx-auto mb-1",
+                        getVariantIconColorClass(effectiveVariant)
+                      )}
+                    />
                     <p className="text-lg font-bold">
                       {product.nutritionalInfo.carbs}g
                     </p>
@@ -255,7 +254,12 @@ export function ProductDetail({
                       getVariantNutritionalClass(effectiveVariant)
                     )}
                   >
-                    <Droplets className="h-5 w-5 mx-auto mb-1" />
+                    <Droplets
+                      className={cn(
+                        "h-5 w-5 mx-auto mb-1",
+                        getVariantIconColorClass(effectiveVariant)
+                      )}
+                    />
                     <p className="text-lg font-bold">
                       {product.nutritionalInfo.fat}g
                     </p>
@@ -264,7 +268,7 @@ export function ProductDetail({
                 )}
               </div>
 
-              {/* Alérgenos con estilo consistente */}
+              {/* Alérgenos con estilo consistente usando utils */}
               {product.nutritionalInfo.allergens &&
                 product.nutritionalInfo.allergens.length > 0 && (
                   <div className="mt-4">
@@ -295,7 +299,7 @@ export function ProductDetail({
             </div>
           )}
 
-          {/* Tags del producto */}
+          {/* Tags del producto usando utils */}
           {product.tags && product.tags.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-3">
@@ -305,7 +309,12 @@ export function ProductDetail({
                     getVariantTagClass(effectiveVariant)
                   )}
                 >
-                  <Tag className="h-3 w-3" />
+                  <Tag
+                    className={cn(
+                      "h-3 w-3",
+                      getVariantIconColorClass(effectiveVariant)
+                    )}
+                  />
                 </div>
                 <h4 className="font-semibold text-foreground">Tags</h4>
               </div>
@@ -327,7 +336,7 @@ export function ProductDetail({
 
           <Separator />
 
-          {/* Acciones de compra mejoradas */}
+          {/* Acciones de compra mejoradas usando utils */}
           <div className="mt-auto space-y-4">
             <div className="flex items-center justify-between">
               <div className="font-semibold text-foreground">Cantidad</div>
