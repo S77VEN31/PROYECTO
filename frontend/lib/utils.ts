@@ -133,7 +133,7 @@ export function getToggleStatusActionText(
 export const variantConfig = {
   // Colores principales por variante (consistentes en ambos modos)
   iconColors: {
-    [CategoryVariant.COFFEE]: "text-[var(--color-coffee)]",
+    [CategoryVariant.COFFEE]: "text-[var(--color-coffee)] dark:!text-white",
     [CategoryVariant.SKYBLUE]: "text-[var(--color-skyblue)]",
     [CategoryVariant.ORANGE]: "text-[var(--color-orange)]",
     [CategoryVariant.RED]: "text-[var(--color-red)]",
