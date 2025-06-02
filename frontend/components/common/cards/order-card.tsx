@@ -54,13 +54,16 @@ export function OrderCard({
     return statusMap[status];
   };
 
+  // Usar reference (número de orden) si está disponible, de lo contrario usar ID
+  const displayOrderNumber = order.reference || order.id;
+
   return (
     <Card className={`h-full ${className}`}>
       <CardHeader className="p-4 space-y-2 border-b">
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
-              Orden #{order.id}
+              Orden #{displayOrderNumber}
               <Badge variant={order.status}>
                 {getStatusText(order.status)}
               </Badge>

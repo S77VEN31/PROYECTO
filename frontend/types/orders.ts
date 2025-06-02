@@ -35,4 +35,5 @@ export interface Order {
   updatedAt: string;
   completedAt: string | null;
   serverName: string;
+  reference?: string;
 }

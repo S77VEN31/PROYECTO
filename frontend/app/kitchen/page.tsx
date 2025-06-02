@@ -1,47 +1,366 @@
 "use client";
 
+import { OrderApiService } from "@/api/entities/order.api";
+import { ProductApiService } from "@/api/entities/product.api";
 import { KitchenStats } from "@/components/kitchen/kitchen-stats";
 import { OrdersList } from "@/components/kitchen/orders-list";
 import { StatusFilter } from "@/components/kitchen/status-filter";
-import { useState } from "react";
+import { Order, OrderProduct, OrderStatus as FrontendOrderStatus, ProductOrderStatus } from "@/types/orders";
+import { Product } from "@/types/products";
+import { OrderStatus } from "colori-platform-shared";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-// Mock data importada desde la carpeta data/mock
-import { mockOrders } from "../../data/mock/orders";
+// Adaptador para convertir órdenes de API a formato frontend
+const adaptOrderFromApi = async (apiOrder: any): Promise<Order> => {
+  // Usar la referencia de la orden (número de orden) si está disponible
+  const orderId = apiOrder.reference ? apiOrder.reference : apiOrder.id;
+  
+  // Extraer productos de la orden API y convertirlos al formato frontend
+  const productPromises = apiOrder.products.map(async (apiProduct: any) => {
+    let productInfo: Partial<Product> = {};
+    
+    // Intentar obtener información del producto desde la API
+    try {
+      const fetchedProduct = await ProductApiService.getProductById({ id: apiProduct.productId });
+      if (fetchedProduct) {
+        productInfo = fetchedProduct;
+      }
+    } catch (err) {
+      console.warn(`No se pudo obtener información para producto ${apiProduct.productId}:`, err);
+    }
+    
+    // Crear objeto Product compatible con el frontend
+    const product: Product = {
+      id: apiProduct.productId,
+      name: productInfo.name || apiProduct.name || "Producto sin nombre",
+      description: productInfo.description || apiProduct.description || "",
+      price: productInfo.price || apiProduct.price || 0,
+      imageSrc: productInfo.imageSrc || productInfo.image || apiProduct.image || "/placeholder.jpg",
+      image: productInfo.image || apiProduct.image || "/placeholder.jpg", // Para compatibilidad
+      available: productInfo.available !== undefined ? productInfo.available : true
+    };
+
+    // Crear OrderProduct compatible con el frontend
+    return {
+      product,
+      quantity: apiProduct.quantity,
+      specialInstructions: apiProduct.specialInstructions || "",
+      // Usar el estado del producto si existe, o "pending" como fallback
+      status: (apiProduct.status as ProductOrderStatus) || "pending"
+    };
+  });
+  
+  // Esperar a que todas las consultas de productos terminen
+  const products: OrderProduct[] = await Promise.all(productPromises);
+
+  // Crear objeto Order compatible con el frontend
+  return {
+    id: apiOrder.id, // Mantener el ID original para las actualizaciones
+    customerName: apiOrder.customerName || "Cliente",
+    tableNumber: apiOrder.tableNumber || 0,
+    products,
+    status: apiOrder.status || "pending",
+    subtotal: apiOrder.subtotal || 0,
+    tax: apiOrder.tax || 0,
+    total: apiOrder.total || 0,
+    tip: apiOrder.tip || null,
+    paymentMethod: apiOrder.paymentMethod || null,
+    createdAt: apiOrder.createdAt || new Date().toISOString(),
+    updatedAt: apiOrder.updatedAt || new Date().toISOString(),
+    completedAt: apiOrder.completedAt || null,
+    serverName: apiOrder.serverName || "Sistema",
+    // Agregar referencia para mostrar como número de orden
+    reference: apiOrder.reference || orderId
+  };
+};
 
 export default function KitchenDashboard() {
+  const [orders, setOrders] = useState<Order[]>([]);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Filtrar las órdenes según el estado seleccionado
   const filteredOrders = statusFilter
-    ? mockOrders.filter((order) => order.status === statusFilter)
-    : mockOrders;
+    ? orders.filter((order) => order.status === statusFilter)
+    : orders;
 
   // Contar órdenes por estado para los filtros y estadísticas
-  const pendingCount = mockOrders.filter(
+  const pendingCount = orders.filter(
     (order) => order.status === "pending"
   ).length;
-  const inProgressCount = mockOrders.filter(
+  
+  const inProgressCount = orders.filter(
     (order) => order.status === "in-progress"
   ).length;
-  const completedCount = mockOrders.filter(
+  
+  const completedCount = orders.filter(
     (order) => order.status === "completed"
   ).length;
 
-  // Manejar acciones sobre las órdenes
-  const handleOrderAction = (action: string, orderId: string) => {
-    console.log(`Acción: ${action}, Orden ID: ${orderId}`);
-    // Aquí iría la lógica para actualizar el estado de la orden en un entorno real
+  // Calcular tiempo promedio de preparación (en minutos)
+  const calculateAverageTime = () => {
+    const completedOrders = orders.filter(
+      (order) => order.status === "completed" && order.completedAt
+    );
+    
+    if (completedOrders.length === 0) return "N/A";
+    
+    const totalMinutes = completedOrders.reduce((sum, order) => {
+      const created = new Date(order.createdAt).getTime();
+      const completed = new Date(order.completedAt!).getTime();
+      return sum + (completed - created) / (1000 * 60); // Convertir a minutos
+    }, 0);
+    
+    const average = totalMinutes / completedOrders.length;
+    return `${Math.round(average)} min`;
   };
+
+  // Cargar órdenes desde la API
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      console.log("Obteniendo órdenes...");
+      
+      // Simplificar la consulta para obtener todas las órdenes sin filtros
+      const response = await OrderApiService.getOrders({
+        // Sin filtros para asegurar que obtenemos todas las órdenes
+        limit: 100
+      });
+      console.log("Respuesta API órdenes:", response);
+      
+      if (response && response.orders) {
+        console.log(`Se encontraron ${response.orders.length} órdenes`);
+        
+        // Adaptar las órdenes al formato frontend (ahora es async)
+        const frontendOrdersPromises = response.orders.map(adaptOrderFromApi);
+        const frontendOrders = await Promise.all(frontendOrdersPromises);
+        
+        console.log("Órdenes adaptadas:", frontendOrders);
+        setOrders(frontendOrders);
+        setError(null);
+      } else {
+        console.error("Respuesta de API inválida:", response);
+        setError("No se pudieron cargar las órdenes");
+      }
+    } catch (err) {
+      console.error("Error al cargar órdenes:", err);
+      setError(`Error al cargar las órdenes: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Actualizar el estado de una orden
+  const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
+    try {
+      console.log(`Actualizando orden ${orderId} a estado ${newStatus}`);
+      
+      // Actualización optimista: actualizar UI inmediatamente
+      const updatedOrdersCopy = [...orders];
+      const orderIndex = updatedOrdersCopy.findIndex(o => o.id === orderId);
+      
+      if (orderIndex === -1) {
+        toast.error(`Orden #${orderId} no encontrada en el estado`);
+        return;
+      }
+      
+      // Crear objeto de orden actualizado para UI
+      const updatedOrder = {
+        ...updatedOrdersCopy[orderIndex],
+        status: newStatus,
+        ...(newStatus === OrderStatus.COMPLETED ? { completedAt: new Date().toISOString() } : {})
+      };
+      
+      // Actualizar el estado local inmediatamente
+      updatedOrdersCopy[orderIndex] = updatedOrder;
+      setOrders(updatedOrdersCopy);
+      
+      // Enviar actualización al API
+      const result = await OrderApiService.updateOrder(orderId, {
+        status: newStatus,
+        // Si la orden se completa, agregar la fecha de completado
+        ...(newStatus === OrderStatus.COMPLETED ? { completedAt: new Date().toISOString() } : {})
+      });
+      
+      if (result && result.updated) {
+        console.log(`API confirmó actualización de orden ${orderId}:`, result);
+        toast.success(`Orden #${orderId} actualizada a ${getStatusText(newStatus)}`);
+      } else {
+        console.error(`Fallo en actualización API de orden ${orderId}:`, result);
+        toast.error(`No se pudo actualizar la orden #${orderId}`);
+        
+        // Revertir cambios optimistas si la API falla
+        fetchOrders();
+      }
+    } catch (err) {
+      console.error(`Error al actualizar la orden ${orderId}:`, err);
+      toast.error(`Error al actualizar la orden #${orderId}`);
+      
+      // Revertir cambios optimistas si hay error
+      fetchOrders();
+    }
+  };
+
+  // Actualizar el estado de un producto específico en una orden
+  const updateProductStatus = async (orderId: string, productId: string, newStatus: ProductOrderStatus) => {
+    try {
+      // Primero, encontrar la orden actual
+      const currentOrder = orders.find(order => order.id === orderId);
+      if (!currentOrder) {
+        toast.error(`Orden #${orderId} no encontrada`);
+        return;
+      }
+      
+      console.log(`Actualizando producto ${productId} en orden ${orderId} a estado ${newStatus}`);
+      
+      // Crear una copia del estado actual para actualización optimista de UI
+      const updatedOrdersCopy = [...orders];
+      const orderIndex = updatedOrdersCopy.findIndex(o => o.id === orderId);
+      
+      if (orderIndex === -1) {
+        toast.error(`Orden #${orderId} no encontrada en el estado`);
+        return;
+      }
+      
+      // Actualizar localmente el estado del producto para UI inmediata
+      const updatedProducts = currentOrder.products.map(product => {
+        if (product.product.id === productId) {
+          console.log(`Encontrado producto ${productId} - Actualizando estado a ${newStatus}`);
+          return {
+            ...product,
+            status: newStatus
+          };
+        }
+        return product;
+      });
+      
+      // Determinar si todos los productos están completados o en progreso
+      const allCompleted = updatedProducts.every(p => p.status === "completed");
+      const anyInProgress = updatedProducts.some(p => p.status === "in-progress");
+      
+      // Determinar el nuevo estado de la orden basado en los productos
+      let orderStatus = currentOrder.status as OrderStatus;
+      if (allCompleted) {
+        orderStatus = OrderStatus.COMPLETED;
+      } else if (anyInProgress) {
+        orderStatus = OrderStatus.IN_PROGRESS;
+      }
+      
+      // Actualizar UI inmediatamente (optimista)
+      const optimisticallyUpdatedOrder = {
+        ...currentOrder,
+        products: updatedProducts,
+        status: orderStatus
+      };
+      
+      updatedOrdersCopy[orderIndex] = optimisticallyUpdatedOrder;
+      setOrders(updatedOrdersCopy);
+      
+      // Mapear los productos al formato de la API
+      const apiProducts = updatedProducts.map(p => ({
+        productId: p.product.id,
+        quantity: p.quantity,
+        specialInstructions: p.specialInstructions,
+        status: p.status
+      }));
+      
+      // Actualizar la orden con los productos actualizados y posiblemente un nuevo estado
+      console.log(`Enviando actualización al API: Orden ${orderId}, Estado: ${orderStatus}`);
+      console.log('Productos actualizados:', apiProducts);
+      
+      const result = await OrderApiService.updateOrder(orderId, {
+        status: orderStatus,
+        products: apiProducts,
+        ...(orderStatus === OrderStatus.COMPLETED ? { completedAt: new Date().toISOString() } : {})
+      });
+      
+      if (result && result.updated) {
+        console.log(`API confirmó actualización de orden ${orderId}:`, result);
+        toast.success(`Producto en orden #${orderId} actualizado`);
+      } else {
+        console.error(`Fallo en actualización API de orden ${orderId}:`, result);
+        toast.error(`No se pudo actualizar el producto en la orden #${orderId}`);
+        
+        // Revertir cambios optimistas si la API falla
+        fetchOrders();
+      }
+    } catch (err) {
+      console.error(`Error al actualizar producto en orden ${orderId}:`, err);
+      toast.error(`Error al actualizar producto en orden #${orderId}`);
+      
+      // Revertir cambios optimistas si hay error
+      fetchOrders();
+    }
+  };
+
+  // Manejar acciones sobre las órdenes
+  const handleOrderAction = (action: string, orderId: string, productId?: string) => {
+    if (action === "start-order") {
+      updateOrderStatus(orderId, OrderStatus.IN_PROGRESS);
+    } else if (action === "complete-order") {
+      updateOrderStatus(orderId, OrderStatus.COMPLETED);
+    } else if (action === "start-product" && productId) {
+      updateProductStatus(orderId, productId, "in-progress");
+    } else if (action === "complete-product" && productId) {
+      updateProductStatus(orderId, productId, "completed");
+    } else if (action === "details") {
+      // Aquí se podría implementar mostrar detalles de la orden
+      console.log(`Ver detalles de orden: ${orderId}`);
+    }
+  };
+
+  // Función auxiliar para obtener texto de estado
+  const getStatusText = (status: string) => {
+    const statusMap: Record<string, string> = {
+      [OrderStatus.PENDING]: "Pendiente",
+      [OrderStatus.IN_PROGRESS]: "En Preparación",
+      [OrderStatus.COMPLETED]: "Completada",
+      [OrderStatus.CANCELLED]: "Cancelada"
+    };
+    return statusMap[status] || status;
+  };
+
+  // Cargar órdenes al montar el componente y cada 30 segundos
+  useEffect(() => {
+    fetchOrders();
+    
+    // Configurar intervalo para actualizar órdenes cada 30 segundos
+    const intervalId = setInterval(fetchOrders, 30000);
+    
+    // Limpiar intervalo al desmontar
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-7xl">
-      <h1 className="text-3xl font-bold mb-6">Panel de Cocina</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Panel de Cocina</h1>
+        <div className="flex items-center gap-2">
+          {loading && (
+            <span className="text-sm text-muted-foreground">Actualizando...</span>
+          )}
+          <button 
+            onClick={fetchOrders}
+            className="text-sm px-3 py-1 bg-primary/10 hover:bg-primary/20 text-primary rounded-md transition-colors"
+          >
+            Actualizar
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-destructive/10 border border-destructive/20 text-destructive p-4 rounded-md mb-6">
+          {error}
+        </div>
+      )}
 
       <KitchenStats
         pendingOrders={pendingCount}
         completedOrders={completedCount}
-        averageTime="18 min"
-        totalOrders={mockOrders.length}
+        averageTime={calculateAverageTime()}
+        totalOrders={orders.length}
       />
 
       <StatusFilter
@@ -52,7 +371,11 @@ export default function KitchenDashboard() {
         completedCount={completedCount}
       />
 
-      <OrdersList orders={filteredOrders} onOrderAction={handleOrderAction} />
+      <OrdersList 
+        orders={filteredOrders} 
+        onOrderAction={handleOrderAction} 
+        isLoading={loading}
+      />
     </div>
   );
 }

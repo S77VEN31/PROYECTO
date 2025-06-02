@@ -17,6 +17,7 @@ import {
   UpdateOrderResponse,
 } from "colori-platform-shared";
 import apiClient from "../index";
+import axios from "axios";
 
 export class OrderApiService {
   /**
@@ -28,12 +29,21 @@ export class OrderApiService {
     params: Partial<GetOrdersRequest>
   ): Promise<GetOrdersResponse | null> {
     try {
+      console.log("Realizando petición a /orders con parámetros:", params);
       const response = await apiClient.get("/orders", {
         params,
       });
+      console.log("Respuesta del servidor:", response.status, response.data);
       return response.data;
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      console.error("Error detallado al obtener órdenes:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Error de Axios:", {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message
+        });
+      }
       return null;
     }
   }
