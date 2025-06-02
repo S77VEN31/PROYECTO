@@ -470,13 +470,13 @@ export function CreatePromotionDialog({
                     name="minimumPurchase"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Compra Mínima (€)</FormLabel>
+                        <FormLabel>Compra Mínima (₡)</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
-                            step="0.01"
+                            step="1"
                             min="0"
-                            placeholder="0.00"
+                            placeholder="0"
                             value={field.value || ""}
                             onChange={(e) =>
                               field.onChange(

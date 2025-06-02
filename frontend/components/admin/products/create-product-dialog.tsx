@@ -243,13 +243,13 @@ export function CreateProductDialog({
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Precio (€)</FormLabel>
+                      <FormLabel>Precio (₡)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
-                          step="0.01"
+                          step="1"
                           min="0"
-                          placeholder="0.00"
+                          placeholder="0"
                           value={field.value || ""}
                           onChange={(e) =>
                             field.onChange(parseFloat(e.target.value) || 0)

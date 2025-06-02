@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CartItem } from "@/types/cart";
+import { CartItem } from "@/contexts/CartContext";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 
@@ -20,8 +20,14 @@ export function CartItemCard({
   onDecrease,
 }: CartItemCardProps) {
   const { product, quantity, productId } = item;
-  const { name, price, imageSrc } = product;
+  const { name, price } = product;
   const totalPrice = price * quantity;
+  
+  // Obtener imagen del producto
+  const imageSrc = product.backgroundImages?.[0]?.src || "/placeholder-product.jpg";
+  
+  // Verificar si es un producto en promoción basado en tags
+  const isPromotion = product.tags?.includes("promoción") || product.tags?.includes("promo");
 
   // Creamos funciones manejadoras específicas para este ítem
   const handleIncrease = () => onIncrease(productId);
@@ -39,7 +45,7 @@ export function CartItemCard({
             className="object-cover"
             sizes="(max-width: 768px) 100px, 150px"
           />
-          {product.isPromo && (
+          {isPromotion && (
             <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-2 py-1 text-xs font-medium rounded-bl-lg">
               Promo
             </div>
@@ -51,8 +57,14 @@ export function CartItemCard({
             {name}
           </h3>
           <p className="text-sm text-muted-foreground mt-1">
-            ${price.toFixed(2)} por unidad
+            ₡{price.toFixed(0)} por unidad
           </p>
+          
+          {item.specialInstructions && (
+            <p className="text-xs text-muted-foreground mt-1 italic">
+              {item.specialInstructions}
+            </p>
+          )}
 
           <div className="flex items-center mt-2 gap-2">
             <div className="flex items-center border border-border rounded-md bg-background">
@@ -90,9 +102,9 @@ export function CartItemCard({
 
         <div className="text-right">
           <div className="text-lg font-medium text-foreground">
-            ${totalPrice.toFixed(2)}
+            ₡{totalPrice.toFixed(0)}
           </div>
-          {product.isPromo && (
+          {isPromotion && (
             <span className="text-xs text-primary-foreground bg-primary px-2 py-0.5 rounded-full">
               Precio promocional
             </span>

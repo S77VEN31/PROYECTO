@@ -9,6 +9,7 @@ import {
   CardFooter,
   CardTitle,
 } from "@/components/ui/card";
+import { useCart } from "@/contexts/CartContext";
 import {
   cn,
   getAllergenBadgeClass,
@@ -26,6 +27,7 @@ import {
   Clock,
   Droplets,
   Info,
+  ShoppingCart,
   Tag,
   Utensils,
   Wheat,
@@ -33,6 +35,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: Product;
@@ -47,7 +50,7 @@ export function ProductCard({
 }: ProductCardProps) {
   // Función para formatear el precio
   const formatPrice = (price: number) => {
-    return `€${price.toFixed(2)}`;
+    return `₡${price.toFixed(0)}`;
   };
 
   // Verificar si el producto está activo
@@ -292,7 +295,7 @@ export function ProductCard({
         )}
       </CardContent>
 
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-4 pt-0 flex flex-col gap-2">
         {onSelect ? (
           <Button
             className={cn(
@@ -306,7 +309,7 @@ export function ProductCard({
             disabled={!isActive()}
           >
             <Info className="mr-2 h-4 w-4" />
-            {isActive() ? "Seleccionar" : "No disponible"}
+            {isActive() ? "Ver detalles" : "No disponible"}
           </Button>
         ) : (
           <Button
@@ -333,7 +336,31 @@ export function ProductCard({
             )}
           </Button>
         )}
+        
+        {isActive() && <AddToCartButton product={product} />}
       </CardFooter>
     </Card>
+  );
+}
+
+// Componente de botón Agregar al Carrito
+function AddToCartButton({ product }: { product: Product }) {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    addToCart(product, 1);
+    toast.success(`${product.name} agregado al carrito`);
+  };
+
+  return (
+    <Button 
+      variant="outline" 
+      size="sm" 
+      className="w-full"
+      onClick={handleAddToCart}
+    >
+      <ShoppingCart className="mr-2 h-4 w-4" />
+      Agregar al carrito
+    </Button>
   );
 }

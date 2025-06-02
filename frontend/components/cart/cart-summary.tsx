@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { CartItem, CartSummary as CartSummaryType } from "@/types/cart";
+import { CartItem, CartSummary as CartSummaryType } from "@/contexts/CartContext";
 import Link from "next/link";
 
 interface CartSummaryProps {
@@ -23,7 +23,7 @@ interface CartSummaryProps {
 
 export function CartSummary({
   items,
-  taxRate = 0.07, // Default to 7%
+  taxRate = 0.16, // Actualizado a 16% para coincidir con el context
   title = "Resumen del Pedido",
   actionLabel = "Proceder al pago",
   actionHref = "/client/checkout",
@@ -59,15 +59,6 @@ export function CartSummary({
     },
   ];
 
-  // Add additional items if they exist
-  if (summary.shipping) {
-    summaryItems.push({ label: "Envío", value: summary.shipping });
-  }
-
-  if (summary.discount) {
-    summaryItems.push({ label: "Descuento", value: -summary.discount });
-  }
-
   const handleAction = () => {
     if (onCheckout) {
       onCheckout();
@@ -84,13 +75,13 @@ export function CartSummary({
           {summaryItems.map((item, index) => (
             <div key={index} className="flex justify-between">
               <span className="text-muted-foreground">{item.label}</span>
-              <span>${item.value.toFixed(2)}</span>
+              <span>₡{item.value.toFixed(0)}</span>
             </div>
           ))}
           <Separator className="my-2" />
           <div className="flex justify-between font-medium text-lg">
             <span>Total</span>
-            <span>${summary.total.toFixed(2)}</span>
+            <span>₡{summary.total.toFixed(0)}</span>
           </div>
         </div>
       </CardContent>

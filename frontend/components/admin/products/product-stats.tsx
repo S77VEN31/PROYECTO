@@ -91,9 +91,9 @@ function StatCard({
  */
 export function ProductStats({ stats }: ProductStatsProps): React.JSX.Element {
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("es-ES", {
+    return new Intl.NumberFormat("es-CR", {
       style: "currency",
-      currency: "EUR",
+      currency: "CRC",
     }).format(price);
   };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { EmptyState } from "@/components/ui/empty-state";
-import { CartItem } from "@/types/cart";
+import { CartItem } from "@/contexts/CartContext";
 import { ShoppingCart } from "lucide-react";
 import { CartItemCard } from "./cart-item-card";
 
@@ -25,7 +25,7 @@ export function CartList({
         title="Tu carrito está vacío"
         description="Agrega algunos productos del menú para empezar tu pedido."
         actionLabel="Ver Menú"
-        actionHref="/client/menu"
+        actionHref="/client"
       />
     );
   }

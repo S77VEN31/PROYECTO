@@ -30,10 +30,10 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
         label.toLowerCase().includes("valor") ||
         label.toLowerCase().includes("precio")
       ) {
-        return new Intl.NumberFormat("es-MX", {
+        return new Intl.NumberFormat("es-CR", {
           style: "currency",
-          currency: "MXN",
-          maximumFractionDigits: 2,
+          currency: "CRC",
+          maximumFractionDigits: 0,
         }).format(value);
       }
       return value.toString();
@@ -44,10 +44,10 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
       // Si es un valor monetario con signo de dólar, formatearlo correctamente
       try {
         const numericValue = parseFloat(value.replace(/[^0-9.-]+/g, ""));
-        return new Intl.NumberFormat("es-MX", {
+        return new Intl.NumberFormat("es-CR", {
           style: "currency",
-          currency: "MXN",
-          maximumFractionDigits: 2,
+          currency: "CRC",
+          maximumFractionDigits: 0,
         }).format(numericValue);
       } catch {
         return value; // Si falla el parsing, devolver el valor original
@@ -65,10 +65,10 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
         return `${positive ? "+" : "-"}${Math.abs(change).toFixed(1)}%`;
       }
       // Si es un valor monetario grande
-      return new Intl.NumberFormat("es-MX", {
+      return new Intl.NumberFormat("es-CR", {
         style: "currency",
-        currency: "MXN",
-        maximumFractionDigits: 2,
+        currency: "CRC",
+        maximumFractionDigits: 0,
       }).format(Math.abs(change));
     }
 

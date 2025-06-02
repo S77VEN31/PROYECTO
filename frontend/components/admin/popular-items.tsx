@@ -31,10 +31,11 @@ interface PopularItemsProps {
 export function PopularItems({ items }: PopularItemsProps) {
   // Format currency consistently
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("es-MX", {
+    return new Intl.NumberFormat("es-CR", {
       style: "currency",
-      currency: "MXN",
-      minimumFractionDigits: 2,
+      currency: "CRC",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(amount);
   };
 
