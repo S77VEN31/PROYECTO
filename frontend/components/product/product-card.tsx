@@ -23,6 +23,7 @@ import {
   AlertTriangle,
   Clock,
   Droplets,
+  ImageIcon,
   ShoppingCart,
   Tag,
   Utensils,
@@ -80,13 +81,20 @@ export function ProductCard({
     >
       {/* Imagen del producto */}
       <div className="relative h-48 w-full overflow-hidden bg-muted">
-        <Image
-          src={product.backgroundImages?.[0]?.src || "/placeholder-product.jpg"}
-          alt={product.name}
-          fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-          priority
-        />
+        {product.backgroundImages && product.backgroundImages.length > 0 ? (
+          <Image
+            src={product.backgroundImages[0].src}
+            alt={product.name}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            priority
+          />
+        ) : (
+          <div className="h-full w-full flex flex-col items-center justify-center bg-muted/30">
+            <ImageIcon className="h-10 w-10 text-muted-foreground/40" />
+            <p className="text-xs text-muted-foreground mt-2">Sin imagen</p>
+          </div>
+        )}
 
         {/* Botón agregar al carrito en la esquina superior derecha */}
         {isActive() && (
@@ -114,7 +122,9 @@ export function ProductCard({
         )}
 
         {/* Overlay gradient para mejor legibilidad */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+        {product.backgroundImages && product.backgroundImages.length > 0 && (
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+        )}
       </div>
 
       <CardContent className="p-4 space-y-3">

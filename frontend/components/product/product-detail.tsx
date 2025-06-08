@@ -79,12 +79,15 @@ export function ProductDetail({
       )}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 h-full">
-        {/* Galería de imágenes del producto */}
-        <ProductImageGallery
-          images={product.backgroundImages || []}
-          productName={product.name}
-          isAvailable={isAvailable}
-        />
+        {/* Galería de imágenes con soporte para imágenes faltantes */}
+        <div className="md:col-span-2 lg:col-span-1 h-full">
+          <ProductImageGallery
+            images={product.backgroundImages || []}
+            productName={product.name}
+            isAvailable={product.active !== false}
+            autoplay={true}
+          />
+        </div>
 
         {/* Detalles del producto */}
         <CardContent className="p-2 sm:p-3 md:p-4 flex flex-col h-full space-y-2 sm:space-y-3">

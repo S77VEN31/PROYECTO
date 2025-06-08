@@ -168,16 +168,21 @@ export function PromotionCard({ promotion, onSelect }: PromotionCardProps) {
     >
       {/* Imagen de la promoción */}
       <div className="relative h-48 w-full overflow-hidden bg-muted">
-        <Image
-          src={
-            promotionData.backgroundImages?.[0]?.src ||
-            "/placeholder-promotion.jpg"
-          }
-          alt={promotionData.name}
-          fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-          priority
-        />
+        {promotionData.backgroundImages &&
+        promotionData.backgroundImages.length > 0 ? (
+          <Image
+            src={promotionData.backgroundImages[0].src}
+            alt={promotionData.name}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            priority
+          />
+        ) : (
+          <div className="h-full w-full flex flex-col items-center justify-center bg-muted/30">
+            <Sparkles className="h-10 w-10 text-muted-foreground/40" />
+            <p className="text-xs text-muted-foreground mt-2">Sin imagen</p>
+          </div>
+        )}
 
         {/* Badge de estado en la esquina superior derecha */}
         <div className="absolute top-2 right-2 z-20">
@@ -222,7 +227,10 @@ export function PromotionCard({ promotion, onSelect }: PromotionCardProps) {
         )}
 
         {/* Overlay gradient para mejor legibilidad */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+        {promotionData.backgroundImages &&
+          promotionData.backgroundImages.length > 0 && (
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+          )}
       </div>
 
       <CardContent className="p-4 space-y-3">

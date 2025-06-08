@@ -210,12 +210,15 @@ export function PromotionDetail({ promotion, backHref }: PromotionDetailProps) {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 h-full">
-        {/* Galería de imágenes de la promoción */}
-        <PromotionImageGallery
-          images={promotionData.backgroundImages || []}
-          promotionName={promotionData.name}
-          isActive={isActive()}
-        />
+        {/* Galería de imágenes de la promoción con soporte para imágenes faltantes */}
+        <div className="h-full">
+          <PromotionImageGallery
+            images={promotionData.backgroundImages || []}
+            promotionName={promotionData.name}
+            isActive={isActive()}
+            autoplay={true}
+          />
+        </div>
 
         {/* Detalles de la promoción */}
         <CardContent className="p-2 sm:p-3 md:p-4 flex flex-col h-full space-y-2 sm:space-y-3">
