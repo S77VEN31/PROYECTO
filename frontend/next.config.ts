@@ -8,6 +8,15 @@ const nextConfig: NextConfig = {
       "images.unsplash.com",
       "encrypted-tbn0.gstatic.com",
       "wp-cdn.typhur.com",
+      "localhost",
+    ],
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3001",
+        pathname: "/uploads/**",
+      },
     ],
   },
   transpilePackages: ["colori-platform-shared"],

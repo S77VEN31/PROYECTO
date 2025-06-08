@@ -1,5 +1,6 @@
 import { ApiError } from "@/middlewares";
 import CategoryModel from "@/models/entities/category.model";
+import { FileUploadService } from "@/services/file-upload.service";
 import { ProductModel, PromotionModel } from "@models";
 import {
   GetProductsRequestParams,
@@ -200,6 +201,22 @@ export class ProductService {
         throw new ApiError(404, "Product not found");
       }
 
+      // Handle image deletion if backgroundImages are being updated
+      if (data.backgroundImages !== undefined) {
+        const oldImages = product.backgroundImages || [];
+        const newImages = data.backgroundImages || [];
+
+        // Find images that are being removed
+        const imagesToDelete = oldImages.filter(
+          (oldImg) => !newImages.some((newImg) => newImg.src === oldImg.src)
+        );
+
+        // Delete removed images from filesystem
+        if (imagesToDelete.length > 0) {
+          await FileUploadService.deleteImages(imagesToDelete, "products");
+        }
+      }
+
       // Handle nutritionalInfo separately to ensure proper merging
       if (data.nutritionalInfo) {
         // Always update nutritionalInfo, even if some fields are undefined
@@ -299,6 +316,14 @@ export class ProductService {
 
       if (!product) {
         throw new ApiError(404, "Product not found");
+      }
+
+      // Delete associated images before deleting the product
+      if (product.backgroundImages && product.backgroundImages.length > 0) {
+        await FileUploadService.deleteImages(
+          product.backgroundImages,
+          "products"
+        );
       }
 
       // Start a transaction to ensure data consistency

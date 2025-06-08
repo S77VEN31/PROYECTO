@@ -22,8 +22,13 @@ export const mockProducts: Product[] = [
     longDescription:
       "Nuestra ensalada césar es una opción fresca y saludable. Preparada con lechuga romana crujiente, crutones caseros, pechuga de pollo a la parrilla, queso parmesano y nuestro aderezo césar especial hecho en casa con anchoas frescas.",
     price: 12.99,
-    imageSrc:
-      "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?q=80&w=2070&auto=format&fit=crop",
+    backgroundImages: [
+      {
+        src: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?q=80&w=2070&auto=format&fit=crop",
+        alt: "Ensalada César",
+        isPrimary: true,
+      },
+    ],
     categories: getCategoriesFromIds(["1", "5"]),
     tags: ["saludable", "ligero"],
     nutritionalInfo: {
@@ -45,8 +50,13 @@ export const mockProducts: Product[] = [
     longDescription:
       "Un clásico aperitivo mexicano que no puede faltar. Nuestros nachos caseros son crujientes y se sirven con un abundante guacamole hecho al momento con aguacates maduros, cebolla, cilantro, limón y un toque de jalapeño.",
     price: 10.99,
-    imageSrc:
-      "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?q=80&w=2035&auto=format&fit=crop",
+    backgroundImages: [
+      {
+        src: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?q=80&w=2035&auto=format&fit=crop",
+        alt: "Nachos con Guacamole",
+        isPrimary: true,
+      },
+    ],
     categories: getCategoriesFromIds(["1"]),
     tags: ["mexicano", "para compartir"],
     nutritionalInfo: {
@@ -68,8 +78,13 @@ export const mockProducts: Product[] = [
     longDescription:
       "Una deliciosa preparación de origen peruano. Utilizamos los mejores cortes de pescado blanco fresco, marinados en jugo de limón recién exprimido, mezclado con cebolla morada, cilantro fresco, ají limo y un toque de jengibre. Se sirve frío con chips de camote.",
     price: 13.99,
-    imageSrc:
-      "https://images.unsplash.com/photo-1535399831218-d5bd36d1a6b3?q=80&w=2070&auto=format&fit=crop",
+    backgroundImages: [
+      {
+        src: "https://images.unsplash.com/photo-1535399831218-d5bd36d1a6b3?q=80&w=2070&auto=format&fit=crop",
+        alt: "Ceviche de Pescado Blanco",
+        isPrimary: true,
+      },
+    ],
     categories: getCategoriesFromIds(["1"]),
     tags: ["peruano", "fresco", "mariscos"],
     nutritionalInfo: {
@@ -162,8 +177,13 @@ export const mockProducts: Product[] = [
     longDescription:
       "Nuestro Filete Mignon es la estrella de nuestra carta. Un corte premium de carne de res, cocinado a la perfección según tu preferencia, bañado en una deliciosa salsa de champiñones y acompañado de una guarnición de papas doradas.",
     price: 32.99,
-    imageSrc:
-      "https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=2070&auto=format&fit=crop",
+    backgroundImages: [
+      {
+        src: "https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=2070&auto=format&fit=crop",
+        alt: "Filete Mignon",
+        isPrimary: true,
+      },
+    ],
     categories: getCategoriesFromIds(["2"]),
     tags: ["premium", "especialidad"],
     nutritionalInfo: {

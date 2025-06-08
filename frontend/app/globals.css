@@ -10,12 +10,44 @@
   --color-orange: #F2B988;
   --color-red: #F29991;
   --color-pink: #F2D0D0;
-  
+
   /* Cancellation/Destructive Action Colors - Same as cancelled status */
   --color-cancellation: #EF4444;
   --color-cancellation-foreground: #FFFFFF;
   --color-cancellation-bg: #FEF2F2;
   --color-cancellation-bg-dark: #450A0A;
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 @theme inline {
@@ -57,7 +89,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  
+
   /* Status Colors */
   --color-status-pending: var(--status-pending);
   --color-status-inprogress: var(--status-inprogress);
@@ -68,52 +100,52 @@
 /* Light Mode */
 :root {
   --radius: 0.625rem;
-  
+
   /* Base colors */
   --background: #FFFFFF;
   --foreground: #1A1A1A;
-  
+
   /* Card */
   --card: #FFFFFF;
   --card-foreground: #1A1A1A;
-  
+
   /* Popover */
   --popover: #FFFFFF;
   --popover-foreground: #1A1A1A;
-  
+
   /* Primary = Coffee */
   --primary: var(--color-coffee);
   --primary-foreground: #FFFFFF;
-  
+
   /* Secondary = Skyblue */
   --secondary: var(--color-skyblue);
   --secondary-foreground: #1A1A1A;
-  
+
   /* Muted */
   --muted: #F8F8F8;
   --muted-foreground: #6F6F6F;
-  
+
   /* Accent = Primary (Coffee) for complete consistency */
   --accent: var(--color-coffee);
   --accent-foreground: #FFFFFF;
-  
+
   /* Destructive = Cancellation Color */
   --destructive: var(--color-cancellation);
   --destructive-foreground: #FFFFFF;
   --destructive-bg: var(--color-cancellation-bg);
-  
+
   /* Border, Input, Ring */
   --border: #E0E0E0;
   --input: #E0E0E0;
   --ring: var(--primary);
-  
+
   /* Charts */
   --chart-1: var(--color-coffee);
   --chart-2: var(--color-skyblue);
   --chart-3: var(--color-orange);
   --chart-4: var(--color-red);
   --chart-5: var(--color-pink);
-  
+
   /* Sidebar */
   --sidebar: #FFFFFF;
   --sidebar-foreground: #1A1A1A;
@@ -123,7 +155,7 @@
   --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: #E0E0E0;
   --sidebar-ring: var(--primary);
-  
+
   /* Status Colors - Light Mode */
   --status-pending: #F59E0B;
   --status-pending-foreground: #FFFFFF;
@@ -138,60 +170,60 @@
 /* Dark Mode */
 .dark {
   /* Base colors */
-  --background: #121212;
-  --foreground: #FAFAFA;
-  
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+
   /* Card */
-  --card: #1E1E1E;
-  --card-foreground: #FAFAFA;
-  
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+
   /* Popover */
-  --popover: #1E1E1E;
-  --popover-foreground: #FAFAFA;
-  
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+
   /* Primary = Pink (changed from coffee for dark mode) */
   --primary: var(--color-pink);
-  --primary-foreground: #121212;
-  
+  --primary-foreground: #000000;
+
   /* Secondary = Skyblue (same as light mode) */
-  --secondary: var(--color-skyblue);
-  --secondary-foreground: #121212;
-  
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+
   /* Muted */
-  --muted: #2A2A2A;
-  --muted-foreground: #A0A0A0;
-  
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+
   /* Accent = Primary (Pink) for complete consistency */
   --accent: var(--color-pink);
-  --accent-foreground: #121212;
-  
+  --accent-foreground: #000000;
+
   /* Destructive = Cancellation Color */
-  --destructive: var(--color-cancellation);
+  --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: #FFFFFF;
   --destructive-bg: var(--color-cancellation-bg-dark);
-  
+
   /* Border, Input, Ring */
-  --border: #2A2A2A;
-  --input: #2A2A2A;
-  --ring: var(--primary);
-  
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: var(--color-pink);
+
   /* Charts - Keep category colors consistent, but chart-1 follows primary */
-  --chart-1: var(--color-pink);
-  --chart-2: var(--color-skyblue);
-  --chart-3: var(--color-orange);
-  --chart-4: var(--color-red);
-  --chart-5: var(--color-coffee);
-  
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+
   /* Sidebar - Use pink as primary color */
-  --sidebar: #1E1E1E;
-  --sidebar-foreground: #FAFAFA;
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: var(--color-pink);
-  --sidebar-primary-foreground: #121212;
+  --sidebar-primary-foreground: #000000;
   --sidebar-accent: var(--color-pink);
-  --sidebar-accent-foreground: #121212;
-  --sidebar-border: #2A2A2A;
-  --sidebar-ring: var(--primary);
-  
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: var(--color-pink);
+
   /* Status Colors - Dark Mode */
   --status-pending: #FBBF24;
   --status-pending-foreground: #000000;

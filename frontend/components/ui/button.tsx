@@ -21,7 +21,7 @@ const buttonVariants = cva(
 
         // CategoryVariant-based colors using CSS variables
         coffee:
-          "bg-[var(--color-coffee)] text-white hover:bg-[var(--color-coffee)]/90",
+          "bg-[var(--color-coffee)] text-white hover:bg-[var(--color-coffee)]/90 dark:bg-[var(--color-pink)] dark:text-black dark:hover:bg-[var(--color-pink)]/90",
         skyblue:
           "bg-[var(--color-skyblue)] text-black hover:bg-[var(--color-skyblue)]/90",
         orange:

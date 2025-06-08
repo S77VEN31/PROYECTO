@@ -7,135 +7,60 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   cn,
   getCategoryFromProduct,
-  getCategoryIconClass,
+  getCategoryIconColorClass,
   getVariantBackgroundClass,
   getVariantBorderStyle,
 } from "@/lib/utils";
 import { Category, CategoryVariant, Product } from "colori-platform-shared";
-import { AlertCircle, Coffee, Package } from "lucide-react";
+import { AlertCircle, Coffee } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 
-// Crear un ProductsGrid mínimo si no está disponible
-import { ProductCard } from "@/components/product/product-card";
+// Importar el nuevo componente de carousel-grid
+import { ProductCarouselGrid } from "@/components/product/product-carousel-grid";
 
 // Extender el tipo Product para incluir la propiedad categories
 interface ExtendedProduct extends Product {
   categories?: string[];
 }
 
-// Definir un componente ProductsGrid compatible con estilos consistentes
-function ProductsGrid({
-  products,
-  onSelectProduct,
-  showInactive = true,
-  categoryVariant = CategoryVariant.DEFAULT,
-}: {
-  products: Product[];
-  onSelectProduct?: (product: Product) => void;
-  showInactive?: boolean;
-  categoryVariant?: CategoryVariant;
-}) {
-  // Filtrar productos inactivos si showInactive es false
-  const filteredProducts = showInactive
-    ? products
-    : products.filter((product) => product.active !== false);
-
-  if (filteredProducts.length === 0) {
-    return (
-      <Card
-        className={cn(
-          "border-2 border-dashed transition-colors",
-          getVariantBorderStyle(categoryVariant)
-        )}
-      >
-        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <div
-            className={cn(
-              "flex h-16 w-16 items-center justify-center rounded-full mb-4",
-              "bg-muted"
-            )}
-          >
-            <Package
-              className={cn(getCategoryIconClass(categoryVariant, "lg"))}
-            />
-          </div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">
-            No hay productos disponibles
-          </h3>
-          <p className="text-sm text-muted-foreground max-w-md">
-            No se encontraron productos en esta categoría. Por favor, intenta
-            con otra categoría o vuelve más tarde.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {filteredProducts.map((product) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          onSelect={onSelectProduct}
-          categoryVariant={categoryVariant}
-        />
-      ))}
-    </div>
-  );
-}
-
-// Componente de header de sección consistente con admin
-function CategoryHeader({
-  category,
-  productCount,
-}: {
-  category: Category;
-  productCount: number;
-}) {
+// Componente de header compacto para layout horizontal
+function CategoryHeader({ category }: { category: Category }) {
   const categoryData = getCategoryFromProduct(category.id);
   const IconComponent = categoryData.icon || Coffee;
 
   return (
-    <div className="text-center space-y-4">
-      {/* Ícono de categoría con estilo consistente */}
-      <div className="flex justify-center">
+    <div className="flex items-center gap-3 lg:gap-4">
+      {/* Contenido principal compacto - ahora a la izquierda */}
+      <div className="flex-1 text-left">
+        <h1 className="text-xl lg:text-2xl font-bold tracking-tight text-foreground">
+          {category.name}
+        </h1>
+      </div>
+
+      {/* Ícono de categoría - ahora a la derecha */}
+      <div className="flex-shrink-0">
         <div
           className={cn(
-            "flex h-16 w-16 items-center justify-center rounded-full border-2",
+            "flex h-12 w-12 lg:h-14 lg:w-14 items-center justify-center rounded-full border-2 shadow-sm",
             getVariantBackgroundClass(
               category.variant as CategoryVariant,
-              "light"
+              "strong"
             ),
-            getVariantBorderStyle(category.variant as CategoryVariant)
+            getVariantBorderStyle(category.variant as CategoryVariant),
+            // Fondo blanco sólido en modo claro para máximo contraste con los colores de categoría
+            "bg-white dark:bg-transparent",
+            // Sombra para profundidad y separación
+            "shadow-lg dark:shadow-none"
           )}
         >
           <IconComponent
             className={cn(
-              getCategoryIconClass(category.variant as CategoryVariant, "lg")
+              "h-6 w-6 lg:h-7 lg:w-7",
+              getCategoryIconColorClass(category.variant as CategoryVariant)
             )}
           />
         </div>
-      </div>
-
-      {/* Título y descripción */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          {category.name}
-        </h1>
-        {category.description && (
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            {category.description}
-          </p>
-        )}
-
-        {/* Contador de productos */}
-        {productCount > 0 && (
-          <p className="text-sm text-muted-foreground mt-3">
-            {productCount} productos disponibles
-          </p>
-        )}
       </div>
     </div>
   );
@@ -274,30 +199,38 @@ export default function CategoryPage({
     {
       label: currentCategory.name,
       isActive: true,
+      productCount: categoryProducts.length,
     },
   ];
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl space-y-8">
-      {/* Breadcrumb con estilo de categoría */}
-      <Breadcrumb
-        items={breadcrumbItems}
-        categoryVariant={currentCategory.variant as CategoryVariant}
-      />
+    <div className="container mx-auto py-8 px-4 max-w-7xl space-y-6">
+      {/* Layout combinado: Breadcrumb + Header en la misma línea */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
+        {/* Breadcrumb */}
+        <div className="flex-shrink-0">
+          <Breadcrumb
+            items={breadcrumbItems}
+            categoryVariant={currentCategory.variant as CategoryVariant}
+          />
+        </div>
 
-      {/* Header de categoría con estilo consistente */}
-      <CategoryHeader
-        category={currentCategory}
-        productCount={categoryProducts.length}
-      />
+        {/* Header compacto */}
+        <div className="flex-1 lg:flex lg:items-center lg:justify-end">
+          <CategoryHeader category={currentCategory} />
+        </div>
+      </div>
 
-      {/* Grid de productos con estilo consistente */}
+      {/* Carousel-Grid de productos con transición automática */}
       <div className="space-y-6">
-        <ProductsGrid
+        <ProductCarouselGrid
           products={categoryProducts}
           onSelectProduct={handleSelectProduct}
           showInactive={false}
           categoryVariant={currentCategory.variant as CategoryVariant}
+          scrollThreshold={200}
+          autoplay={true}
+          autoplayDelay={5000}
         />
       </div>
     </div>

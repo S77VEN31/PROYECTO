@@ -6,6 +6,8 @@
 "use client";
 
 import { ProductApiService } from "@/api/entities/product.api";
+import { UploadApiService } from "@/api/upload.api";
+import { ImageUpload } from "@/components/common/image-upload";
 import { TagInput } from "@/components/common/tag-input";
 import { Button } from "@/components/ui/button";
 import {
@@ -76,6 +78,7 @@ export function CreateProductDialog({
       active: true,
       slug: "",
       searchTerm: "",
+      backgroundImages: [],
     },
   });
 
@@ -92,6 +95,19 @@ export function CreateProductDialog({
       form.setValue("slug", slug);
     }
   }, [watchedName, form]);
+
+  /**
+   * Handle image upload
+   */
+  const handleImageUpload = async (files: File[]) => {
+    try {
+      const uploadedImages = await UploadApiService.uploadProductImages(files);
+      return uploadedImages;
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      throw error;
+    }
+  };
 
   /**
    * Handle form submission
@@ -121,7 +137,7 @@ export function CreateProductDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Crear Nuevo Producto</DialogTitle>
           <DialogDescription>
@@ -130,7 +146,34 @@ export function CreateProductDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Images Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Imágenes del Producto</h3>
+
+              <FormField
+                control={form.control}
+                name="backgroundImages"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <ImageUpload
+                        label="Imágenes del Producto"
+                        description="Sube imágenes para mostrar tu producto. La primera imagen será la principal."
+                        value={field.value || []}
+                        onChange={field.onChange}
+                        onUpload={handleImageUpload}
+                        maxFiles={5}
+                        maxFileSize={5}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             {/* Basic Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Información Básica</h3>
@@ -198,13 +241,8 @@ export function CreateProductDialog({
                       <Input
                         placeholder="Se genera automáticamente desde el nombre"
                         {...field}
-                        className="font-mono text-sm"
                       />
                     </FormControl>
-                    <div className="text-xs text-muted-foreground">
-                      Se usa para crear URLs amigables. Se genera
-                      automáticamente pero puedes editarlo.
-                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
