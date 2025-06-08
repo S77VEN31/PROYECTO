@@ -96,11 +96,12 @@ export class OrderService {
     // Find the highest reference number (which should be the last created order)
     // If reference exists and is a number, use it, otherwise count orders + 1
     const lastOrder = todayOrders[0];
-    if (lastOrder.reference && /^\d+$/.test(lastOrder.reference)) {
-      return parseInt(lastOrder.reference) + 1;
+    const reference = (lastOrder as any).reference;
+    if (reference && /^\d+$/.test(reference)) {
+      return parseInt(reference) + 1;
     }
-    
-    return todayOrders.length + 1;
+
+    return todayOrders.length + 1; 
   }
 
   /**

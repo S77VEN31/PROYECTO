@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Product } from "@/types/products";
+import { Product } from "colori-platform-shared";
 import Image from "next/image";
 
 interface ProductCardProps {
@@ -20,19 +20,19 @@ export function ProductCard({
     <Card
       className={cn(
         "overflow-hidden cursor-pointer transition-all hover:shadow-md",
-        product.available === false && "opacity-70 pointer-events-none",
+        product.active === false && "opacity-70 pointer-events-none",
         className
       )}
       onClick={() => onSelect?.(product)}
     >
       <div className="aspect-square relative">
         <Image
-          src={product.image || product.imageSrc}
+          src={product.backgroundImages?.[0]?.src || "/placeholder.jpg"}
           alt={product.name}
           fill
           className="object-cover"
         />
-        {product.available === false && (
+        {product.active === false && (
           <div className="absolute inset-0 bg-background/70 flex items-center justify-center">
             <span className="text-sm font-medium text-destructive">
               No disponible
@@ -49,13 +49,6 @@ export function ProductCard({
         )}
         <div className="flex justify-between items-center">
           <span className="font-semibold">${product.price.toFixed(2)}</span>
-          {product.category && (
-            <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded-full">
-              {Array.isArray(product.category)
-                ? product.category[0]
-                : product.category}
-            </span>
-          )}
         </div>
       </div>
     </Card>

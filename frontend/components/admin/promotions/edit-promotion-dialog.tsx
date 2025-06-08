@@ -78,7 +78,6 @@ export function EditPromotionDialog({
   onPromotionUpdated,
 }: EditPromotionDialogProps): React.JSX.Element | null {
   const [isLoading, setIsLoading] = useState(false);
-
   const form = useForm<PromotionUpdate>({
     resolver: zodResolver(PromotionUpdateSchema),
     defaultValues: {
@@ -124,6 +123,8 @@ export function EditPromotionDialog({
     return response || { data: [], total: 0, page: 1, limit: 10, pages: 0 };
   };
 
+  // Image upload functionality temporarily disabled due to type conflicts
+
   // Update form data when promotion changes
   useEffect(() => {
     if (promotion) {
@@ -146,7 +147,7 @@ export function EditPromotionDialog({
         searchTerm: promotionData.searchTerm || "",
         active:
           promotionData.active !== undefined ? promotionData.active : true,
-      });
+      } as PromotionUpdate);
     }
   }, [promotion, form]);
 
@@ -225,6 +226,9 @@ export function EditPromotionDialog({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Images Section - Temporarily disabled due to type conflicts */}
+            {/* TODO: Re-enable when type issues are resolved */}
+
             {/* Basic Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Información Básica</h3>

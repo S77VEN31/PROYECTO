@@ -70,6 +70,52 @@ export class UploadApiService {
   }
 
   /**
+   * Upload promotion images
+   * @param files - Array of files to upload
+   * @returns Promise<Image[]> - Array of uploaded images
+   */
+  static async uploadPromotionImages(files: File[]): Promise<Image[]> {
+    try {
+      const formData = new FormData();
+
+      // Append each file to the form data
+      files.forEach((file) => {
+        formData.append("images", file);
+      });
+
+      // Get auth token for authorization header
+      const token = AuthApiService.getAuthToken();
+      const headers: HeadersInit = {};
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${this.BASE_URL}/api/upload/promotions`, {
+        method: "POST",
+        body: formData,
+        headers,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error uploading images");
+      }
+
+      const data: UploadResponse = await response.json();
+
+      if (!data.success || !data.data) {
+        throw new Error(data.message || "Upload failed");
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      throw error;
+    }
+  }
+
+  /**
    * Delete a product image
    * @param filename - The filename to delete
    * @returns Promise<boolean> - Success status
@@ -86,6 +132,42 @@ export class UploadApiService {
 
       const response = await fetch(
         `${this.BASE_URL}/api/upload/products/${filename}`,
+        {
+          method: "DELETE",
+          headers,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error deleting image");
+      }
+
+      const data = await response.json();
+      return data.success;
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete a promotion image
+   * @param filename - The filename to delete
+   * @returns Promise<boolean> - Success status
+   */
+  static async deletePromotionImage(filename: string): Promise<boolean> {
+    try {
+      // Get auth token for authorization header
+      const token = AuthApiService.getAuthToken();
+      const headers: HeadersInit = {};
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(
+        `${this.BASE_URL}/api/upload/promotions/${filename}`,
         {
           method: "DELETE",
           headers,

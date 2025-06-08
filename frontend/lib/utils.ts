@@ -513,6 +513,114 @@ export const statsColorConfig = {
   // Promotion-specific colors (matching getStatusBadgeClass for promotion statuses)
   expired: "text-red-600 bg-red-50 dark:bg-red-950 dark:text-red-400",
   upcoming: "text-blue-600 bg-blue-50 dark:bg-blue-950 dark:text-blue-400",
+
+  // Promotion theme colors
+  promotions:
+    "text-[var(--color-coffee)] bg-[var(--color-coffee)]/10 dark:text-[var(--color-pink)] dark:bg-[var(--color-pink)]/20",
+  discount:
+    "text-[var(--color-coffee)] bg-[var(--color-coffee)]/10 dark:text-[var(--color-pink)] dark:bg-[var(--color-pink)]/20",
+};
+
+/**
+ * Configuración centralizada de colores para promociones
+ * Proporciona estilos consistentes en modo claro y oscuro usando los colores primarios del tema
+ * Modo claro: coffee, Modo oscuro: pink
+ */
+export const promotionColorConfig = {
+  // Colores principales para promociones usando los colores primarios del tema
+  primary: {
+    text: "text-[var(--color-coffee)] dark:text-[var(--color-pink)]",
+    background: "bg-[var(--color-coffee)]/10 dark:bg-[var(--color-pink)]/20",
+    border:
+      "border-[var(--color-coffee)]/20 dark:border-[var(--color-pink)]/30",
+    hover:
+      "hover:bg-[var(--color-coffee)]/20 dark:hover:bg-[var(--color-pink)]/30",
+  },
+
+  // Estados de promoción con colores específicos
+  status: {
+    active: {
+      text: "text-green-600 dark:text-green-400",
+      background: "bg-green-50 dark:bg-green-950/50",
+      border: "border-green-200 dark:border-green-800",
+      badge: "bg-green-600 hover:bg-green-700 text-white",
+    },
+    upcoming: {
+      text: "text-[var(--color-coffee)] dark:text-[var(--color-pink)]",
+      background: "bg-[var(--color-coffee)]/10 dark:bg-[var(--color-pink)]/20",
+      border:
+        "border-[var(--color-coffee)]/20 dark:border-[var(--color-pink)]/30",
+      badge:
+        "bg-[var(--color-coffee)] hover:bg-[var(--color-coffee)]/90 text-white dark:bg-[var(--color-pink)] dark:hover:bg-[var(--color-pink)]/90 dark:text-black",
+    },
+    expired: {
+      text: "text-red-600 dark:text-red-400",
+      background: "bg-red-50 dark:bg-red-950/50",
+      border: "border-red-200 dark:border-red-800",
+      badge: "bg-red-600 hover:bg-red-700 text-white",
+    },
+    inactive: {
+      text: "text-gray-600 dark:text-gray-400",
+      background: "bg-gray-50 dark:bg-gray-950/50",
+      border: "border-gray-200 dark:border-gray-800",
+      badge: "bg-gray-600 hover:bg-gray-700 text-white",
+    },
+  },
+
+  // Tipos de promoción con colores específicos
+  types: {
+    discount: {
+      text: "text-[var(--color-coffee)] dark:text-[var(--color-pink)]",
+      background: "bg-[var(--color-coffee)]/10 dark:bg-[var(--color-pink)]/20",
+      badge:
+        "bg-[var(--color-coffee)]/90 hover:bg-[var(--color-coffee)] text-white dark:bg-[var(--color-pink)] dark:hover:bg-[var(--color-pink)]/90 dark:text-black",
+    },
+    bogo: {
+      text: "text-green-600 dark:text-green-400",
+      background: "bg-green-50 dark:bg-green-950/50",
+      badge: "bg-green-600 hover:bg-green-700 text-white",
+    },
+    bundle: {
+      text: "text-purple-600 dark:text-purple-400",
+      background: "bg-purple-50 dark:bg-purple-950/50",
+      badge: "bg-purple-600 hover:bg-purple-700 text-white",
+    },
+    "free-shipping": {
+      text: "text-orange-600 dark:text-orange-400",
+      background: "bg-orange-50 dark:bg-orange-950/50",
+      badge: "bg-orange-600 hover:bg-orange-700 text-white",
+    },
+    "gift-with-purchase": {
+      text: "text-pink-600 dark:text-pink-400",
+      background: "bg-pink-50 dark:bg-pink-950/50",
+      badge: "bg-pink-600 hover:bg-pink-700 text-white",
+    },
+    seasonal: {
+      text: "text-yellow-600 dark:text-yellow-400",
+      background: "bg-yellow-50 dark:bg-yellow-950/50",
+      badge: "bg-yellow-600 hover:bg-yellow-700 text-white",
+    },
+  },
+
+  // Elementos de UI específicos para promociones
+  ui: {
+    card: {
+      background: "bg-card dark:bg-card",
+      border:
+        "border-[var(--color-coffee)]/30 hover:border-[var(--color-coffee)]/60 dark:border-[var(--color-pink)]/30 dark:hover:border-[var(--color-pink)]/60",
+      shadow: "shadow-lg hover:shadow-xl",
+    },
+    urgent: {
+      background: "bg-red-50/50 dark:bg-red-950/20",
+      border: "border-red-200 dark:border-red-800",
+      text: "text-red-700 dark:text-red-300",
+    },
+    icon: {
+      container:
+        "bg-[var(--color-coffee)]/10 border-[var(--color-coffee)]/30 dark:bg-[var(--color-pink)]/20 dark:border-[var(--color-pink)]/40",
+      color: "text-[var(--color-coffee)] dark:text-[var(--color-pink)]",
+    },
+  },
 };
 
 /**
@@ -1099,5 +1207,135 @@ export function getVariantArrowClass(
   return (
     variantConfig.arrowStyles[variant as CategoryVariant] ||
     variantConfig.arrowStyles[CategoryVariant.DEFAULT]
+  );
+}
+
+/**
+ * Obtiene clases de color primario para promociones
+ * @param element El elemento específico ('text' | 'background' | 'border' | 'hover')
+ * @returns Clase CSS para el color primario de promociones
+ */
+export function getPromotionPrimaryClass(
+  element: "text" | "background" | "border" | "hover"
+): string {
+  return promotionColorConfig.primary[element];
+}
+
+/**
+ * Obtiene clases de color para estados de promoción
+ * @param status El estado de la promoción ('active' | 'upcoming' | 'expired' | 'inactive')
+ * @param element El elemento específico ('text' | 'background' | 'border' | 'badge')
+ * @returns Clase CSS para el estado de promoción
+ */
+export function getPromotionStatusClass(
+  status: "active" | "upcoming" | "expired" | "inactive",
+  element: "text" | "background" | "border" | "badge"
+): string {
+  return promotionColorConfig.status[status][element];
+}
+
+/**
+ * Obtiene clases de color para tipos de promoción
+ * @param type El tipo de promoción
+ * @param element El elemento específico ('text' | 'background' | 'badge')
+ * @returns Clase CSS para el tipo de promoción
+ */
+export function getPromotionTypeClass(
+  type:
+    | "discount"
+    | "bogo"
+    | "bundle"
+    | "free-shipping"
+    | "gift-with-purchase"
+    | "seasonal",
+  element: "text" | "background" | "badge"
+): string {
+  return (
+    promotionColorConfig.types[type]?.[element] ||
+    promotionColorConfig.types.discount[element]
+  );
+}
+
+/**
+ * Obtiene clases para tarjetas de promoción
+ * @param element El elemento específico ('background' | 'border' | 'shadow')
+ * @returns Clase CSS para tarjetas de promoción
+ */
+export function getPromotionCardClass(
+  element: "background" | "border" | "shadow"
+): string {
+  return promotionColorConfig.ui.card[element];
+}
+
+/**
+ * Obtiene clases para promociones urgentes
+ * @param element El elemento específico ('background' | 'border' | 'text')
+ * @returns Clase CSS para promociones urgentes
+ */
+export function getPromotionUrgentClass(
+  element: "background" | "border" | "text"
+): string {
+  return promotionColorConfig.ui.urgent[element];
+}
+
+/**
+ * Obtiene clases para íconos de promoción
+ * @param element El elemento específico ('container' | 'color')
+ * @returns Clase CSS para íconos de promoción
+ */
+export function getPromotionIconClass(element: "container" | "color"): string {
+  return promotionColorConfig.ui.icon[element];
+}
+
+/**
+ * Obtiene clases completas para badges de promoción basadas en el estado
+ * @param status El estado de la promoción
+ * @returns Clase CSS completa para el badge
+ */
+export function getPromotionBadgeClassByStatus(
+  status: "active" | "upcoming" | "expired" | "inactive"
+): string {
+  return cn(
+    "text-xs font-medium shadow-sm border border-white/20",
+    getPromotionStatusClass(status, "badge")
+  );
+}
+
+/**
+ * Obtiene clases completas para badges de tipo de promoción
+ * @param type El tipo de promoción
+ * @returns Clase CSS completa para el badge
+ */
+export function getPromotionTypeBadgeClassByType(
+  type:
+    | "discount"
+    | "bogo"
+    | "bundle"
+    | "free-shipping"
+    | "gift-with-purchase"
+    | "seasonal"
+): string {
+  return cn(
+    "text-xs font-medium shadow-sm border border-white/20",
+    getPromotionTypeClass(type, "badge")
+  );
+}
+
+/**
+ * Obtiene clases completas para tarjetas de promoción con todos los estilos
+ * @param isActive Si la promoción está activa (afecta la opacidad y filtros)
+ * @returns Clase CSS completa para tarjetas de promoción
+ */
+export function getPromotionCardCompleteClass(
+  isActive: boolean = true
+): string {
+  return cn(
+    "overflow-hidden transition-all duration-300 hover:shadow-lg group cursor-pointer border-2",
+    getPromotionCardClass("background"),
+    getPromotionCardClass("shadow"),
+    isActive
+      ? getPromotionCardClass("border")
+      : "border-muted hover:border-muted-foreground/30 opacity-75 grayscale",
+    !isActive && "cursor-not-allowed"
   );
 }

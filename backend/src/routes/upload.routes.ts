@@ -8,6 +8,7 @@ import express, { Request, Response } from "express";
 import {
   FileUploadService,
   productImageUpload,
+  promotionImageUpload,
 } from "../services/file-upload.service";
 
 const router = express.Router();
@@ -73,6 +74,66 @@ router.post(
 );
 
 /**
+ * Upload promotion images endpoint
+ * POST /api/upload/promotions
+ */
+router.post(
+  "/promotions",
+  authMiddleware,
+  promotionImageUpload.array("images", 10) as any,
+  async (req: Request, res: Response) => {
+    try {
+      const files = req.files as Express.Multer.File[];
+
+      if (!files || files.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "No files uploaded",
+        });
+      }
+
+      // Validate each file
+      const validationErrors: string[] = [];
+      files.forEach((file, index) => {
+        const validation = FileUploadService.validateImageFile(file);
+        if (!validation.isValid) {
+          validationErrors.push(`File ${index + 1}: ${validation.error}`);
+        }
+      });
+
+      if (validationErrors.length > 0) {
+        // Delete uploaded files if validation fails
+        files.forEach((file) => {
+          FileUploadService.deleteFile(file.filename, "promotions");
+        });
+
+        return res.status(400).json({
+          success: false,
+          message: "File validation failed",
+          errors: validationErrors,
+        });
+      }
+
+      // Convert files to Image objects
+      const images = FileUploadService.filesToImages(files, "promotions");
+
+      res.status(200).json({
+        success: true,
+        message: `${files.length} image(s) uploaded successfully`,
+        data: images,
+      });
+    } catch (error: any) {
+      console.error("Error uploading files:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error during file upload",
+        error: error.message,
+      });
+    }
+  }
+);
+
+/**
  * Delete product image endpoint
  * DELETE /api/upload/products/:filename
  */
@@ -103,6 +164,63 @@ router.delete(
       }
 
       const deleted = await FileUploadService.deleteFile(filename, "products");
+
+      if (deleted) {
+        res.status(200).json({
+          success: true,
+          message: "Image deleted successfully",
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: "Image not found",
+        });
+      }
+    } catch (error: any) {
+      console.error("Error deleting file:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error during file deletion",
+        error: error.message,
+      });
+    }
+  }
+);
+
+/**
+ * Delete promotion image endpoint
+ * DELETE /api/upload/promotions/:filename
+ */
+router.delete(
+  "/promotions/:filename",
+  authMiddleware,
+  async (req: Request, res: Response) => {
+    try {
+      const { filename } = req.params;
+
+      if (!filename) {
+        return res.status(400).json({
+          success: false,
+          message: "Filename is required",
+        });
+      }
+
+      // Validate filename to prevent path traversal
+      if (
+        filename.includes("..") ||
+        filename.includes("/") ||
+        filename.includes("\\")
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid filename",
+        });
+      }
+
+      const deleted = await FileUploadService.deleteFile(
+        filename,
+        "promotions"
+      );
 
       if (deleted) {
         res.status(200).json({

@@ -11,6 +11,7 @@ import {
   PromotionCreate,
   PromotionUpdate,
 } from "colori-platform-shared";
+import { FileUploadService } from "../file-upload.service";
 
 /**
  * Transform MongoDB document to Promotion object
@@ -172,6 +173,30 @@ export class PromotionService {
     data: PromotionUpdate
   ): Promise<Promotion | null> {
     try {
+      const promotion = await PromotionModel.findById(id);
+
+      if (!promotion) {
+        return null;
+      }
+
+      // Handle image deletion if backgroundImages are being updated
+      const updateData = data as any;
+      if (updateData.backgroundImages !== undefined) {
+        const oldImages = promotion.backgroundImages || [];
+        const newImages = updateData.backgroundImages || [];
+
+        // Find images that are being removed
+        const imagesToDelete = oldImages.filter(
+          (oldImg: any) =>
+            !newImages.some((newImg: any) => newImg.src === oldImg.src)
+        );
+
+        // Delete removed images from filesystem
+        if (imagesToDelete.length > 0) {
+          await FileUploadService.deleteImages(imagesToDelete, "promotions");
+        }
+      }
+
       const updatedPromotion = await PromotionModel.findByIdAndUpdate(
         id,
         data,
@@ -196,6 +221,20 @@ export class PromotionService {
    */
   static async delete(id: string): Promise<boolean> {
     try {
+      const promotion = await PromotionModel.findById(id);
+
+      if (!promotion) {
+        return false;
+      }
+
+      // Delete associated images from filesystem
+      if (promotion.backgroundImages && promotion.backgroundImages.length > 0) {
+        await FileUploadService.deleteImages(
+          promotion.backgroundImages,
+          "promotions"
+        );
+      }
+
       const deletedPromotion = await PromotionModel.findByIdAndDelete(id);
       return deletedPromotion !== null;
     } catch (error: any) {

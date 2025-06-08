@@ -29,6 +29,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
  */
 const UPLOAD_DIR = path.join(process.cwd(), "uploads");
 const PRODUCTS_DIR = path.join(UPLOAD_DIR, "products");
+const PROMOTIONS_DIR = path.join(UPLOAD_DIR, "promotions");
 
 /**
  * Ensure upload directories exist
@@ -39,6 +40,9 @@ function ensureUploadDirectories(): void {
   }
   if (!fs.existsSync(PRODUCTS_DIR)) {
     fs.mkdirSync(PRODUCTS_DIR, { recursive: true });
+  }
+  if (!fs.existsSync(PROMOTIONS_DIR)) {
+    fs.mkdirSync(PROMOTIONS_DIR, { recursive: true });
   }
 }
 
@@ -67,6 +71,20 @@ const productStorage = multer.diskStorage({
 });
 
 /**
+ * Multer storage configuration for promotions
+ */
+const promotionStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    ensureUploadDirectories();
+    cb(null, PROMOTIONS_DIR);
+  },
+  filename: (req, file, cb) => {
+    const uniqueFilename = generateUniqueFilename(file.originalname);
+    cb(null, uniqueFilename);
+  },
+});
+
+/**
  * File filter for images
  */
 const imageFileFilter = (
@@ -86,6 +104,18 @@ const imageFileFilter = (
  */
 export const productImageUpload = multer({
   storage: productStorage,
+  fileFilter: imageFileFilter,
+  limits: {
+    fileSize: MAX_FILE_SIZE,
+    files: 10, // Maximum 10 files per upload
+  },
+});
+
+/**
+ * Multer configuration for promotion images
+ */
+export const promotionImageUpload = multer({
+  storage: promotionStorage,
   fileFilter: imageFileFilter,
   limits: {
     fileSize: MAX_FILE_SIZE,

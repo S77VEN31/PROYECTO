@@ -8,6 +8,8 @@
 import { CategoryApiService } from "@/api/entities/category.api";
 import { ProductApiService } from "@/api/entities/product.api";
 import { PromotionApiService } from "@/api/entities/promotion.api";
+import { UploadApiService } from "@/api/upload.api";
+import { ImageUpload } from "@/components/common/image-upload";
 import {
   PaginatedSelector,
   SelectorItem,
@@ -99,6 +101,7 @@ export function CreatePromotionDialog({
       active: true,
       slug: "",
       searchTerm: "",
+      backgroundImages: [],
     },
   });
 
@@ -138,6 +141,21 @@ export function CreatePromotionDialog({
   }) => {
     const response = await CategoryApiService.getCategories(params);
     return response || { data: [], total: 0, page: 1, limit: 10, pages: 0 };
+  };
+
+  /**
+   * Handle image upload
+   */
+  const handleImageUpload = async (files: File[]) => {
+    try {
+      const uploadedImages = await UploadApiService.uploadPromotionImages(
+        files
+      );
+      return uploadedImages;
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      throw error;
+    }
   };
 
   /**
@@ -208,6 +226,33 @@ export function CreatePromotionDialog({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Images Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Imágenes de la Promoción</h3>
+
+              <FormField
+                control={form.control}
+                name="backgroundImages"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <ImageUpload
+                        label="Imágenes de la Promoción"
+                        description="Sube imágenes para mostrar tu promoción. La primera imagen será la principal."
+                        value={field.value || []}
+                        onChange={field.onChange}
+                        onUpload={handleImageUpload}
+                        maxFiles={5}
+                        maxFileSize={5}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             {/* Basic Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Información Básica</h3>

@@ -92,15 +92,10 @@ export default function PromotionDetailPage({ params }: PromotionPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <Button variant="outline" asChild>
-          <Link href="/client/category/promotions">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a promociones
-          </Link>
-        </Button>
-      </div>
-      <PromotionDetail promotion={promotion} />
+      <PromotionDetail
+        promotion={promotion}
+        backHref="/client/category/promotions"
+      />
     </div>
   );
 }
