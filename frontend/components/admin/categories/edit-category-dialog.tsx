@@ -49,7 +49,14 @@ import {
   Product,
   UpdateCategoryRequestBody,
 } from "colori-platform-shared";
-import { Coffee, Dessert, UtensilsCrossed, Wine, X } from "lucide-react";
+import {
+  Coffee,
+  Dessert,
+  IceCream,
+  UtensilsCrossed,
+  Wine,
+  X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -76,6 +83,7 @@ const CATEGORY_ICONS = [
   { name: "Dessert", icon: Dessert, displayName: "Postres" },
   { name: "Coffee", icon: Coffee, displayName: "Café/Bebidas Calientes" },
   { name: "Wine", icon: Wine, displayName: "Bebidas" },
+  { name: "IceCream", icon: IceCream, displayName: "Helados" },
 ];
 
 /**
@@ -352,26 +360,11 @@ export function EditCategoryDialog({
                     <FormLabel>Icono</FormLabel>
                     <Select
                       onValueChange={(selectedIcon) => {
-                        // Asignar el componente de icono basado en la selección
-                        switch (selectedIcon) {
-                          case "UtensilsCrossed":
-                            field.onChange(UtensilsCrossed);
-                            break;
-                          case "Dessert":
-                            field.onChange(Dessert);
-                            break;
-                          case "Coffee":
-                            field.onChange(Coffee);
-                            break;
-                          case "Wine":
-                            field.onChange(Wine);
-                            break;
-                          default:
-                            field.onChange(UtensilsCrossed);
-                        }
+                        // Almacenar el nombre del icono como string
+                        field.onChange(selectedIcon);
                       }}
                       // Valor inicial o seleccionado
-                      defaultValue={field.value ? "UtensilsCrossed" : undefined}
+                      defaultValue={field.value || ""}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -384,10 +377,30 @@ export function EditCategoryDialog({
                                   <Dessert className="h-3.5 w-3.5" />
                                   <Coffee className="h-3.5 w-3.5" />
                                   <Wine className="h-3.5 w-3.5" />
+                                  <IceCream className="h-3.5 w-3.5" />
                                 </div>
                               </div>
                             }
-                          />
+                          >
+                            {field.value && (
+                              <div className="flex items-center gap-2">
+                                {(() => {
+                                  const iconOption = CATEGORY_ICONS.find(
+                                    (opt) => opt.name === field.value
+                                  );
+                                  if (iconOption) {
+                                    return (
+                                      <>
+                                        <iconOption.icon className="h-4 w-4" />
+                                        <span>{iconOption.displayName}</span>
+                                      </>
+                                    );
+                                  }
+                                  return null;
+                                })()}
+                              </div>
+                            )}
+                          </SelectValue>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

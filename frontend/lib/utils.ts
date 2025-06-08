@@ -8,6 +8,7 @@ import {
 import {
   Coffee,
   Dessert,
+  IceCream,
   LucideIcon,
   UtensilsCrossed,
   Wine,
@@ -20,6 +21,7 @@ export const CATEGORY_ICON_MAP = {
   Dessert,
   Coffee,
   Wine,
+  IceCream,
 };
 
 export function cn(...inputs: ClassValue[]) {
