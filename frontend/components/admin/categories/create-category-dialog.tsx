@@ -337,34 +337,42 @@ export function CreateCategoryDialog({
                     <FormLabel>Icono</FormLabel>
                     <Select
                       onValueChange={(selectedIcon) => {
-                        // Almacenar el nombre del icono como string
-                        field.onChange(selectedIcon);
+                        // Asignar el componente de icono basado en la selección
+                        switch (selectedIcon) {
+                          case "UtensilsCrossed":
+                            field.onChange(UtensilsCrossed);
+                            break;
+                          case "Dessert":
+                            field.onChange(Dessert);
+                            break;
+                          case "Coffee":
+                            field.onChange(Coffee);
+                            break;
+                          case "Wine":
+                            field.onChange(Wine);
+                            break;
+                          default:
+                            field.onChange(UtensilsCrossed);
+                        }
                       }}
                       // Valor inicial o seleccionado
-                      defaultValue={field.value || "UtensilsCrossed"}
+                      defaultValue={field.value ? "UtensilsCrossed" : undefined}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar un icono">
-                            {field.value && (
-                              <div className="flex items-center gap-2">
-                                {(() => {
-                                  const iconOption = CATEGORY_ICONS.find(
-                                    (opt) => opt.name === field.value
-                                  );
-                                  if (iconOption) {
-                                    return (
-                                      <>
-                                        <iconOption.icon className="h-4 w-4" />
-                                        <span>{iconOption.displayName}</span>
-                                      </>
-                                    );
-                                  }
-                                  return <span>Seleccionar icono</span>;
-                                })()}
+                          <SelectValue
+                            placeholder={
+                              <div className="text-muted-foreground flex items-center gap-2">
+                                <span>Selecciona un icono:</span>
+                                <div className="flex items-center gap-1">
+                                  <UtensilsCrossed className="h-3.5 w-3.5" />
+                                  <Dessert className="h-3.5 w-3.5" />
+                                  <Coffee className="h-3.5 w-3.5" />
+                                  <Wine className="h-3.5 w-3.5" />
+                                </div>
                               </div>
-                            )}
-                          </SelectValue>
+                            }
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

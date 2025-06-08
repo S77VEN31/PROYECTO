@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { getPromotionTypeDisplayText } from "@/lib/utils";
+import { CATEGORY_ICON_MAP, getPromotionTypeDisplayText } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Category,
@@ -48,7 +48,7 @@ import {
   PromotionUpdateSchema,
   UpdatePromotionRequestBody,
 } from "colori-platform-shared";
-import { X } from "lucide-react";
+import { LucideIcon, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -619,7 +619,21 @@ export function EditPromotionDialog({
                         renderItem={(category) => (
                           <div className="flex-1">
                             <div className="font-medium flex items-center gap-2">
-                              <span>{category.icon}</span>
+                              {(() => {
+                                // Renderizar el icono de la categoría
+                                let IconComponent: LucideIcon | null = null;
+                                if (typeof category.icon === "string") {
+                                  IconComponent =
+                                    CATEGORY_ICON_MAP[
+                                      category.icon as keyof typeof CATEGORY_ICON_MAP
+                                    ] || null;
+                                } else if (category.icon) {
+                                  IconComponent = category.icon;
+                                }
+                                return IconComponent ? (
+                                  <IconComponent className="h-4 w-4" />
+                                ) : null;
+                              })()}
                               {category.name}
                             </div>
                             <div className="text-sm text-muted-foreground">
@@ -629,6 +643,21 @@ export function EditPromotionDialog({
                         )}
                         renderSelectedItem={(category, onRemove) => (
                           <div className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm">
+                            {(() => {
+                              // Renderizar el icono de la categoría
+                              let IconComponent: LucideIcon | null = null;
+                              if (typeof category.icon === "string") {
+                                IconComponent =
+                                  CATEGORY_ICON_MAP[
+                                    category.icon as keyof typeof CATEGORY_ICON_MAP
+                                  ] || null;
+                              } else if (category.icon) {
+                                IconComponent = category.icon;
+                              }
+                              return IconComponent ? (
+                                <IconComponent className="h-3 w-3 mr-1" />
+                              ) : null;
+                            })()}
                             <span>{category.name}</span>
                             <Button
                               type="button"
