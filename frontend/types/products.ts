@@ -1,5 +1,11 @@
 import { Category } from "./category";
 
+export interface Image {
+  src: string;
+  alt?: string;
+  isPrimary?: boolean;
+}
+
 export interface NutritionalInfo {
   calories?: number;
   protein?: number;
@@ -14,7 +20,8 @@ export interface Product {
   description: string;
   longDescription?: string;
   price: number;
-  imageSrc: string;
+  backgroundImages?: Image[];
+  imageSrc?: string; // Para compatibilidad con componentes existentes
   image?: string; // Para compatibilidad con componentes existentes
   categories?: Category[]; // Nueva propiedad con referencia directa a las categorías
   tags?: string[];

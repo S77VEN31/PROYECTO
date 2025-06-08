@@ -133,18 +133,19 @@ export function getToggleStatusActionText(
 export const variantConfig = {
   // Colores principales por variante (consistentes en ambos modos)
   iconColors: {
-    [CategoryVariant.COFFEE]: "text-[var(--color-coffee)] dark:!text-white",
+    [CategoryVariant.COFFEE]:
+      "text-[var(--color-coffee)] dark:text-[var(--color-pink)]",
     [CategoryVariant.SKYBLUE]: "text-[var(--color-skyblue)]",
     [CategoryVariant.ORANGE]: "text-[var(--color-orange)]",
     [CategoryVariant.RED]: "text-[var(--color-red)]",
-    [CategoryVariant.PINK]: "text-[var(--color-pink)]",
-    [CategoryVariant.DEFAULT]: "text-primary",
+    [CategoryVariant.PINK]: "text-black dark:text-[var(--color-pink)]",
+    [CategoryVariant.DEFAULT]: "text-primary dark:text-[var(--color-pink)]",
   },
 
   // Estilos de borde para tarjetas por variante (consistentes en ambos modos)
   borderStyles: {
     [CategoryVariant.COFFEE]:
-      "border-[var(--color-coffee)]/20 hover:border-[var(--color-coffee)]/50",
+      "border-[var(--color-coffee)]/20 hover:border-[var(--color-coffee)]/50 dark:border-[var(--color-pink)]/20 dark:hover:border-[var(--color-pink)]/50",
     [CategoryVariant.SKYBLUE]:
       "border-[var(--color-skyblue)]/20 hover:border-[var(--color-skyblue)]/50",
     [CategoryVariant.ORANGE]:
@@ -153,13 +154,30 @@ export const variantConfig = {
       "border-[var(--color-red)]/20 hover:border-[var(--color-red)]/50",
     [CategoryVariant.PINK]:
       "border-[var(--color-pink)]/20 hover:border-[var(--color-pink)]/50",
-    [CategoryVariant.DEFAULT]: "border-primary/20 hover:border-primary/50",
+    [CategoryVariant.DEFAULT]:
+      "border-primary/20 hover:border-primary/50 dark:border-[var(--color-pink)]/20 dark:hover:border-[var(--color-pink)]/50",
+  },
+
+  // Estilos para flechas de carrusel (basado en badges para consistencia)
+  arrowStyles: {
+    [CategoryVariant.COFFEE]:
+      "bg-[var(--color-coffee)] text-white hover:bg-[var(--color-coffee)]/90 dark:bg-[var(--color-pink)] dark:text-black dark:hover:bg-[var(--color-pink)]/90",
+    [CategoryVariant.SKYBLUE]:
+      "bg-[var(--color-skyblue)] text-black hover:bg-[var(--color-skyblue)]/90",
+    [CategoryVariant.ORANGE]:
+      "bg-[var(--color-orange)] text-black hover:bg-[var(--color-orange)]/90",
+    [CategoryVariant.RED]:
+      "bg-[var(--color-red)] text-black hover:bg-[var(--color-red)]/90",
+    [CategoryVariant.PINK]:
+      "bg-[var(--color-pink)] text-black hover:bg-[var(--color-pink)]/90",
+    [CategoryVariant.DEFAULT]:
+      "bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-[var(--color-pink)] dark:text-black dark:hover:bg-[var(--color-pink)]/90",
   },
 
   // Variantes para badges/etiquetas (consistentes en ambos modos)
   badgeVariants: {
     [CategoryVariant.COFFEE]:
-      "bg-[var(--color-coffee)] !text-white hover:bg-[var(--color-coffee)]/90 hover:!text-white transition-colors",
+      "bg-[var(--color-coffee)] !text-white hover:bg-[var(--color-coffee)]/90 hover:!text-white transition-colors dark:bg-[var(--color-pink)] dark:!text-black dark:hover:bg-[var(--color-pink)]/90 dark:hover:!text-black",
     [CategoryVariant.SKYBLUE]:
       "bg-[var(--color-skyblue)] text-black hover:bg-[var(--color-skyblue)]/90 transition-colors",
     [CategoryVariant.ORANGE]:
@@ -169,7 +187,7 @@ export const variantConfig = {
     [CategoryVariant.PINK]:
       "bg-[var(--color-pink)] text-black hover:bg-[var(--color-pink)]/90 transition-colors",
     [CategoryVariant.DEFAULT]:
-      "bg-primary text-primary-foreground hover:bg-primary/90 transition-colors",
+      "bg-primary text-primary-foreground hover:bg-primary/90 transition-colors dark:bg-[var(--color-pink)] dark:text-black dark:hover:bg-[var(--color-pink)]/90",
   },
 };
 
@@ -258,14 +276,14 @@ export function getVariantBackgroundClass(
   const opacityLevel = opacityMap[opacity];
 
   const backgroundClasses: Record<string, string> = {
-    [CategoryVariant.COFFEE]: `bg-[var(--color-coffee)]${opacityLevel}`,
+    [CategoryVariant.COFFEE]: `bg-[var(--color-coffee)]${opacityLevel} dark:bg-[var(--color-pink)]${opacityLevel}`,
     [CategoryVariant.SKYBLUE]: `bg-[var(--color-skyblue)]${opacityLevel}`,
     [CategoryVariant.ORANGE]: `bg-[var(--color-orange)]${opacityLevel}`,
     [CategoryVariant.RED]: `bg-[var(--color-red)]${opacityLevel}`,
     [CategoryVariant.PINK]: `bg-[var(--color-pink)]${opacityLevel}`,
     [CategoryVariant.DEFAULT]: `bg-muted${
       opacityLevel === "/10" ? "/50" : opacityLevel === "/20" ? "/70" : ""
-    }`,
+    } dark:bg-[var(--color-pink)]${opacityLevel}`,
   };
 
   return (
@@ -293,12 +311,13 @@ export function getVariantBorderClass(
   const opacity = styleMap[style];
 
   const borderClasses: Record<string, string> = {
-    [CategoryVariant.COFFEE]: `border-[var(--color-coffee)]${opacity}`,
+    [CategoryVariant.COFFEE]: `border-[var(--color-coffee)]${opacity} dark:border-[var(--color-pink)]${opacity}`,
     [CategoryVariant.SKYBLUE]: `border-[var(--color-skyblue)]${opacity}`,
     [CategoryVariant.ORANGE]: `border-[var(--color-orange)]${opacity}`,
     [CategoryVariant.RED]: `border-[var(--color-red)]${opacity}`,
     [CategoryVariant.PINK]: `border-[var(--color-pink)]${opacity}`,
-    [CategoryVariant.DEFAULT]: "border-muted-foreground/20",
+    [CategoryVariant.DEFAULT]:
+      "border-muted-foreground/20 dark:border-[var(--color-pink)]/20",
   };
 
   return (
@@ -712,8 +731,8 @@ export function getVariantTagClass(variant: CategoryVariant | string): string {
   const tagClasses: Record<string, string> = {
     [CategoryVariant.COFFEE]:
       "bg-[var(--color-coffee)]/40 text-[var(--color-coffee)] " +
-      "dark:bg-[var(--color-coffee)]/20 dark:!text-white dark:border-[var(--color-coffee)]/30 " +
-      "hover:bg-[var(--color-coffee)]/50 dark:hover:bg-[var(--color-coffee)]/30 transition-colors",
+      "dark:bg-[var(--color-pink)]/20 dark:text-[var(--color-pink)] dark:border-[var(--color-pink)]/30 " +
+      "hover:bg-[var(--color-coffee)]/50 dark:hover:bg-[var(--color-pink)]/30 transition-colors",
     [CategoryVariant.SKYBLUE]:
       "bg-[var(--color-skyblue)]/40 text-black " +
       "dark:bg-[var(--color-skyblue)]/20 dark:text-[var(--color-skyblue)] dark:border-[var(--color-skyblue)]/30 " +
@@ -733,7 +752,9 @@ export function getVariantTagClass(variant: CategoryVariant | string): string {
       "hover:shadow-sm hover:scale-[1.02]",
     [CategoryVariant.DEFAULT]:
       "bg-muted/50 text-muted-foreground dark:border-muted-foreground/20 " +
-      "hover:bg-muted/70 transition-colors",
+      "hover:bg-muted/70 transition-colors " +
+      "dark:bg-[var(--color-pink)]/20 dark:text-[var(--color-pink)] dark:border-[var(--color-pink)]/30 " +
+      "dark:hover:bg-[var(--color-pink)]/30",
   };
 
   return (
@@ -755,8 +776,8 @@ export function getVariantNutritionalClass(
   const nutritionalClasses: Record<string, string> = {
     [CategoryVariant.COFFEE]:
       "bg-[var(--color-coffee)]/30 text-[var(--color-coffee)] " +
-      "dark:bg-[var(--color-coffee)]/15 dark:!text-white dark:border-[var(--color-coffee)]/25 " +
-      "hover:bg-[var(--color-coffee)]/40 dark:hover:bg-[var(--color-coffee)]/25 transition-colors",
+      "dark:bg-[var(--color-pink)]/15 dark:text-[var(--color-pink)] dark:border-[var(--color-pink)]/25 " +
+      "hover:bg-[var(--color-coffee)]/40 dark:hover:bg-[var(--color-pink)]/25 transition-colors",
     [CategoryVariant.SKYBLUE]:
       "bg-[var(--color-skyblue)]/30 text-black " +
       "dark:bg-[var(--color-skyblue)]/15 dark:text-[var(--color-skyblue)] dark:border-[var(--color-skyblue)]/25 " +
@@ -776,7 +797,9 @@ export function getVariantNutritionalClass(
       "hover:shadow-md hover:scale-[1.02]",
     [CategoryVariant.DEFAULT]:
       "bg-muted/30 text-muted-foreground dark:border-muted-foreground/20 " +
-      "hover:bg-muted/50 transition-colors",
+      "hover:bg-muted/50 transition-colors " +
+      "dark:bg-[var(--color-pink)]/15 dark:text-[var(--color-pink)] dark:border-[var(--color-pink)]/25 " +
+      "dark:hover:bg-[var(--color-pink)]/25",
   };
 
   return (
@@ -987,6 +1010,23 @@ export function getActionButtonClass(disabled: boolean = false): string {
 }
 
 /**
+ * Obtiene clases para el badge indicador de cantidad de productos en el carrito
+ * Estilos consistentes con el theme y modo claro/oscuro
+ * @returns Clase CSS para el badge indicador del carrito
+ */
+export function getCartIndicatorBadgeClass(): string {
+  return cn(
+    "flex items-center gap-2 text-sm text-muted-foreground",
+    "bg-muted/50 px-3 py-1 rounded-full backdrop-blur-sm",
+    "border border-border/30 shadow-sm",
+    "transition-all duration-200",
+    "hover:bg-muted/70 hover:border-border/50 hover:shadow-md",
+    "dark:bg-muted/30 dark:border-border/20",
+    "dark:hover:bg-muted/50 dark:hover:border-border/40"
+  );
+}
+
+/**
  * Get special instructions styling classes
  * @returns CSS classes for special instructions text
  */
@@ -1012,12 +1052,13 @@ export function getCategoryIconColorClass(
   variant: CategoryVariant | string
 ): string {
   const categoryIconColors: Record<string, string> = {
-    [CategoryVariant.COFFEE]: "text-[var(--color-coffee)]",
+    [CategoryVariant.COFFEE]:
+      "text-[var(--color-coffee)] dark:text-[var(--color-pink)]",
     [CategoryVariant.SKYBLUE]: "text-[var(--color-skyblue)]",
     [CategoryVariant.ORANGE]: "text-[var(--color-orange)]",
     [CategoryVariant.RED]: "text-[var(--color-red)]",
     [CategoryVariant.PINK]: "text-[var(--color-pink)]",
-    [CategoryVariant.DEFAULT]: "text-primary",
+    [CategoryVariant.DEFAULT]: "text-primary dark:text-[var(--color-pink)]",
   };
 
   return (
@@ -1045,4 +1086,18 @@ export function getCategoryIconClass(
   const variantColor = getCategoryIconColorClass(variant);
 
   return `${sizeClasses[size]} ${variantColor}`;
+}
+
+/**
+ * Obtiene clases para las flechas del carrusel basadas en la variante
+ * @param variant La variante de color a usar
+ * @returns Clase CSS para las flechas
+ */
+export function getVariantArrowClass(
+  variant: CategoryVariant | string
+): string {
+  return (
+    variantConfig.arrowStyles[variant as CategoryVariant] ||
+    variantConfig.arrowStyles[CategoryVariant.DEFAULT]
+  );
 }

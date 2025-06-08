@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardTitle,
 } from "@/components/ui/card";
 import { useCart } from "@/contexts/CartContext";
@@ -14,8 +13,6 @@ import {
   cn,
   getAllergenBadgeClass,
   getCategoryFromProduct,
-  getStatusBadgeClass,
-  getStatusDisplayText,
   getVariantBadgeClass,
   getVariantBorderStyle,
   getVariantNutritionalClass,
@@ -26,15 +23,13 @@ import {
   AlertTriangle,
   Clock,
   Droplets,
-  Info,
-  Plus,
+  ShoppingCart,
   Tag,
   Utensils,
   Wheat,
   Zap,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { toast } from "sonner";
 
 interface ProductCardProps {
@@ -62,14 +57,26 @@ export function ProductCard({
   const categoryData = getCategoryFromProduct(product.id);
   const effectiveVariant = categoryVariant || categoryData.variant;
 
+  const handleCardClick = () => {
+    if (isActive()) {
+      if (onSelect) {
+        onSelect(product);
+      } else {
+        // Navegar directamente al producto si no hay onSelect
+        window.location.href = `/client/product/${product.id}`;
+      }
+    }
+  };
+
   return (
     <Card
       className={cn(
-        "overflow-hidden transition-all duration-300 hover:shadow-lg group",
+        "overflow-hidden transition-all duration-300 hover:shadow-lg group cursor-pointer",
         "border-2 bg-card",
         getVariantBorderStyle(effectiveVariant),
-        !isActive() && "opacity-75 grayscale"
+        !isActive() && "opacity-75 grayscale cursor-not-allowed"
       )}
+      onClick={handleCardClick}
     >
       {/* Imagen del producto */}
       <div className="relative h-48 w-full overflow-hidden bg-muted">
@@ -81,17 +88,15 @@ export function ProductCard({
           priority
         />
 
-        {/* Badge de estado con mejor contraste */}
-        <div className="absolute top-2 right-2">
-          <Badge
-            className={cn(
-              "text-xs font-medium shadow-sm border",
-              getStatusBadgeClass(isActive())
-            )}
-          >
-            {getStatusDisplayText(isActive())}
-          </Badge>
-        </div>
+        {/* Botón agregar al carrito en la esquina superior derecha */}
+        {isActive() && (
+          <div className="absolute top-2 right-2 z-20">
+            <AddToCartButton
+              product={product}
+              effectiveVariant={effectiveVariant}
+            />
+          </div>
+        )}
 
         {/* Badge de tiempo de preparación si está disponible */}
         {product.preparationTime && (
@@ -121,14 +126,6 @@ export function ProductCard({
           <CardDescription className="line-clamp-2 text-sm text-muted-foreground">
             {product.description}
           </CardDescription>
-
-          {/* Descripción larga si está disponible */}
-          {product.longDescription &&
-            product.longDescription !== product.description && (
-              <p className="text-xs text-muted-foreground line-clamp-1 italic">
-                {product.longDescription}
-              </p>
-            )}
         </div>
 
         {/* Precio destacado con colores de variante */}
@@ -212,7 +209,7 @@ export function ProductCard({
           </div>
         )}
 
-        {/* Alérgenos con colores consistentes del sistema */}
+        {/* Alérgenos */}
         {product.nutritionalInfo?.allergens &&
           product.nutritionalInfo.allergens.length > 0 && (
             <div className="space-y-1">
@@ -252,21 +249,23 @@ export function ProductCard({
             </div>
           )}
 
-        {/* Tags del producto con colores de categoría */}
+        {/* Tags del producto con botón agregar al carrito */}
         {product.tags && product.tags.length > 0 && (
           <div className="space-y-1">
-            <div className="flex items-center gap-1">
-              <div
-                className={cn(
-                  "flex items-center justify-center h-5 w-5 rounded-sm",
-                  getVariantTagClass(effectiveVariant)
-                )}
-              >
-                <Tag className="h-3 w-3" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1">
+                <div
+                  className={cn(
+                    "flex items-center justify-center h-5 w-5 rounded-sm",
+                    getVariantTagClass(effectiveVariant)
+                  )}
+                >
+                  <Tag className="h-3 w-3" />
+                </div>
+                <span className="text-xs font-semibold text-foreground uppercase tracking-wide">
+                  Tags
+                </span>
               </div>
-              <span className="text-xs font-semibold text-foreground uppercase tracking-wide">
-                Tags
-              </span>
             </div>
             <div className="flex flex-wrap gap-1">
               {product.tags.slice(0, 3).map((tag, index) => (
@@ -294,56 +293,6 @@ export function ProductCard({
           </div>
         )}
       </CardContent>
-
-      <CardFooter className="p-4 pt-0 flex gap-2">
-        {onSelect ? (
-          <Button
-            className={cn(
-              "flex-1 font-medium shadow-sm",
-              getVariantBadgeClass(effectiveVariant),
-              "hover:opacity-90 transition-all duration-200",
-              !isActive() && "opacity-50 cursor-not-allowed"
-            )}
-            size="sm"
-            onClick={() => isActive() && onSelect(product)}
-            disabled={!isActive()}
-          >
-            <Info className="mr-2 h-4 w-4" />
-            {isActive() ? "Ver detalles" : "No disponible"}
-          </Button>
-        ) : (
-          <Button
-            className={cn(
-              "flex-1 font-medium shadow-sm",
-              getVariantBadgeClass(effectiveVariant),
-              "hover:opacity-90 transition-all duration-200",
-              !isActive() && "opacity-50 cursor-not-allowed"
-            )}
-            size="sm"
-            asChild={isActive()}
-            disabled={!isActive()}
-          >
-            {isActive() ? (
-              <Link href={`/client/product/${product.id}`}>
-                <Info className="mr-2 h-4 w-4" />
-                Ver detalles
-              </Link>
-            ) : (
-              <span>
-                <Info className="mr-2 h-4 w-4" />
-                No disponible
-              </span>
-            )}
-          </Button>
-        )}
-
-        {isActive() && (
-          <AddToCartButton
-            product={product}
-            effectiveVariant={effectiveVariant}
-          />
-        )}
-      </CardFooter>
     </Card>
   );
 }
@@ -358,22 +307,46 @@ function AddToCartButton({
 }) {
   const { addToCart } = useCart();
 
-  const handleAddToCart = () => {
-    addToCart(product, 1);
-    toast.success(`${product.name} agregado al carrito`);
+  // Debug: verificar que el contexto esté disponible
+  console.log("CartContext addToCart function:", typeof addToCart);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation(); // Evitar que se active el click del card
+
+    console.log("Intentando agregar al carrito:", product.name, product.id);
+
+    try {
+      if (!addToCart) {
+        console.error("addToCart function is not available");
+        toast.error("Error: función de carrito no disponible");
+        return;
+      }
+
+      addToCart(product, 1);
+      console.log("Producto agregado exitosamente al carrito");
+      toast.success(`${product.name} agregado al carrito`, {
+        duration: 2000,
+        position: "bottom-right",
+      });
+    } catch (error) {
+      console.error("Error al agregar al carrito:", error);
+      toast.error("Error al agregar el producto al carrito");
+    }
   };
 
   return (
     <Button
       size="sm"
       className={cn(
-        "h-9 w-9 p-0 font-medium shadow-sm",
+        "h-9 w-9 p-0 font-medium shadow-sm z-10 relative",
         getVariantBadgeClass(effectiveVariant),
         "hover:opacity-90 transition-all duration-200"
       )}
       onClick={handleAddToCart}
+      type="button"
     >
-      <Plus className="h-4 w-4" />
+      <ShoppingCart className="h-4 w-4" />
       <span className="sr-only">Agregar {product.name} al carrito</span>
     </Button>
   );

@@ -67,20 +67,22 @@ export function CategoryCard({ category, href }: CategoryCardProps) {
 
   return (
     <Card
-      className={`transition-all duration-300 hover:shadow-md overflow-hidden ${getVariantBorderStyle(
+      className={`h-full flex flex-col transition-all duration-300 hover:shadow-md overflow-hidden ${getVariantBorderStyle(
         variant
       )}`}
     >
-      <CardContent className="pt-6 relative z-10">
-        <div className="mb-4 flex items-center justify-center">
+      <CardContent className="pt-8 pb-4 flex-1 flex flex-col justify-center relative z-10">
+        <div className="mb-6 flex items-center justify-center">
           <IconComponent className={getCategoryIconClass(variant, "lg")} />
         </div>
-        <CardTitle className="text-xl font-bold text-center">{name}</CardTitle>
-        <CardDescription className="text-center mt-2">
+        <CardTitle className="text-xl font-bold text-center mb-3">
+          {name}
+        </CardTitle>
+        <CardDescription className="text-center text-sm leading-relaxed flex-1 flex items-center justify-center">
           {description}
         </CardDescription>
       </CardContent>
-      <CardFooter className="flex justify-center pb-6 relative z-10">
+      <CardFooter className="flex justify-center pb-6 pt-2 relative z-10">
         <Button
           asChild
           variant={
@@ -92,6 +94,7 @@ export function CategoryCard({ category, href }: CategoryCardProps) {
               | "pink"
               | "default"
           }
+          className="w-full max-w-[140px]"
         >
           <Link href={categoryHref}>Ver más</Link>
         </Button>

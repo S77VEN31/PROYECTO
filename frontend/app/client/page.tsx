@@ -1,6 +1,6 @@
 "use client";
 
-import { CategoryCard } from "@/components/category/category-card";
+import { CategoryCarouselGrid } from "@/components/category/category-carousel-grid";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCategories } from "@/hooks/useCategories";
 import { cn } from "@/lib/utils";
@@ -37,65 +37,66 @@ export default function ClientHomePage() {
     backgroundImages: [],
   };
 
-  // Función para renderizar el contenido de categorías
-  const renderCategoryContent = () => {
-    if (isLoading) {
-      // Mostrar esqueletos de carga mientras se cargan las categorías
-      return Array.from({ length: 4 }).map((_, index) => (
-        <div key={`skeleton-${index}`} className="flex flex-col space-y-3">
-          <Skeleton
-            className={cn(
-              "h-48 w-full rounded-xl",
-              "bg-gray-200 dark:bg-gray-800"
-            )}
-          />
-          <Skeleton
-            className={cn("h-6 w-3/4", "bg-gray-200 dark:bg-gray-800")}
-          />
-          <Skeleton
-            className={cn("h-4 w-full", "bg-gray-200 dark:bg-gray-800")}
-          />
+  // Si está cargando, mostrar esqueletos
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-8 px-4 max-w-7xl">
+        <h1 className="text-3xl font-bold mb-8 text-center">Menú de Colori</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={`skeleton-${index}`} className="flex flex-col space-y-3">
+              <Skeleton
+                className={cn(
+                  "h-48 w-full rounded-xl",
+                  "bg-gray-200 dark:bg-gray-800"
+                )}
+              />
+              <Skeleton
+                className={cn("h-6 w-3/4", "bg-gray-200 dark:bg-gray-800")}
+              />
+              <Skeleton
+                className={cn("h-4 w-full", "bg-gray-200 dark:bg-gray-800")}
+              />
+            </div>
+          ))}
         </div>
-      ));
-    }
+      </div>
+    );
+  }
 
-    if (error) {
-      return (
-        <div className="col-span-full p-4 text-center">
+  // Si hay error, mostrar mensaje
+  if (error) {
+    return (
+      <div className="container mx-auto py-8 px-4 max-w-7xl">
+        <h1 className="text-3xl font-bold mb-8 text-center">Menú de Colori</h1>
+        <div className="text-center p-4">
           <p className="text-red-500 mb-2">Error al cargar las categorías</p>
           <p className="text-sm text-muted-foreground">{error}</p>
         </div>
-      );
-    }
-
-    return (
-      <>
-        {categories.map((category) => (
-          <CategoryCard key={category.id} category={category} />
-        ))}
-
-        <CategoryCard
-          key={promotionsCategory.id}
-          category={promotionsCategory}
-          href="/client/category/promotions"
-        />
-
-        <CategoryCard
-          key={cartCategory.id}
-          category={cartCategory}
-          href="/client/cart"
-        />
-      </>
+      </div>
     );
-  };
+  }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
-      <h1 className="text-3xl font-bold mb-8 text-center">Menú de Colori</h1>
+    <div className="container mx-auto py-8 px-4 max-w-7xl space-y-8">
+      <h1 className="text-3xl font-bold text-center">Menú de Colori</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto">
-        {renderCategoryContent()}
-      </div>
+      <CategoryCarouselGrid
+        categories={categories}
+        scrollThreshold={100}
+        autoplay={true}
+        autoplayDelay={6000}
+        additionalCategories={[
+          {
+            category: promotionsCategory,
+            href: "/client/category/promotions",
+          },
+          {
+            category: cartCategory,
+            href: "/client/cart",
+          },
+        ]}
+      />
     </div>
   );
 }

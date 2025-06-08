@@ -6,6 +6,8 @@
 "use client";
 
 import { ProductApiService } from "@/api/entities/product.api";
+import { UploadApiService } from "@/api/upload.api";
+import { ImageUpload } from "@/components/common/image-upload";
 import { TagInput } from "@/components/common/tag-input";
 import { Button } from "@/components/ui/button";
 import {
@@ -79,6 +81,7 @@ export function EditProductDialog({
       active: product.active,
       slug: product.slug || "",
       searchTerm: product.searchTerm || "",
+      backgroundImages: product.backgroundImages || [],
     },
   });
 
@@ -101,8 +104,22 @@ export function EditProductDialog({
       active: product.active,
       slug: product.slug || "",
       searchTerm: product.searchTerm || "",
+      backgroundImages: product.backgroundImages || [],
     });
   }, [product, form]);
+
+  /**
+   * Handle image upload
+   */
+  const handleImageUpload = async (files: File[]) => {
+    try {
+      const uploadedImages = await UploadApiService.uploadProductImages(files);
+      return uploadedImages;
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      throw error;
+    }
+  };
 
   /**
    * Handle form submission
@@ -166,7 +183,34 @@ export function EditProductDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Images Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Imágenes del Producto</h3>
+
+              <FormField
+                control={form.control}
+                name="backgroundImages"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <ImageUpload
+                        label="Imágenes del Producto"
+                        description="Sube imágenes para mostrar tu producto. La primera imagen será la principal."
+                        value={field.value || []}
+                        onChange={field.onChange}
+                        onUpload={handleImageUpload}
+                        maxFiles={5}
+                        maxFileSize={5}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             {/* Basic Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Información Básica</h3>

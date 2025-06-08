@@ -40,6 +40,9 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(requestLogger);
 
+// Serve static files from uploads directory
+app.use("/uploads", express.static("uploads"));
+
 // API Routes
 app.use("/api", routes);
 
