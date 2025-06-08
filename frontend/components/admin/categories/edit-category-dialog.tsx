@@ -49,7 +49,7 @@ import {
   Product,
   UpdateCategoryRequestBody,
 } from "colori-platform-shared";
-import { X } from "lucide-react";
+import { Coffee, Dessert, UtensilsCrossed, Wine, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -65,6 +65,18 @@ interface EditCategoryDialogProps {
 
 // Extend Product to match SelectorItem interface
 interface ProductSelectorItem extends Product, SelectorItem {}
+
+// Lista de íconos disponibles para categorías con sus nombres legibles
+const CATEGORY_ICONS = [
+  {
+    name: "UtensilsCrossed",
+    icon: UtensilsCrossed,
+    displayName: "Platos Principales",
+  },
+  { name: "Dessert", icon: Dessert, displayName: "Postres" },
+  { name: "Coffee", icon: Coffee, displayName: "Café/Bebidas Calientes" },
+  { name: "Wine", icon: Wine, displayName: "Bebidas" },
+];
 
 /**
  * Edit category dialog component
@@ -338,12 +350,52 @@ export function EditCategoryDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Icono</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Nombre del icono (e.g., coffee, utensils)"
-                        {...field}
-                      />
-                    </FormControl>
+                    <Select
+                      onValueChange={(selectedIcon) => {
+                        // Almacenar el nombre del icono como string
+                        field.onChange(selectedIcon);
+                      }}
+                      // Valor inicial o seleccionado
+                      defaultValue={field.value || "UtensilsCrossed"}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar un icono">
+                            {field.value && (
+                              <div className="flex items-center gap-2">
+                                {(() => {
+                                  const iconOption = CATEGORY_ICONS.find(
+                                    (opt) => opt.name === field.value
+                                  );
+                                  if (iconOption) {
+                                    return (
+                                      <>
+                                        <iconOption.icon className="h-4 w-4" />
+                                        <span>{iconOption.displayName}</span>
+                                      </>
+                                    );
+                                  }
+                                  return <span>Seleccionar icono</span>;
+                                })()}
+                              </div>
+                            )}
+                          </SelectValue>
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {CATEGORY_ICONS.map((iconOption) => (
+                          <SelectItem
+                            key={iconOption.name}
+                            value={iconOption.name}
+                          >
+                            <div className="flex items-center gap-2">
+                              <iconOption.icon className="h-4 w-4" />
+                              <span>{iconOption.displayName}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

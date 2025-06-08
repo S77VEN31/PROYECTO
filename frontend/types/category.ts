@@ -14,8 +14,8 @@ export interface Category {
   active: boolean;
   /** Orden de visualización en el menú */
   displayOrder: number;
-  /** Icono asociado a la categoría */
-  icon: LucideIcon;
+  /** Icono asociado a la categoría - puede ser un nombre de icono (string) o un componente LucideIcon */
+  icon: LucideIcon | string;
   /** Variante visual utilizada para estilos (color, tema) */
   variant: CategoryVariant;
   /** URL amigable para la categoría */

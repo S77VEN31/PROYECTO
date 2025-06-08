@@ -1,6 +1,6 @@
-import { Coffee, Dessert, UtensilsCrossed, Wine } from "lucide-react";
 import { Category } from "../../types/category";
 
+// Actualizando datos mock para usar strings como nombres de iconos
 export const mockCategories: Category[] = [
   {
     id: "1",
@@ -8,7 +8,7 @@ export const mockCategories: Category[] = [
     description: "Platos para comenzar tu experiencia culinaria",
     active: true,
     displayOrder: 1,
-    icon: Coffee,
+    icon: "UtensilsCrossed",
     variant: "cafe",
     slug: "entradas",
     searchTerm: "appetizer",
@@ -19,7 +19,7 @@ export const mockCategories: Category[] = [
     description: "Nuestras mejores creaciones culinarias",
     active: true,
     displayOrder: 2,
-    icon: UtensilsCrossed,
+    icon: "UtensilsCrossed",
     variant: "naranja",
     slug: "platos-principales",
     searchTerm: "main-dish",
@@ -30,7 +30,7 @@ export const mockCategories: Category[] = [
     description: "Endulza tu visita con nuestros postres artesanales",
     active: true,
     displayOrder: 3,
-    icon: Dessert,
+    icon: "Dessert",
     variant: "rosa",
     slug: "postres",
     searchTerm: "dessert",
@@ -41,7 +41,7 @@ export const mockCategories: Category[] = [
     description: "Refrescantes opciones para acompañar tu comida",
     active: true,
     displayOrder: 4,
-    icon: Wine,
+    icon: "Wine",
     variant: "celeste",
     slug: "bebidas",
     searchTerm: "beverage",

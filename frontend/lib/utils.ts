@@ -5,8 +5,22 @@ import {
   PromotionType,
   UserRole,
 } from "colori-platform-shared";
-import { LucideIcon } from "lucide-react";
+import {
+  Coffee,
+  Dessert,
+  LucideIcon,
+  UtensilsCrossed,
+  Wine,
+} from "lucide-react";
 import { twMerge } from "tailwind-merge";
+
+// Mapa de iconos disponibles - esto refleja las opciones del selector en los formularios
+export const CATEGORY_ICON_MAP = {
+  UtensilsCrossed,
+  Dessert,
+  Coffee,
+  Wine,
+};
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -383,12 +397,21 @@ export function getCategoryFromProduct(categoryId: string | string[]): {
     };
   }
 
+  // Obtener el icono del mapa de iconos si existe (convertir icon a string si es necesario)
+  let icon = null;
+  // Tratamos category.icon como string ya que así lo estamos guardando ahora
+  const iconName = typeof category.icon === "string" ? category.icon : "";
+
+  if (iconName && iconName in CATEGORY_ICON_MAP) {
+    icon = CATEGORY_ICON_MAP[iconName as keyof typeof CATEGORY_ICON_MAP];
+  }
+
   // Devolver los datos de la categoría encontrada
   return {
     id: category.id,
     variant: category.variant as CategoryVariant,
     name: category.name,
-    icon: category.icon,
+    icon: icon,
   };
 }
 

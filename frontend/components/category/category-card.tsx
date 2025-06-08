@@ -9,34 +9,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  CATEGORY_ICON_MAP,
   getButtonVariantFromCategory,
   getCategoryIconClass,
   getVariantBorderStyle,
 } from "@/lib/utils";
 import { Category } from "colori-platform-shared";
-import {
-  Coffee,
-  LucideIcon,
-  ShoppingBag,
-  Tag,
-  UtensilsCrossed,
-} from "lucide-react";
+import { Coffee, LucideIcon } from "lucide-react";
 import Link from "next/link";
 
 interface CategoryCardProps {
   category: Category;
   href?: string;
 }
-
-// Mapeo de iconos de string a componentes Lucide
-const iconMap: Record<string, LucideIcon> = {
-  "entradas.png": UtensilsCrossed,
-  "image.png": Coffee,
-  tag: Tag,
-  "shopping-bag": ShoppingBag,
-  coffee: Coffee,
-  utensils: UtensilsCrossed,
-};
 
 export function CategoryCard({ category, href }: CategoryCardProps) {
   // Si category es undefined, mostrar un mensaje o usar valores predeterminados
@@ -62,8 +47,17 @@ export function CategoryCard({ category, href }: CategoryCardProps) {
   const categoryHref = href || `/client/category/${slug}`;
   const buttonVariant = getButtonVariantFromCategory(variant);
 
-  // Obtener el componente de icono
-  const IconComponent = iconMap[icon] || Coffee;
+  // Obtener el componente de icono según el valor de icon (string o componente)
+  let IconComponent: LucideIcon = Coffee; // Valor por defecto
+
+  if (typeof icon === "string") {
+    // Si icon es un string, intentar obtener el componente del mapa de iconos
+    IconComponent =
+      CATEGORY_ICON_MAP[icon as keyof typeof CATEGORY_ICON_MAP] || Coffee;
+  } else if (icon) {
+    // Si icon ya es un componente LucideIcon
+    IconComponent = icon;
+  }
 
   return (
     <Card

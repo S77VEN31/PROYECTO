@@ -5,14 +5,14 @@ import { ProductApiService } from "@/api/entities/product.api";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Card, CardContent } from "@/components/ui/card";
 import {
+  CATEGORY_ICON_MAP,
   cn,
-  getCategoryFromProduct,
   getCategoryIconColorClass,
   getVariantBackgroundClass,
   getVariantBorderStyle,
 } from "@/lib/utils";
 import { Category, CategoryVariant, Product } from "colori-platform-shared";
-import { AlertCircle, Coffee } from "lucide-react";
+import { AlertCircle, Coffee, LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 
@@ -26,8 +26,21 @@ interface ExtendedProduct extends Product {
 
 // Componente de header compacto para layout horizontal
 function CategoryHeader({ category }: { category: Category }) {
-  const categoryData = getCategoryFromProduct(category.id);
-  const IconComponent = categoryData.icon || Coffee;
+  // Usar directamente la categoría pasada como prop, en lugar de buscarla
+  // Obtener el icono directamente de la categoría
+  let IconComponent: LucideIcon = Coffee; // Valor por defecto
+
+  if (category.icon) {
+    if (typeof category.icon === "string") {
+      // Si es un string, obtener el componente del mapa de iconos
+      IconComponent =
+        CATEGORY_ICON_MAP[category.icon as keyof typeof CATEGORY_ICON_MAP] ||
+        Coffee;
+    } else {
+      // Si ya es un componente LucideIcon
+      IconComponent = category.icon;
+    }
+  }
 
   return (
     <div className="flex items-center gap-3 lg:gap-4">
