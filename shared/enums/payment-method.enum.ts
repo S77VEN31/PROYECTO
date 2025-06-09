@@ -9,17 +9,12 @@ export enum PaymentMethod {
   CASH = "cash",
 
   /**
-   * Credit card payment
+   * Card payment (credit or debit)
    */
-  CREDIT_CARD = "credit-card",
+  CARD = "card",
 
   /**
-   * Debit card payment
+   * SINPE Móvil (Costa Rica mobile payment system)
    */
-  DEBIT_CARD = "debit-card",
-
-  /**
-   * Mobile payment methods (Apple Pay, Google Pay, etc.)
-   */
-  MOBILE_PAYMENT = "mobile-payment",
+  SINPE_MOVIL = "sinpe-movil",
 }

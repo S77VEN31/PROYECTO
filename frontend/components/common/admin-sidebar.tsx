@@ -5,6 +5,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import {
   BarChart3,
+  FileText,
   FolderOpen,
   LogOut,
   Package,
@@ -95,6 +96,13 @@ export function AdminSidebar() {
               href="/admin/promotions"
               label="Promociones"
               icon={<Percent className="h-4 w-4" />}
+            />
+          </li>
+          <li>
+            <SidebarLink
+              href="/admin/reports"
+              label="Reportes"
+              icon={<FileText className="h-4 w-4" />}
             />
           </li>
         </ul>

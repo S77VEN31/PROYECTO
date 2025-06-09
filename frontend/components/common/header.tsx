@@ -5,10 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/contexts/AuthContext";
 import {
-  BarChart3,
   ClipboardList,
   LogOut,
-  Settings,
   ShoppingCart,
   Utensils,
 } from "lucide-react";

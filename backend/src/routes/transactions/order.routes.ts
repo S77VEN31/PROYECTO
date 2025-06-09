@@ -3,6 +3,8 @@ import {
   deleteOrder,
   getOrderById,
   getOrders,
+  getSalesReport,
+  getSalesReportExport,
   updateOrder,
 } from "@controllers";
 import { Router } from "express";
@@ -19,6 +21,20 @@ const router = Router();
  * @access Public (should be protected in production)
  */
 router.get("/", getOrders);
+
+/**
+ * @route GET /orders/reports/sales
+ * @description Get sales report with filtering and statistics
+ * @access Public (should be protected in production)
+ */
+router.get("/reports/sales", getSalesReport);
+
+/**
+ * @route GET /orders/reports/sales/export
+ * @description Get sales report data for Excel export
+ * @access Public (should be protected in production)
+ */
+router.get("/reports/sales/export", getSalesReportExport);
 
 /**
  * @route GET /orders/:id

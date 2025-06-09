@@ -4,10 +4,11 @@ import { OrderApiService } from "@/api/entities/order.api";
 import { ProductApiService } from "@/api/entities/product.api";
 import { KitchenStats } from "@/components/kitchen/kitchen-stats";
 import { OrdersList } from "@/components/kitchen/orders-list";
+import { PaymentMethodDialog } from "@/components/kitchen/payment-method-dialog";
 import { StatusFilter } from "@/components/kitchen/status-filter";
-import { Order, OrderProduct, OrderStatus as FrontendOrderStatus, ProductOrderStatus } from "@/types/orders";
+import { Order, OrderProduct, ProductOrderStatus } from "@/types/orders";
 import { Product } from "@/types/products";
-import { OrderStatus } from "colori-platform-shared";
+import { OrderStatus, PaymentMethod } from "colori-platform-shared";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -80,6 +81,10 @@ export default function KitchenDashboard() {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Payment method dialog state
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [orderToComplete, setOrderToComplete] = useState<Order | null>(null);
 
   // Filtrar y ordenar las órdenes según el estado seleccionado y prioridad
   const filteredOrders = (() => {
@@ -183,9 +188,19 @@ export default function KitchenDashboard() {
   };
 
   // Actualizar el estado de una orden
-  const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
+  const updateOrderStatus = async (orderId: string, newStatus: OrderStatus, paymentMethod?: PaymentMethod | null) => {
     try {
       console.log(`Actualizando orden ${orderId} a estado ${newStatus}`);
+      
+      // Si se está completando la orden y no se especificó método de pago, mostrar modal
+      if (newStatus === OrderStatus.COMPLETED && paymentMethod === undefined) {
+        const orderToComplete = orders.find(o => o.id === orderId);
+        if (orderToComplete) {
+          setOrderToComplete(orderToComplete);
+          setPaymentDialogOpen(true);
+          return; // Salir aquí, la actualización continuará después del modal
+        }
+      }
       
       // Actualización optimista: actualizar UI inmediatamente
       const updatedOrdersCopy = [...orders];
@@ -200,7 +215,10 @@ export default function KitchenDashboard() {
       const updatedOrder = {
         ...updatedOrdersCopy[orderIndex],
         status: newStatus,
-        ...(newStatus === OrderStatus.COMPLETED ? { completedAt: new Date().toISOString() } : {})
+        ...(newStatus === OrderStatus.COMPLETED ? { 
+          completedAt: new Date().toISOString(),
+          paymentMethod: paymentMethod as any || null
+        } : {})
       };
       
       // Actualizar el estado local inmediatamente
@@ -210,8 +228,11 @@ export default function KitchenDashboard() {
       // Enviar actualización al API
       const result = await OrderApiService.updateOrder(orderId, {
         status: newStatus,
-        // Si la orden se completa, agregar la fecha de completado
-        ...(newStatus === OrderStatus.COMPLETED ? { completedAt: new Date().toISOString() } : {})
+        // Si la orden se completa, agregar la fecha de completado y método de pago
+        ...(newStatus === OrderStatus.COMPLETED ? { 
+          completedAt: new Date().toISOString(),
+          paymentMethod: paymentMethod || null
+        } : {})
       });
       
       if (result && result.updated) {
@@ -272,8 +293,12 @@ export default function KitchenDashboard() {
       
       // Determinar el nuevo estado de la orden basado en los productos
       let orderStatus = currentOrder.status as OrderStatus;
-      if (allCompleted) {
-        orderStatus = OrderStatus.COMPLETED;
+      if (allCompleted && currentOrder.status !== OrderStatus.COMPLETED) {
+        // Si todos los productos están completados y la orden no estaba completada antes,
+        // mostrar el modal de método de pago
+        setOrderToComplete(currentOrder);
+        setPaymentDialogOpen(true);
+        return; // Salir aquí, la actualización continuará después del modal
       } else if (anyInProgress) {
         orderStatus = OrderStatus.IN_PROGRESS;
       }
@@ -323,6 +348,20 @@ export default function KitchenDashboard() {
       // Revertir cambios optimistas si hay error
       fetchOrders();
     }
+  };
+
+  /**
+   * Handle payment method confirmation
+   */
+  const handlePaymentMethodConfirm = (paymentMethod: PaymentMethod | null) => {
+    if (orderToComplete) {
+      // Continuar con la actualización de la orden con el método de pago seleccionado
+      updateOrderStatus(orderToComplete.id, OrderStatus.COMPLETED, paymentMethod);
+    }
+    
+    // Cerrar modal y limpiar estado
+    setPaymentDialogOpen(false);
+    setOrderToComplete(null);
   };
 
   // Manejar acciones sobre las órdenes
@@ -406,6 +445,18 @@ export default function KitchenDashboard() {
         onOrderAction={handleOrderAction} 
         isLoading={loading}
       />
+
+      {/* Payment Method Dialog */}
+      {orderToComplete && (
+        <PaymentMethodDialog
+          open={paymentDialogOpen}
+          onOpenChange={setPaymentDialogOpen}
+          onConfirm={handlePaymentMethodConfirm}
+          orderNumber={orderToComplete.reference || orderToComplete.id}
+          customerName={orderToComplete.customerName}
+          total={orderToComplete.total}
+        />
+      )}
     </div>
   );
 }

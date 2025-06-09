@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   BarChart3,
+  FileText,
   FolderOpen,
   LogOut,
   Menu,
@@ -113,6 +114,14 @@ export function AdminMobileNav() {
                   href="/admin/promotions"
                   label="Promociones"
                   icon={<Percent className="h-4 w-4" />}
+                  onClose={() => {}}
+                />
+              </li>
+              <li>
+                <MobileLink
+                  href="/admin/reports"
+                  label="Reportes"
+                  icon={<FileText className="h-4 w-4" />}
                   onClose={() => {}}
                 />
               </li>

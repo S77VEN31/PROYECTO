@@ -133,3 +133,43 @@ export interface DeleteOrderRequest extends IdParam {}
 export interface DeleteOrderResponse {
   deleted: boolean;
 }
+
+// Sales Report types
+export interface GetSalesReportRequest extends PaginationParams {
+  status?: string;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface SalesStatistics {
+  totalSales: number;
+  totalRevenue: number;
+  averageOrderValue: number;
+  totalTips: number;
+  totalTax: number;
+  ordersByStatus: Record<string, number>;
+  ordersByPaymentMethod: Record<string, number>;
+  revenueByPaymentMethod: Record<string, number>;
+  dailySales: Array<{ date: string; orders: number; revenue: number }>;
+}
+
+export interface GetSalesReportResponse {
+  orders: Order[];
+  total: number;
+  page: number;
+  limit: number;
+  statistics: SalesStatistics;
+}
+
+export interface GetSalesReportExportRequest {
+  status?: string;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface GetSalesReportExportResponse {
+  orders: Order[];
+  statistics: SalesStatistics;
+}

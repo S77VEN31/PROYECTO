@@ -219,3 +219,92 @@ export const deleteOrder = async (
     } as ApiResponse);
   }
 };
+
+/**
+ * Get sales report with filtering and statistics
+ *
+ * @param req - Express request object with query parameters
+ * @param res - Express response object
+ * @returns Promise<Response> - JSON response with sales report data
+ */
+export const getSalesReport = async (req: Request, res: Response) => {
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      status,
+      tableNumber,
+      search,
+      startDate,
+      endDate,
+    } = req.query;
+
+    const options = {
+      page: Number(page),
+      limit: Number(limit),
+      status: status as string,
+      tableNumber: tableNumber ? Number(tableNumber) : undefined,
+      search: search as string,
+      startDate: startDate as string,
+      endDate: endDate as string,
+    };
+
+    const result = await OrderService.getSalesReport(options);
+
+    return res.status(200).json({
+      success: true,
+      orders: result.orders,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      statistics: result.statistics,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to retrieve sales report",
+      message: error.message,
+    } as ApiResponse);
+  }
+};
+
+/**
+ * Get sales report data for Excel export (all data, no pagination)
+ *
+ * @param req - Express request object with query parameters
+ * @param res - Express response object
+ * @returns Promise<Response> - JSON response with all sales data
+ */
+export const getSalesReportExport = async (req: Request, res: Response) => {
+  try {
+    const {
+      status,
+      tableNumber,
+      search,
+      startDate,
+      endDate,
+    } = req.query;
+
+    const options = {
+      status: status as string,
+      tableNumber: tableNumber ? Number(tableNumber) : undefined,
+      search: search as string,
+      startDate: startDate as string,
+      endDate: endDate as string,
+    };
+
+    const result = await OrderService.getSalesReportForExport(options);
+
+    return res.status(200).json({
+      success: true,
+      orders: result.orders,
+      statistics: result.statistics,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to retrieve sales report for export",
+      message: error.message,
+    } as ApiResponse);
+  }
+};

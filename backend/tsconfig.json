@@ -24,7 +24,7 @@
       "colori-platform-shared": ["../shared/dist"]
     }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/types/**/*.d.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../shared" }

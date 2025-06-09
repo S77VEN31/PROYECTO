@@ -208,7 +208,7 @@ export class ProductService {
 
         // Find images that are being removed
         const imagesToDelete = oldImages.filter(
-          (oldImg) => !newImages.some((newImg) => newImg.src === oldImg.src)
+          (oldImg: any) => !newImages.some((newImg: any) => newImg.src === oldImg.src)
         );
 
         // Delete removed images from filesystem

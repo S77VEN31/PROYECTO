@@ -174,4 +174,79 @@ export class OrderApiService {
       return null;
     }
   }
+
+  /**
+   * Get sales report with filtering and statistics
+   * @param params Query parameters
+   * @returns Promise with sales report data
+   */
+  static async getSalesReport(params: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    tableNumber?: number;
+    search?: string;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<{
+    orders: Order[];
+    total: number;
+    page: number;
+    limit: number;
+    statistics: {
+      totalSales: number;
+      totalRevenue: number;
+      averageOrderValue: number;
+      totalTips: number;
+      totalTax: number;
+      ordersByStatus: Record<string, number>;
+      ordersByPaymentMethod: Record<string, number>;
+      dailySales: Array<{ date: string; orders: number; revenue: number }>;
+    };
+  } | null> {
+    try {
+      const response = await apiClient.get("/orders/reports/sales", {
+        params,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching sales report:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Get sales report data for Excel export (all data, no pagination)
+   * @param params Query parameters
+   * @returns Promise with all sales data
+   */
+  static async getSalesReportForExport(params: {
+    status?: string;
+    tableNumber?: number;
+    search?: string;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<{
+    orders: Order[];
+    statistics: {
+      totalSales: number;
+      totalRevenue: number;
+      averageOrderValue: number;
+      totalTips: number;
+      totalTax: number;
+      ordersByStatus: Record<string, number>;
+      ordersByPaymentMethod: Record<string, number>;
+      dailySales: Array<{ date: string; orders: number; revenue: number }>;
+    };
+  } | null> {
+    try {
+      const response = await apiClient.get("/orders/reports/sales/export", {
+        params,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching sales report for export:", error);
+      return null;
+    }
+  }
 } 

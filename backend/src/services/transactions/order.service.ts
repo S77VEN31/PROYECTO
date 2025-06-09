@@ -44,8 +44,18 @@ export class OrderService {
     }
     if (startDate || endDate) {
       filters.createdAt = {};
-      if (startDate) filters.createdAt.$gte = new Date(startDate);
-      if (endDate) filters.createdAt.$lte = new Date(endDate);
+      if (startDate) {
+        // Start of the day
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        filters.createdAt.$gte = start;
+      }
+      if (endDate) {
+        // End of the day
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        filters.createdAt.$lte = end;
+      }
     }
 
     const [orders, total] = await Promise.all([
@@ -143,7 +153,7 @@ export class OrderService {
     const createdOrder = await OrderModel.create(orderToCreate);
 
     return {
-      id: createdOrder._id.toString(),
+      id: (createdOrder._id as any).toString(),
       order: JSON.parse(JSON.stringify(createdOrder)) as Order,
     };
   }
@@ -219,5 +229,199 @@ export class OrderService {
    */
   private static isCompletedStatus(status: OrderStatus): boolean {
     return [OrderStatus.COMPLETED, OrderStatus.CANCELLED].includes(status);
+  }
+
+  /**
+   * Get sales reports with filtering and statistics
+   * @param params - Query parameters for filtering
+   * @returns Promise with sales report data
+   */
+  static async getSalesReport(params: {
+    startDate?: string;
+    endDate?: string;
+    status?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const {
+      startDate,
+      endDate,
+      status,
+      search,
+      page = 1,
+      limit = 10,
+    } = params;
+
+    const offset = (page - 1) * limit;
+
+    // Build filter conditions
+    const filters: any = {};
+    
+    // Only add status filter if explicitly provided
+    if (status) {
+      filters.status = status;
+    }
+
+    if (search) {
+      filters.customerName = { $regex: search, $options: "i" };
+    }
+    if (startDate || endDate) {
+      filters.createdAt = {};
+      if (startDate) {
+        // Start of the day
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        filters.createdAt.$gte = start;
+      }
+      if (endDate) {
+        // End of the day
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        filters.createdAt.$lte = end;
+      }
+    }
+
+    const [orders, total] = await Promise.all([
+      OrderModel.find(filters)
+        .sort({ createdAt: -1 })
+        .limit(limit)
+        .skip(offset)
+        .exec(),
+      OrderModel.countDocuments(filters),
+    ]);
+
+    // Calculate statistics
+    const allOrders = await OrderModel.find(filters).exec();
+    const statistics = this.calculateSalesStatistics(allOrders);
+
+    return {
+      orders: orders.map((order) => JSON.parse(JSON.stringify(order)) as Order),
+      total,
+      page,
+      limit,
+      statistics,
+    };
+  }
+
+  /**
+   * Get all sales data for Excel export (no pagination)
+   * @param params - Query parameters for filtering
+   * @returns Promise with all sales data
+   */
+  static async getSalesReportForExport(params: {
+    startDate?: string;
+    endDate?: string;
+    status?: string;
+    search?: string;
+  }) {
+    const { startDate, endDate, status, search } = params;
+
+    // Build filter conditions
+    const filters: any = {};
+    
+    // Only add status filter if explicitly provided
+    if (status) {
+      filters.status = status;
+    }
+
+    if (search) {
+      filters.customerName = { $regex: search, $options: "i" };
+    }
+    if (startDate || endDate) {
+      filters.createdAt = {};
+      if (startDate) {
+        // Start of the day
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        filters.createdAt.$gte = start;
+      }
+      if (endDate) {
+        // End of the day
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        filters.createdAt.$lte = end;
+      }
+    }
+
+    const orders = await OrderModel.find(filters)
+      .sort({ createdAt: -1 })
+      .exec();
+
+    const statistics = this.calculateSalesStatistics(orders);
+
+    return {
+      orders: orders.map((order) => JSON.parse(JSON.stringify(order)) as Order),
+      statistics,
+    };
+  }
+
+  /**
+   * Calculate sales statistics from orders
+   * @param orders - Array of orders
+   * @returns Statistics object
+   */
+  private static calculateSalesStatistics(orders: any[]) {
+    if (orders.length === 0) {
+      return {
+        totalSales: 0,
+        totalRevenue: 0,
+        averageOrderValue: 0,
+        totalTips: 0,
+        totalTax: 0,
+        ordersByStatus: {},
+        ordersByPaymentMethod: {},
+        revenueByPaymentMethod: {},
+        dailySales: [],
+      };
+    }
+
+    const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);
+    const totalTips = orders.reduce((sum, order) => sum + (order.tip || 0), 0);
+    const totalTax = orders.reduce((sum, order) => sum + (order.tax || 0), 0);
+    const averageOrderValue = totalRevenue / orders.length;
+
+    // Group by status
+    const ordersByStatus = orders.reduce((acc, order) => {
+      acc[order.status] = (acc[order.status] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Group by payment method (count)
+    const ordersByPaymentMethod = orders.reduce((acc, order) => {
+      const method = order.paymentMethod || 'Sin especificar';
+      acc[method] = (acc[method] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Group by payment method (revenue)
+    const revenueByPaymentMethod = orders.reduce((acc, order) => {
+      const method = order.paymentMethod || 'Sin especificar';
+      acc[method] = (acc[method] || 0) + (order.total || 0);
+      return acc;
+    }, {});
+
+    // Group by day for daily sales
+    const dailySales = orders.reduce((acc, order) => {
+      const date = new Date(order.createdAt).toISOString().split('T')[0];
+      if (!acc[date]) {
+        acc[date] = { date, orders: 0, revenue: 0 };
+      }
+      acc[date].orders += 1;
+      acc[date].revenue += order.total || 0;
+      return acc;
+    }, {});
+
+    return {
+      totalSales: orders.length,
+      totalRevenue,
+      averageOrderValue,
+      totalTips,
+      totalTax,
+      ordersByStatus,
+      ordersByPaymentMethod,
+      revenueByPaymentMethod,
+      dailySales: Object.values(dailySales),
+    };
   }
 }

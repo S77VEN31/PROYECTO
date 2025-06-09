@@ -100,7 +100,7 @@ export class EventService {
     const createdEvent = await EventModel.create(eventToCreate);
 
     return {
-      id: createdEvent._id.toString(),
+      id: (createdEvent._id as any).toString(),
       event: JSON.parse(JSON.stringify(createdEvent)) as Event,
     };
   }

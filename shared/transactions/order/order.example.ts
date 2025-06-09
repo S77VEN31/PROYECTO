@@ -48,7 +48,7 @@ const orderModel: Order = {
   tax: 1.25,
   total: 13.75,
   tip: 2.75,
-  paymentMethod: PaymentMethod.CREDIT_CARD,
+  paymentMethod: PaymentMethod.CARD,
   active: true,
   createdAt: "2023-08-15T12:30:00Z",
   updatedAt: "2023-08-15T12:45:00Z",

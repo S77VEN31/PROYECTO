@@ -49,6 +49,8 @@ import {
   deleteOrder,
   getOrderById,
   getOrders,
+  getSalesReport,
+  getSalesReportExport,
   updateOrder,
 } from "./transactions/order.controller";
 
@@ -90,9 +92,17 @@ export { PromotionController };
     // Event controllers
     completeEvent,
     createEvent,
+    deleteEvent,
+    getEventById,
+    getEvents,
+    updateEvent,
     // Order controllers
-    createOrder, deleteEvent, deleteOrder, getEventById,
-    getEvents, getOrderById,
-    getOrders, updateEvent, updateOrder
+    createOrder,
+    deleteOrder,
+    getOrderById,
+    getOrders,
+    getSalesReport,
+    getSalesReportExport,
+    updateOrder
   };
 
