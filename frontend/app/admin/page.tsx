@@ -9,105 +9,136 @@ import {
   ActivityItem,
   RecentActivity,
 } from "@/components/admin/recent-activity";
-import { mockOrders } from "@/data/mock";
-import { ClipboardList, FileBox, ShoppingCart } from "lucide-react";
+import { DashboardApiService, DashboardData } from "@/api/dashboard.api";
+import { ClipboardList, FileBox, ShoppingCart, Loader2, RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function AdminDashboard() {
-  // Calculate stats based on mock data
-  const totalOrdersToday = mockOrders.length;
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const totalSales = mockOrders.reduce(
-    (total, order) => total + order.total,
-    0
-  );
-  const salesFormatted = `$${totalSales.toFixed(2)}`;
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const data = await DashboardApiService.getDashboardData();
+      setDashboardData(data);
+      setError(null);
+    } catch (err) {
+      console.error('Error loading dashboard data:', err);
+      setError('Error al cargar los datos del dashboard');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const avgTime = 18; // In minutes
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
-  const totalItems = mockOrders.flatMap((order) => order.products).length;
+  if (loading) {
+    return (
+      <AdminPageLayout
+        title="Dashboard Administrativo"
+        subtitle="Panel de control para la administración del restaurante"
+      >
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span>Cargando datos del dashboard...</span>
+          </div>
+        </div>
+      </AdminPageLayout>
+    );
+  }
+
+  if (error || !dashboardData) {
+    return (
+      <AdminPageLayout
+        title="Dashboard Administrativo"
+        subtitle="Panel de control para la administración del restaurante"
+      >
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">
+              <p className="text-red-600 mb-2">
+                {error || 'Error al cargar los datos del dashboard'}
+              </p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="text-blue-600 hover:underline"
+              >
+                Intentar de nuevo
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </AdminPageLayout>
+    );
+  }
 
   const stats: StatItem[] = [
     {
       label: "Ventas Hoy",
-      value: salesFormatted,
-      change: "+12.5%",
-      positive: true,
+      value: `₡${dashboardData.stats.totalSalesToday.toLocaleString()}`,
+      change: dashboardData.stats.salesGrowth,
+      positive: !dashboardData.stats.salesGrowth.startsWith('-'),
     },
     {
       label: "Pedidos Completados",
-      value: totalOrdersToday.toString(),
-      change: "+8.3%",
-      positive: true,
+      value: dashboardData.stats.totalOrdersToday.toString(),
+      change: dashboardData.stats.ordersGrowth,
+      positive: !dashboardData.stats.ordersGrowth.startsWith('-'),
     },
     {
       label: "Tiempo Promedio",
-      value: `${avgTime} min`,
-      change: "-5.2%",
-      positive: true,
+      value: `${dashboardData.stats.averageOrderTime} min`,
+      change: dashboardData.stats.timeImprovement,
+      positive: dashboardData.stats.timeImprovement.startsWith('-'), // Negative time is good
     },
     {
       label: "Productos Vendidos",
-      value: totalItems.toString(),
-      change: "+15.7%",
-      positive: true,
+      value: dashboardData.stats.totalProductsSold.toString(),
+      change: dashboardData.stats.productsGrowth,
+      positive: !dashboardData.stats.productsGrowth.startsWith('-'),
     },
   ];
 
-  // Calculate popular items based on mockMenuItems and mockOrders
-  const itemCounts = mockOrders
-    .flatMap((order) => order.products)
-    .reduce((acc, item) => {
-      const existing = acc.find((i) => i.id === item.product.id);
-      if (existing) {
-        existing.sales += item.quantity;
-        existing.revenue += item.product.price * item.quantity;
-      } else {
-        acc.push({
-          id: item.product.id,
-          name: item.product.name,
-          sales: item.quantity,
-          revenue: item.product.price * item.quantity,
-          category:
-            Array.isArray(item.product.categories) &&
-            item.product.categories.length > 0
-              ? typeof item.product.categories[0] === "string"
-                ? item.product.categories[0]
-                : item.product.categories[0].name
-              : "Sin categoría",
-        });
-      }
-      return acc;
-    }, [] as Array<PopularItem>);
+  const popularItems: PopularItem[] = dashboardData.popularProducts.map(product => ({
+    id: product.id,
+    name: product.name,
+    sales: product.sales,
+    revenue: product.revenue,
+    category: product.category
+  }));
 
-  const popularItems = itemCounts.sort((a, b) => b.sales - a.sales).slice(0, 5);
-
-  // Recent activity data
-  const recentActivity: ActivityItem[] = [
-    {
-      id: "1",
-      title: "Nuevo pedido #1048",
-      description: "4 productos - $45.98",
-      time: "Hace 5 min",
-    },
-    {
-      id: "2",
-      title: "Pedido #1047 completado",
-      description: "Tiempo de preparación: 15 min",
-      time: "Hace 12 min",
-    },
-    {
-      id: "3",
-      title: "Menú actualizado",
-      description: "Cambios por Juan García",
-      time: "Hace 45 min",
-    },
-  ];
+  const recentActivity: ActivityItem[] = dashboardData.recentActivity.map(activity => ({
+    id: activity.id,
+    title: activity.title,
+    description: activity.description,
+    time: activity.time
+  }));
 
   return (
     <AdminPageLayout
       title="Dashboard Administrativo"
       subtitle="Panel de control para la administración del restaurante"
     >
+      {/* Header with refresh button */}
+      <div className="flex justify-end mb-6">
+        <Button
+          onClick={fetchDashboardData}
+          disabled={loading}
+          variant="outline"
+          size="sm"
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          Actualizar datos
+        </Button>
+      </div>
+
       {/* Stats Section */}
       <section className="mb-8">
         <DashboardStats stats={stats} />
