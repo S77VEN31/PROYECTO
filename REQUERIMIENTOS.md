@@ -16,8 +16,8 @@ Una vez confirmado el pedido, el sistema debe asignar un número de orden único
 - [X] REQ-F05: Visualización de Pedidos en Cocina
 Los pedidos deben visualizarse en la interfaz del panel de cocina en tiempo real, mostrando los productos, cantidades, instrucciones especiales y tiempo desde que fue recibido.
 
-- [X] REQ-F06: Organización de la Cola de Pedidos
-El sistema debe organizar la cola de pedidos según su estado: pendiente, en preparación o completado. Se debe mantener orden cronológico con prioridad visual y colores distintivos por estado.
+- [X] REQ-F06: Gestión de Usuarios
+El sistema debe permitir a los administradores realizar operaciones CRUD sobre los usuarios, incluyendo nombre, correo electrónico, rol (admin, gerente, chef, mesero, cajero), estado activo/inactivo y permisos. Debe incluir validaciones, filtros por rol, y control de accesos según tipo de usuario.
 
 - [X] REQ-F07: Gestión de Estados de Pedido
 Cada pedido debe pasar por un ciclo de vida controlado: pendiente → preparando → listo → entregado. El personal de cocina debe poder cambiar estos estados desde su panel.
