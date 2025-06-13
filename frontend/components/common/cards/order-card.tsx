@@ -183,13 +183,15 @@ export function OrderCard({
             </Button>
           )}
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onAction("details", order.id)}
-          >
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
+          {order.status === "completed" && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => onAction("details", order.id)}
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          )}
         </CardFooter>
       )}
     </Card>

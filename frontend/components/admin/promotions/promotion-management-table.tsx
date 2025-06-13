@@ -283,25 +283,25 @@ export function PromotionManagementTable({
                 onValueChange={handleTypeFilterChange}
               >
                 <SelectTrigger className="w-full sm:w-48 min-w-[180px]">
-                  <SelectValue placeholder="Filter by type" />
+                  <SelectValue placeholder="Filtrar por tipo" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="all">Todos los Tipos</SelectItem>
                   <SelectItem value={PromotionType.DISCOUNT}>
-                    Discount
+                    Descuento
                   </SelectItem>
                   <SelectItem value={PromotionType.BOGO}>
-                    Buy One Get One
+                    Compra Uno Lleva Dos
                   </SelectItem>
-                  <SelectItem value={PromotionType.BUNDLE}>Bundle</SelectItem>
+                  <SelectItem value={PromotionType.BUNDLE}>Paquete</SelectItem>
                   <SelectItem value={PromotionType.FREE_SHIPPING}>
-                    Free Shipping
+                    Envío Gratis
                   </SelectItem>
                   <SelectItem value={PromotionType.GIFT_WITH_PURCHASE}>
-                    Gift with Purchase
+                    Regalo con Compra
                   </SelectItem>
                   <SelectItem value={PromotionType.SEASONAL}>
-                    Seasonal
+                    Estacional
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -310,12 +310,12 @@ export function PromotionManagementTable({
                 onValueChange={handleActiveFilterChange}
               >
                 <SelectTrigger className="w-full sm:w-40 min-w-[140px]">
-                  <SelectValue placeholder="Filter by status" />
+                  <SelectValue placeholder="Filtrar por estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="true">Active</SelectItem>
-                  <SelectItem value="false">Inactive</SelectItem>
+                  <SelectItem value="all">Todos los Estados</SelectItem>
+                                      <SelectItem value="true">Activo</SelectItem>
+                    <SelectItem value="false">Inactivo</SelectItem>
                 </SelectContent>
               </Select>
               <Button
@@ -336,19 +336,19 @@ export function PromotionManagementTable({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="min-w-[200px]">Promotion</TableHead>
-                <TableHead className="min-w-[120px]">Type</TableHead>
+                <TableHead className="min-w-[200px]">Promoción</TableHead>
+                <TableHead className="min-w-[120px]">Tipo</TableHead>
                 <TableHead className="min-w-[100px] hidden md:table-cell">
-                  Status
+                  Estado
                 </TableHead>
                 <TableHead className="min-w-[120px] hidden lg:table-cell">
-                  Discount
+                  Descuento
                 </TableHead>
                 <TableHead className="min-w-[150px] hidden xl:table-cell">
-                  Valid Period
+                  Período Válido
                 </TableHead>
                 <TableHead className="min-w-[80px] text-right">
-                  Actions
+                  Acciones
                 </TableHead>
               </TableRow>
             </TableHeader>

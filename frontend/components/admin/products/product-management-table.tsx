@@ -283,16 +283,16 @@ export function ProductManagementTable({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="min-w-[200px]">Product</TableHead>
-                <TableHead className="min-w-[120px]">Price</TableHead>
+                <TableHead className="min-w-[200px]">Producto</TableHead>
+                <TableHead className="min-w-[120px]">Precio</TableHead>
                 <TableHead className="min-w-[100px] hidden md:table-cell">
-                  Status
+                  Estado
                 </TableHead>
                 <TableHead className="min-w-[120px] hidden lg:table-cell">
-                  Prep. Time
+                  Tiempo Prep.
                 </TableHead>
                 <TableHead className="min-w-[80px] text-right">
-                  Actions
+                  Acciones
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -450,7 +450,7 @@ export function ProductManagementTable({
                             className={getCancellationTextClass()}
                           >
                             <Trash2 className="h-4 w-4 mr-2 flex-shrink-0" />
-                            <span>Delete</span>
+                            <span>Eliminar</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

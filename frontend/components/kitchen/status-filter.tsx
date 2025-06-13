@@ -44,8 +44,7 @@ export function StatusFilter({
   config = {},
   className = "",
 }: StatusFilterProps) {
-  const totalCount =
-    pendingCount + inProgressCount + completedCount + cancelledCount;
+  const totalCount = pendingCount + inProgressCount;
 
   const buttons: StatusButtonConfig[] = [
     {
@@ -89,34 +88,6 @@ export function StatusFilter({
           "text-[var(--status-pending)] group-hover:text-white dark:group-hover:text-black",
         activeIconClass: "text-white dark:text-black",
         ...(config.pending || {}),
-      },
-    },
-    {
-      id: "completed",
-      variant: "completed",
-      icon: Check,
-      label: "Completadas",
-      count: completedCount,
-      config: {
-        buttonVariant: "completed",
-        iconClass:
-          "text-[var(--status-completed)] group-hover:text-white dark:group-hover:text-black",
-        activeIconClass: "text-white dark:text-black",
-        ...(config.completed || {}),
-      },
-    },
-    {
-      id: "cancelled",
-      variant: "cancelled",
-      icon: X,
-      label: "Canceladas",
-      count: cancelledCount,
-      config: {
-        buttonVariant: "cancelled",
-        iconClass:
-          "text-[var(--status-cancelled)] group-hover:text-white dark:group-hover:text-black",
-        activeIconClass: "text-white dark:text-black",
-        ...(config.cancelled || {}),
       },
     },
   ];

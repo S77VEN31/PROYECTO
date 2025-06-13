@@ -145,7 +145,6 @@ export function SalesTable({
             <TableRow>
               <TableHead className="min-w-[120px]">Orden</TableHead>
               <TableHead className="min-w-[150px]">Cliente</TableHead>
-              <TableHead className="min-w-[80px]">Mesa</TableHead>
               <TableHead className="min-w-[100px]">Estado</TableHead>
               <TableHead className="min-w-[120px]">Método de Pago</TableHead>
               <TableHead className="min-w-[100px] text-right">Subtotal</TableHead>
@@ -158,7 +157,7 @@ export function SalesTable({
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={10} className="text-center py-8">
+                <TableCell colSpan={9} className="text-center py-8">
                   <div className="flex items-center justify-center gap-2">
                     <RefreshCw className="h-4 w-4 animate-spin text-primary" />
                     <span>Cargando reportes...</span>
@@ -167,7 +166,7 @@ export function SalesTable({
               </TableRow>
             ) : orders.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={10} className="text-center py-8">
+                <TableCell colSpan={9} className="text-center py-8">
                   <div className="text-muted-foreground">
                     <p className="text-lg font-medium mb-2">
                       No se encontraron órdenes
@@ -198,12 +197,6 @@ export function SalesTable({
                       <User className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium">{order.customerName}</span>
                     </div>
-                  </TableCell>
-                  
-                  <TableCell>
-                    <Badge variant="outline" className="font-mono">
-                      Mesa {order.tableNumber}
-                    </Badge>
                   </TableCell>
                   
                   <TableCell>

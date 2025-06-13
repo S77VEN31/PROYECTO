@@ -209,15 +209,15 @@ export function UserManagementTable({
                 onValueChange={handleRoleFilterChange}
               >
                 <SelectTrigger className="w-full sm:w-48 min-w-[180px]">
-                  <SelectValue placeholder="Filter by role" />
+                  <SelectValue placeholder="Filtrar por rol" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
-                  <SelectItem value={UserRole.ADMIN}>Administrator</SelectItem>
-                  <SelectItem value={UserRole.MANAGER}>Manager</SelectItem>
+                  <SelectItem value="all">Todos los Roles</SelectItem>
+                  <SelectItem value={UserRole.ADMIN}>Administrador</SelectItem>
+                  <SelectItem value={UserRole.MANAGER}>Gerente</SelectItem>
                   <SelectItem value={UserRole.CHEF}>Chef</SelectItem>
-                  <SelectItem value={UserRole.SERVER}>Server</SelectItem>
-                  <SelectItem value={UserRole.CASHIER}>Cashier</SelectItem>
+                  <SelectItem value={UserRole.SERVER}>Mesero</SelectItem>
+                  <SelectItem value={UserRole.CASHIER}>Cajero</SelectItem>
                 </SelectContent>
               </Select>
               <Button
@@ -238,19 +238,19 @@ export function UserManagementTable({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="min-w-[150px]">User</TableHead>
+                <TableHead className="min-w-[150px]">Usuario</TableHead>
                 <TableHead className="min-w-[200px] hidden sm:table-cell">
-                  Email
+                  Correo
                 </TableHead>
-                <TableHead className="min-w-[120px]">Role</TableHead>
+                <TableHead className="min-w-[120px]">Rol</TableHead>
                 <TableHead className="min-w-[100px] hidden md:table-cell">
-                  Status
+                  Estado
                 </TableHead>
                 <TableHead className="min-w-[130px] hidden lg:table-cell">
-                  Last Access
+                  Último Acceso
                 </TableHead>
                 <TableHead className="text-right min-w-[80px]">
-                  Actions
+                  Acciones
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -337,7 +337,7 @@ export function UserManagementTable({
                       ) : (
                         <div className="flex items-center gap-1 text-sm">
                           <Calendar className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-muted-foreground">Never</span>
+                          <span className="text-muted-foreground">Nunca</span>
                         </div>
                       )}
                     </TableCell>
@@ -350,7 +350,7 @@ export function UserManagementTable({
                             className="h-8 w-8 flex-shrink-0 hover:text-primary"
                           >
                             <MoreHorizontal className="h-4 w-4 text-primary" />
-                            <span className="sr-only">Open menu</span>
+                            <span className="sr-only">Abrir menú</span>
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
@@ -359,7 +359,7 @@ export function UserManagementTable({
                             className="cursor-pointer text-primary"
                           >
                             <Edit className="h-4 w-4 mr-2 flex-shrink-0" />
-                            <span>Edit</span>
+                            <span>Editar</span>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleToggleUserStatus(user)}
@@ -393,7 +393,7 @@ export function UserManagementTable({
                             className={`${getCancellationTextClass()} cursor-pointer`}
                           >
                             <Trash2 className="h-4 w-4 mr-2 flex-shrink-0" />
-                            <span>Delete</span>
+                            <span>Eliminar</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

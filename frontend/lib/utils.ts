@@ -57,15 +57,15 @@ export function getCategoryVariantDisplayName(
   variant: CategoryVariant | string
 ): string {
   const displayNames: Record<string, string> = {
-    [CategoryVariant.COFFEE]: "Coffee",
-    [CategoryVariant.SKYBLUE]: "Sky Blue",
-    [CategoryVariant.ORANGE]: "Orange",
-    [CategoryVariant.RED]: "Red",
-    [CategoryVariant.PINK]: "Pink",
-    [CategoryVariant.DEFAULT]: "Default",
+    [CategoryVariant.COFFEE]: "Café",
+    [CategoryVariant.SKYBLUE]: "Azul Cielo",
+    [CategoryVariant.ORANGE]: "Naranja",
+    [CategoryVariant.RED]: "Rojo",
+    [CategoryVariant.PINK]: "Rosa",
+    [CategoryVariant.DEFAULT]: "Por Defecto",
   };
 
-  return displayNames[variant as CategoryVariant] || "Default";
+  return displayNames[variant as CategoryVariant] || "Por Defecto";
 }
 
 /**
@@ -81,22 +81,22 @@ export function getCategoryVariantBadgeClass(
 }
 
 /**
- * Get status display text in English
+ * Get status display text in Spanish
  * @param status The status value (boolean for active/inactive or string for promotion statuses)
- * @returns The English display name
+ * @returns The Spanish display name
  */
 export function getStatusDisplayText(status?: boolean | string): string {
   if (typeof status === "boolean") {
-    return status === true ? "Active" : "Inactive";
+    return status === true ? "Activo" : "Inactivo";
   }
 
   const statusLabels: Record<string, string> = {
-    active: "Active",
-    inactive: "Inactive",
-    expired: "Expired",
-    upcoming: "Upcoming",
+    active: "Activo",
+    inactive: "Inactivo",
+    expired: "Expirado",
+    upcoming: "Próximo",
   };
-  return statusLabels[status as string] || status || "Unknown";
+  return statusLabels[status as string] || status || "Desconocido";
 }
 
 /**
@@ -128,16 +128,23 @@ export function getStatusBadgeClass(status?: boolean | string): string {
 }
 
 /**
- * Get toggle status action text in English
+ * Get toggle status action text in Spanish
  */
 export function getToggleStatusActionText(
   isActive?: boolean,
   entityType: "user" | "product" | "promotion" | "category" = "user"
 ): string {
+  const entityNames = {
+    user: "usuario",
+    product: "producto", 
+    promotion: "promoción",
+    category: "categoría"
+  };
+  
   if (isActive === true) {
-    return `Deactivate ${entityType}`;
+    return `Desactivar ${entityNames[entityType]}`;
   } else {
-    return `Activate ${entityType}`;
+    return `Activar ${entityNames[entityType]}`;
   }
 }
 
@@ -426,12 +433,12 @@ export function getPromotionTypeDisplayText(
   type: PromotionType | string
 ): string {
   const typeLabels: Record<string, string> = {
-    [PromotionType.DISCOUNT]: "Discount",
-    [PromotionType.BOGO]: "Buy One Get One",
-    [PromotionType.BUNDLE]: "Bundle",
-    [PromotionType.FREE_SHIPPING]: "Free Shipping",
-    [PromotionType.GIFT_WITH_PURCHASE]: "Gift with Purchase",
-    [PromotionType.SEASONAL]: "Seasonal",
+    [PromotionType.DISCOUNT]: "Descuento",
+    [PromotionType.BOGO]: "Compra Uno Lleva Dos",
+    [PromotionType.BUNDLE]: "Paquete",
+    [PromotionType.FREE_SHIPPING]: "Envío Gratis",
+    [PromotionType.GIFT_WITH_PURCHASE]: "Regalo con Compra",
+    [PromotionType.SEASONAL]: "Estacional",
   };
   return typeLabels[type as PromotionType] || type;
 }
@@ -465,17 +472,17 @@ export function getPromotionTypeBadgeClass(
 }
 
 /**
- * Get role display name in English
+ * Get role display name in Spanish
  * @param role The UserRole enum value
- * @returns The English display name
+ * @returns The Spanish display name
  */
 export function getRoleDisplayName(role: UserRole | string): string {
   const roleNames: Record<string, string> = {
-    [UserRole.ADMIN]: "Administrator",
-    [UserRole.MANAGER]: "Manager",
+    [UserRole.ADMIN]: "Administrador",
+    [UserRole.MANAGER]: "Gerente",
     [UserRole.CHEF]: "Chef",
-    [UserRole.SERVER]: "Server",
-    [UserRole.CASHIER]: "Cashier",
+    [UserRole.SERVER]: "Mesero",
+    [UserRole.CASHIER]: "Cajero",
   };
   return roleNames[role as UserRole] || role;
 }

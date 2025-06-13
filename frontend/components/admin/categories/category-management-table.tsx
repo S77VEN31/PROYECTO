@@ -211,20 +211,20 @@ export function CategoryManagementTable({
                 onValueChange={handleVariantFilterChange}
               >
                 <SelectTrigger className="w-full sm:w-48 min-w-[180px]">
-                  <SelectValue placeholder="Filter by variant" />
+                  <SelectValue placeholder="Filtrar por variante" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Variants</SelectItem>
+                  <SelectItem value="all">Todas las Variantes</SelectItem>
                   <SelectItem value={CategoryVariant.DEFAULT}>
-                    Default
+                    Predeterminado
                   </SelectItem>
-                  <SelectItem value={CategoryVariant.COFFEE}>Coffee</SelectItem>
-                  <SelectItem value={CategoryVariant.ORANGE}>Orange</SelectItem>
-                  <SelectItem value={CategoryVariant.PINK}>Pink</SelectItem>
+                  <SelectItem value={CategoryVariant.COFFEE}>Café</SelectItem>
+                  <SelectItem value={CategoryVariant.ORANGE}>Naranja</SelectItem>
+                  <SelectItem value={CategoryVariant.PINK}>Rosa</SelectItem>
                   <SelectItem value={CategoryVariant.SKYBLUE}>
-                    Sky Blue
+                    Azul Cielo
                   </SelectItem>
-                  <SelectItem value={CategoryVariant.RED}>Red</SelectItem>
+                  <SelectItem value={CategoryVariant.RED}>Rojo</SelectItem>
                 </SelectContent>
               </Select>
               <Button
@@ -245,12 +245,12 @@ export function CategoryManagementTable({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Category</TableHead>
-                <TableHead>Variant</TableHead>
-                <TableHead>Order</TableHead>
-                <TableHead>Products</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Categoría</TableHead>
+                <TableHead>Variante</TableHead>
+                <TableHead>Orden</TableHead>
+                <TableHead>Productos</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -366,7 +366,7 @@ export function CategoryManagementTable({
                               className="text-primary"
                             >
                               <Edit className="h-4 w-4 mr-2" />
-                              Edit
+                              Editar
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
@@ -396,7 +396,7 @@ export function CategoryManagementTable({
                               className={getCancellationTextClass()}
                             >
                               <Trash2 className="h-4 w-4 mr-2 flex-shrink-0" />
-                              <span>Delete</span>
+                              <span>Eliminar</span>
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>

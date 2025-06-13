@@ -80,6 +80,13 @@ export default function LoginPage() {
     }
   };
 
+  /**
+   * Handle guest access to client view
+   */
+  const handleGuestAccess = () => {
+    router.push("/client");
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="absolute top-4 right-4">
@@ -158,6 +165,26 @@ export default function LoginPage() {
                 disabled={isLoading}
               >
                 {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+              </Button>
+              
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    O
+                  </span>
+                </div>
+              </div>
+              
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleGuestAccess}
+              >
+                Continuar como Cliente
               </Button>
             </div>
           </form>

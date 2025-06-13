@@ -84,9 +84,24 @@ export function CreateUserDialog({
       onUserCreated(newUser);
       form.reset();
       onOpenChange(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating user:", error);
-      // You could add toast notification here
+      
+      // Handle specific error messages
+      if (error.message?.includes("Email already exists")) {
+        form.setError("email", {
+          type: "manual",
+          message: "Este email ya está registrado. Por favor, usa otro email."
+        });
+      } else if (error.message?.includes("First name is required")) {
+        form.setError("firstName", {
+          type: "manual",
+          message: "El nombre es requerido."
+        });
+      } else {
+        // Generic error - could add toast notification here
+        console.error("Error inesperado:", error.message || error);
+      }
     } finally {
       setIsLoading(false);
     }

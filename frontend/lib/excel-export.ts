@@ -53,10 +53,10 @@ const getPaymentMethodDisplayText = (method: PaymentMethod | null) => {
   switch (method) {
     case PaymentMethod.CASH:
       return "Efectivo";
-    case PaymentMethod.CREDIT_CARD:
-      return "Tarjeta de Crédito";
-    case PaymentMethod.DEBIT_CARD:
-      return "Tarjeta de Débito";
+    case PaymentMethod.CARD:
+      return "Tarjeta";
+    case PaymentMethod.SINPE_MOVIL:
+      return "SINPE Móvil";
     default:
       return method;
   }
@@ -93,7 +93,6 @@ export const exportSalesReportToExcel = (
     "#": index + 1,
     "Número de Orden": order.reference || order.id.slice(-6),
     "Cliente": order.customerName,
-    "Mesa": order.tableNumber,
     "Estado": getStatusDisplayText(order.status),
     "Método de Pago": getPaymentMethodDisplayText(order.paymentMethod || null),
     "Productos": order.products?.length || 0,
@@ -112,7 +111,6 @@ export const exportSalesReportToExcel = (
     { wch: 5 },   // #
     { wch: 15 },  // Número de Orden
     { wch: 20 },  // Cliente
-    { wch: 8 },   // Mesa
     { wch: 12 },  // Estado
     { wch: 18 },  // Método de Pago
     { wch: 10 },  // Productos
@@ -188,7 +186,6 @@ export const exportSalesReportToExcel = (
     { "Filtro": "Fecha de Inicio", "Valor": filters.startDate || "No especificada" },
     { "Filtro": "Fecha de Fin", "Valor": filters.endDate || "No especificada" },
     { "Filtro": "Estado", "Valor": filters.status ? getStatusDisplayText(filters.status as OrderStatus) : "Todos" },
-    { "Filtro": "Mesa", "Valor": filters.tableNumber || "Todas" },
     { "Filtro": "Búsqueda", "Valor": filters.search || "Sin filtro" },
     { "Filtro": "", "Valor": "" },
     { "Filtro": "Fecha de Exportación", "Valor": new Date().toLocaleDateString("es-CR") },

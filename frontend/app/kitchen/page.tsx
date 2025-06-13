@@ -87,21 +87,26 @@ export default function KitchenDashboard() {
   const [orderToComplete, setOrderToComplete] = useState<Order | null>(null);
 
   // Filtrar y ordenar las órdenes según el estado seleccionado y prioridad
+  // Excluir órdenes completadas ya que van al historial
   const filteredOrders = (() => {
-    // Si hay un filtro de estado, solo mostrar órdenes con ese estado
-    const filtered = statusFilter
-      ? orders.filter((order) => order.status === statusFilter)
-      : orders;
+    // Filtrar solo órdenes pendientes y en progreso
+    const activeOrders = orders.filter((order) => 
+      order.status === "pending" || order.status === "in-progress"
+    );
     
-    // Ordenar según prioridad: primero en preparación, luego pendientes, finalmente completadas
+    // Si hay un filtro de estado, aplicarlo a las órdenes activas
+    const filtered = statusFilter
+      ? activeOrders.filter((order) => order.status === statusFilter)
+      : activeOrders;
+    
+    // Ordenar según prioridad: primero en preparación, luego pendientes
     return [...filtered].sort((a, b) => {
       // Definir prioridad para cada estado
       const getPriority = (status: string): number => {
         switch (status) {
           case "in-progress": return 1; // Prioridad más alta
           case "pending": return 2;
-          case "completed": return 3; // Prioridad más baja
-          default: return 4;
+          default: return 3;
         }
       };
       
@@ -122,6 +127,7 @@ export default function KitchenDashboard() {
   })();
 
   // Contar órdenes por estado para los filtros y estadísticas
+  // Solo contar órdenes activas (pendientes y en progreso)
   const pendingCount = orders.filter(
     (order) => order.status === "pending"
   ).length;
@@ -130,6 +136,7 @@ export default function KitchenDashboard() {
     (order) => order.status === "in-progress"
   ).length;
   
+  // Para las estadísticas, mantener el conteo de completadas
   const completedCount = orders.filter(
     (order) => order.status === "completed"
   ).length;
@@ -410,6 +417,12 @@ export default function KitchenDashboard() {
           {loading && (
             <span className="text-sm text-muted-foreground">Actualizando...</span>
           )}
+          <a 
+            href="/kitchen/history"
+            className="text-sm px-3 py-1 bg-secondary/10 hover:bg-secondary/20 text-secondary-foreground rounded-md transition-colors"
+          >
+            Ver Historial
+          </a>
           <button 
             onClick={fetchOrders}
             className="text-sm px-3 py-1 bg-primary/10 hover:bg-primary/20 text-primary rounded-md transition-colors"
